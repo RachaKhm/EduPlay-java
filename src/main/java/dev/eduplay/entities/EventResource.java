@@ -12,7 +12,7 @@ public class EventResource {
     private LocalDateTime createdAt;
     private SchoolEvent event;
 
-    public EventResource() {}
+    public EventResource(int id, String nom, String prenom, int age, String sexe, double poids, String autres, LocalDateTime date, String groupSanguin) {}
 
     public EventResource(int id, String type, String title, String context, String filePath, String url, LocalDateTime createdAt, SchoolEvent event) {
         this.id = id;
