@@ -48,6 +48,28 @@ public class EventRegistration {
         this.parent = parent;
     }
 
+    public EventRegistration(int id, String status, LocalDateTime registeredAt, String childFullName,
+                             String parentPhone, String childClassLevel, String medicalNotes,
+                             String emergencyContactName, String emergencyContactPhone, String notes,
+                             String ticketQrCode, String qrCodePath, LocalDateTime scannedAt,
+                             Boolean reminderSent, LocalDateTime reminderSentAt) {
+        this.id = id;
+        this.status = status;
+        this.registeredAt = registeredAt;
+        this.childFullName = childFullName;
+        this.parentPhone = parentPhone;
+        this.childClassLevel = childClassLevel;
+        this.medicalNotes = medicalNotes;
+        this.emergencyContactName = emergencyContactName;
+        this.emergencyContactPhone = emergencyContactPhone;
+        this.notes = notes;
+        this.ticketQrCode = ticketQrCode;
+        this.qrCodePath = qrCodePath;
+        this.scannedAt = scannedAt;
+        this.reminderSent = reminderSent;
+        this.reminderSentAt = reminderSentAt;
+    }
+
     public int getId() {
         return id;
     }
