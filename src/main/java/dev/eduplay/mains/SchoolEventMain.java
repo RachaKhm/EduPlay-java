@@ -10,7 +10,7 @@ import java.util.List;
 public class SchoolEventMain {
     public static void main(String[] args) throws SQLException {
         SchoolEventService ses = new SchoolEventService();
-        SchoolEvent event1 = new SchoolEvent(1, "Atelier Mosaïstes", "Description",
+        SchoolEvent event1 = new SchoolEvent(28, "Atelier Mosaïstes", "Description",
                 LocalDateTime.of(2026, 5, 15, 10, 0), LocalDateTime.of(2026, 5, 15, 12, 0),
                 "Tunis", null, null, null, null, null, null);
 
@@ -67,7 +67,7 @@ public class SchoolEventMain {
 //        }
 
 //        try {
-//            ses.supprimer(event4);
+//            ses.supprimer(event1);
 //            System.out.println("event supprimé!");
 //        } catch (SQLException e) {
 //            System.out.println(e.getMessage());
