@@ -35,10 +35,15 @@ public class EventResourceService implements IGeneralService<EventResource>  {
 
     @Override
     public void supprimer(EventResource resource) throws SQLException {
-        String sql = "DELETE FROM event_resource WHERE id = ?";
-        PreparedStatement pst = cn.prepareStatement(sql);
-        pst.setInt(1, resource.getId());
-        pst.executeUpdate();
+        if(chercher(resource) ==resource.getId()){
+            String sql = "DELETE FROM event_resource WHERE id = ?";
+            PreparedStatement pst = cn.prepareStatement(sql);
+            pst.setInt(1, resource.getId());
+            pst.executeUpdate();
+        }
+        else{
+            System.out.println("resource n'esxiste pas");
+        }
     }
 
     @Override
