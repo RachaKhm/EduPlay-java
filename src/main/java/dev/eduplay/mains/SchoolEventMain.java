@@ -10,10 +10,9 @@ import java.util.List;
 public class SchoolEventMain {
     public static void main(String[] args) throws SQLException {
         SchoolEventService ses = new SchoolEventService();
-        SchoolEvent event1 = new SchoolEvent(1, "Atelier Petits Mosaïstes", "Viens découvrir l'art de la mosaïque",
+        SchoolEvent event1 = new SchoolEvent(1, "Atelier Mosaïstes", "Description",
                 LocalDateTime.of(2026, 5, 15, 10, 0), LocalDateTime.of(2026, 5, 15, 12, 0),
-                "Musée National du Bardo, Tunis", "uploads/events/mosaique.jpg",
-                null, "36.809876", "10.134552", null, null);
+                "Tunis", null, null, null, null, null, null);
 
         SchoolEvent event2 = new SchoolEvent(2, "Safari des Oasis", "Découverte des animaux du désert",
                 LocalDateTime.of(2026, 6, 10, 9, 30), LocalDateTime.of(2026, 6, 10, 16, 0),
@@ -25,13 +24,13 @@ public class SchoolEventMain {
                 "Maison de la Culture, Sidi Bou Saïd", "uploads/events/patisserie.jpg",
                 null, "36.869650", "10.342430", null, null);
 
-//        try {
-//            ses.ajouter(event1);
-//            System.out.println("event ajouté!");
-//        }
-//        catch (SQLException e) {
-//            System.out.println(e.getMessage());
-//        }
+        try {
+            ses.ajouter(event1);
+            System.out.println("event ajouté!");
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
 
 
 
@@ -67,12 +66,12 @@ public class SchoolEventMain {
 //            System.out.println(e.getMessage());
 //        }
 
-        try {
-            ses.supprimer(event4);
-            System.out.println("event supprimé!");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+//        try {
+//            ses.supprimer(event4);
+//            System.out.println("event supprimé!");
+//        } catch (SQLException e) {
+//            System.out.println(e.getMessage());
+//        }
 
     }
 

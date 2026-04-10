@@ -12,7 +12,7 @@ public class EventResource {
     private LocalDateTime createdAt;
     private SchoolEvent event;
 
-    public EventResource(int id, String nom, String prenom, int age, String sexe, double poids, String autres, LocalDateTime date, String groupSanguin) {}
+    public EventResource() {}
 
     public EventResource(int id, String type, String title, String context, String filePath, String url, LocalDateTime createdAt, SchoolEvent event) {
         this.id = id;
@@ -23,6 +23,16 @@ public class EventResource {
         this.url = url;
         this.createdAt = createdAt;
         this.event = event;
+    }
+
+    public EventResource(int id, String type, String title, String context, String filePath, String url, LocalDateTime createdAt) {
+        this.id = id;
+        this.type = type;
+        this.title = title;
+        this.context = context;
+        this.filePath = filePath;
+        this.url = url;
+        this.createdAt = createdAt;
     }
 
     public int getId() {

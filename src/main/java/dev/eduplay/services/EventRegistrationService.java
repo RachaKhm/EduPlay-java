@@ -15,35 +15,31 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
 
     @Override
     public void ajouter(EventRegistration registration) throws SQLException {
-        String sql = "INSERT INTO event_registration(status, registered_at, child_full_name, parent_phone, child_class_level, medical_notes, emergency_contact_name, emergency_contact_phone, notes, ticket_qr_code, qr_code_path, scanned_at, reminder_sent, reminder_sent_at, event_id, parent_id) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO event_registration(event_id, parent_id, status, registered_at, child_full_name, parent_phone, child_class_level, medical_notes, emergency_contact_name, emergency_contact_phone, notes, ticket_qr_code, qr_code_path, scanned_at, reminder_sent, reminder_sent_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement ps = cn.prepareStatement(sql);
 
-        ps.setString(1, registration.getStatus());
-        ps.setTimestamp(2, Timestamp.valueOf(registration.getRegisteredAt()));
-        ps.setString(3, registration.getChildFullName());
-        ps.setString(4, registration.getParentPhone());
-        ps.setString(5, registration.getChildClassLevel());
-        ps.setString(6, registration.getMedicalNotes());
-        ps.setString(7, registration.getEmergencyContactName());
-        ps.setString(8, registration.getEmergencyContactPhone());
-        ps.setString(9, registration.getNotes());
-        ps.setString(10, registration.getTicketQrCode());
-        ps.setString(11, registration.getQrCodePath());
-        ps.setTimestamp(12, registration.getScannedAt() != null ? Timestamp.valueOf(registration.getScannedAt()) : null);
-        ps.setBoolean(13, registration.getReminderSent());
-        ps.setTimestamp(14, registration.getReminderSentAt() != null ? Timestamp.valueOf(registration.getReminderSentAt()) : null);
-        ps.setInt(15, registration.getEvent().getId());
-        ps.setInt(16, registration.getParent().getId());
+        ps.setInt(1, registration.getEvent().getId());
+        ps.setInt(2, registration.getParent().getId());
+        ps.setString(3, registration.getStatus());
+        ps.setTimestamp(4, Timestamp.valueOf(registration.getRegisteredAt()));
+        ps.setString(5, registration.getChildFullName());
+        ps.setString(6, registration.getParentPhone());
+        ps.setString(7, registration.getChildClassLevel());
+        ps.setString(8, registration.getMedicalNotes());
+        ps.setString(9, registration.getEmergencyContactName());
+        ps.setString(10, registration.getEmergencyContactPhone());
+        ps.setString(11, registration.getNotes());
+        ps.setString(12, registration.getTicketQrCode());
+        ps.setString(13, registration.getQrCodePath());
+        ps.setTimestamp(14, registration.getScannedAt() != null ? Timestamp.valueOf(registration.getScannedAt()) : null);
+        ps.setBoolean(15, registration.getReminderSent());
+        ps.setTimestamp(16, registration.getReminderSentAt() != null ? Timestamp.valueOf(registration.getReminderSentAt()) : null);
+
 
         ps.executeUpdate();
 
-        ResultSet rs = ps.getGeneratedKeys();
-        if (rs.next()) {
-            registration.setId(rs.getInt(1));
-        }
 
-        ps.close();
     }
 
     @Override
