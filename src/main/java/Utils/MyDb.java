@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class MyDb {
 
     public static final String DEFAULT_URL =
-            "jdbc:mysql://127.0.0.1:3306/eduplaydb-4?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+            "jdbc:mysql://127.0.0.1:3306/eduplaydb?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
                     + "&zeroDateTimeBehavior=CONVERT_TO_NULL";
 
     public String PATH = DEFAULT_URL;
