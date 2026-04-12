@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="dev.eduplay.controllers.LibraryShowController"
+      style="-fx-background-color: #f1f5f9;"
+      spacing="0">
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- HEADER GRADIENT                            -->
+    <!-- ══════════════════════════════════════════ -->
+    <VBox style="-fx-background-color: linear-gradient(to right, #3b82f6, #6366f1);
+                 -fx-padding: 28 32 24 32;" spacing="12">
+
+        <!-- Ligne 1 : Titre + Boutons -->
+        <HBox alignment="CENTER_LEFT" spacing="16">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label fx:id="libraryNameLabel"
+                       text="Nom de la bibliothèque"
+                       style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label text="Détails complets de la bibliothèque"
+                       style="-fx-font-size: 13px; -fx-text-fill: #bfdbfe;"/>
+            </VBox>
+
+            <!-- Bouton Retour -->
+            <Button text="←  Retour" onAction="#handleRetour"
+                    style="-fx-background-color: rgba(255,255,255,0.2);
+                           -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px;
+                           -fx-background-radius: 12; -fx-padding: 10 18;
+                           -fx-border-color: rgba(255,255,255,0.35); -fx-border-width: 1;
+                           -fx-border-radius: 12; -fx-cursor: hand;"/>
+            <!-- Bouton Modifier -->
+            <Button text="✏  Modifier" onAction="#handleModifier"
+                    style="-fx-background-color: white; -fx-text-fill: #2563eb;
+                           -fx-font-weight: bold; -fx-font-size: 13px;
+                           -fx-background-radius: 12; -fx-padding: 10 18; -fx-cursor: hand;"/>
+        </HBox>
+
+        <!-- Ligne 2 : Badges -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <!-- Badge âge -->
+            <Label fx:id="ageBadgeLabel"
+                   style="-fx-background-color: rgba(255,255,255,0.18);
+                          -fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;
+                          -fx-background-radius: 20; -fx-padding: 5 14;
+                          -fx-border-color: rgba(255,255,255,0.3); -fx-border-width: 1;
+                          -fx-border-radius: 20;"/>
+            <!-- Badge niveau -->
+            <Label fx:id="levelBadgeLabel"
+                   style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;
+                          -fx-background-radius: 20; -fx-padding: 5 14;"/>
+            <!-- Badge thème -->
+            <Label fx:id="themeBadgeLabel"
+                   style="-fx-background-color: rgba(255,255,255,0.18);
+                          -fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;
+                          -fx-background-radius: 20; -fx-padding: 5 14;
+                          -fx-border-color: rgba(255,255,255,0.3); -fx-border-width: 1;
+                          -fx-border-radius: 20;"/>
+        </HBox>
+    </VBox>
+
+    <!-- ══════════════════════════════════════════ -->
+    <!-- CONTENU PRINCIPAL (scrollable)             -->
+    <!-- ══════════════════════════════════════════ -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-background: #f1f5f9;">
+        <VBox style="-fx-padding: 24 32;" spacing="20">
+
+            <!-- IMAGE DE COUVERTURE -->
+            <VBox fx:id="imageContainer" spacing="0"
+                  style="-fx-background-color: #e2e8f0; -fx-background-radius: 16;
+                         -fx-border-radius: 16; -fx-min-height: 200; -fx-max-height: 220;
+                         -fx-overflow: hidden;"
+                  managed="false" visible="false">
+                <ImageView fx:id="coverImageView"
+                           fitWidth="980" fitHeight="220"
+                           preserveRatio="false"
+                           smooth="true"
+                           style="-fx-background-radius: 16;"/>
+            </VBox>
+
+            <!-- GRILLE : Description (gauche 2/3) + Infos+Actions (droite 1/3) -->
+            <HBox spacing="20" alignment="TOP_LEFT">
+
+                <!-- ── COLONNE GAUCHE : Description ── -->
+                <VBox HBox.hgrow="ALWAYS" spacing="0"
+                      style="-fx-background-color: white; -fx-background-radius: 16;
+                             -fx-border-radius: 16; -fx-border-color: #e2e8f0; -fx-border-width: 1;
+                             -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,3);
+                             -fx-padding: 24;">
+
+                    <!-- Titre section Description -->
+                    <HBox spacing="14" alignment="CENTER_LEFT" style="-fx-padding: 0 0 16 0;">
+                        <HBox style="-fx-background-color: #eff6ff; -fx-background-radius: 12; -fx-padding: 10;"
+                              alignment="CENTER">
+                            <Label text="💬" style="-fx-font-size: 18px;"/>
+                        </HBox>
+                        <VBox spacing="2">
+                            <Label text="Description"
+                                   style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                            <Label text="Présentation de la bibliothèque"
+                                   style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                        </VBox>
+                    </HBox>
+
+                    <Separator style="-fx-background-color: #f1f5f9; -fx-padding: 0 0 16 0;"/>
+
+                    <!-- Texte description -->
+                    <VBox style="-fx-padding: 16 0 0 0;">
+                        <Label fx:id="descriptionLabel"
+                               style="-fx-background-color: #f8fafc; -fx-background-radius: 12;
+                                      -fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 12;
+                                      -fx-padding: 18; -fx-font-size: 14px; -fx-text-fill: #374151;
+                                      -fx-wrap-text: true; -fx-line-spacing: 4;"
+                               wrapText="true"/>
+                    </VBox>
+                </VBox>
+
+                <!-- ── COLONNE DROITE : Infos + Actions ── -->
+                <VBox spacing="16" prefWidth="320" minWidth="300">
+
+                    <!-- Carte Informations -->
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 16;
+                                 -fx-border-radius: 16; -fx-border-color: #e2e8f0; -fx-border-width: 1;
+                                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,3);
+                                 -fx-padding: 22;" spacing="16">
+
+                        <!-- Titre Informations -->
+                        <HBox spacing="14" alignment="CENTER_LEFT">
+                            <HBox style="-fx-background-color: #f0fdf4; -fx-background-radius: 12; -fx-padding: 10;"
+                                  alignment="CENTER">
+                                <Label text="ℹ" style="-fx-font-size: 18px; -fx-text-fill: #16a34a;"/>
+                            </HBox>
+                            <VBox spacing="2">
+                                <Label text="Informations"
+                                       style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                                <Label text="Détails techniques"
+                                       style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Tranche d'âge -->
+                        <VBox spacing="8"
+                              style="-fx-background-color: linear-gradient(to right,#eff6ff,#eef2ff);
+                                     -fx-background-radius: 12; -fx-border-color: #bfdbfe;
+                                     -fx-border-width: 1; -fx-border-radius: 12; -fx-padding: 14;">
+                            <Label text="📊 Tranche d'âge"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1e40af;"/>
+                            <Label fx:id="ageRangeLabel"
+                                   style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1e3a8a;"/>
+                            <!-- Barre de progression -->
+                            <VBox spacing="4" style="-fx-padding: 4 0 0 0;">
+                                <HBox>
+                                    <Label fx:id="minAgeBarLabel"
+                                           style="-fx-font-size: 11px; -fx-text-fill: #3b82f6;"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Label fx:id="maxAgeBarLabel"
+                                           style="-fx-font-size: 11px; -fx-text-fill: #3b82f6;"/>
+                                </HBox>
+                                <StackPane style="-fx-background-color: #bfdbfe; -fx-background-radius: 4;"
+                                           prefHeight="8">
+                                    <HBox alignment="CENTER_LEFT">
+                                        <Region fx:id="ageProgressBar"
+                                                prefHeight="8"
+                                                style="-fx-background-color: linear-gradient(to right,#3b82f6,#6366f1);
+                                                       -fx-background-radius: 4;"/>
+                                    </HBox>
+                                </StackPane>
+                            </VBox>
+                        </VBox>
+
+                        <!-- Niveau -->
+                        <HBox alignment="CENTER_LEFT"
+                              style="-fx-background-color: linear-gradient(to right,#f8fafc,#f1f5f9);
+                                     -fx-background-radius: 12; -fx-border-color: #e2e8f0;
+                                     -fx-border-width: 1; -fx-border-radius: 12; -fx-padding: 14;">
+                            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                <Label text="🎯 Niveau de difficulté"
+                                       style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                                <Label fx:id="levelDetailLabel"
+                                       style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                            </VBox>
+                            <Label fx:id="levelEmojiLabel" style="-fx-font-size: 28px;"/>
+                        </HBox>
+
+                        <!-- Thème -->
+                        <VBox spacing="4"
+                              style="-fx-background-color: linear-gradient(to right,#faf5ff,#ede9fe);
+                                     -fx-background-radius: 12; -fx-border-color: #d8b4fe;
+                                     -fx-border-width: 1; -fx-border-radius: 12; -fx-padding: 14;">
+                            <Label text="🏷 Thème / Catégorie"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #7c3aed;"/>
+                            <Label fx:id="themeDetailLabel"
+                                   style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- Carte Actions -->
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 16;
+                                 -fx-border-radius: 16; -fx-border-color: #e2e8f0; -fx-border-width: 1;
+                                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,3);
+                                 -fx-padding: 22;" spacing="14">
+
+                        <!-- Titre Actions -->
+                        <HBox spacing="14" alignment="CENTER_LEFT">
+                            <HBox style="-fx-background-color: #fef2f2; -fx-background-radius: 12; -fx-padding: 10;"
+                                  alignment="CENTER">
+                                <Label text="🗑" style="-fx-font-size: 18px;"/>
+                            </HBox>
+                            <VBox spacing="2">
+                                <Label text="Actions"
+                                       style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                                <Label text="Gestion de la bibliothèque"
+                                       style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Bouton Modifier -->
+                        <Button text="✏  Modifier" onAction="#handleModifier"
+                                maxWidth="Infinity"
+                                style="-fx-background-color: #eff6ff; -fx-text-fill: #1d4ed8;
+                                       -fx-font-weight: bold; -fx-font-size: 13px;
+                                       -fx-background-radius: 12; -fx-padding: 14;
+                                       -fx-border-color: #bfdbfe; -fx-border-width: 2;
+                                       -fx-border-radius: 12; -fx-cursor: hand;"/>
+
+                        <!-- Bouton Supprimer -->
+                        <Button text="🗑  Supprimer" onAction="#handleSupprimer"
+                                maxWidth="Infinity"
+                                style="-fx-background-color: #fef2f2; -fx-text-fill: #dc2626;
+                                       -fx-font-weight: bold; -fx-font-size: 13px;
+                                       -fx-background-radius: 12; -fx-padding: 14;
+                                       -fx-border-color: #fecaca; -fx-border-width: 2;
+                                       -fx-border-radius: 12; -fx-cursor: hand;"/>
+                    </VBox>
+
+                </VBox>
+            </HBox>
+        </VBox>
+    </ScrollPane>
+</VBox>
