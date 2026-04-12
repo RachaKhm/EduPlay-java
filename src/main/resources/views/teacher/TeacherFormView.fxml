@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.TeacherDashboardController"
+            prefWidth="580"
+            style="-fx-background-color: #F8F9FA;">
+
+    <!-- HEADER -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="12"
+              style="-fx-background-color: #1A1A2E; -fx-padding: 18 24;">
+            <VBox spacing="3">
+                <Label fx:id="formTitle" text="Nouvel enseignant"
+                       style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label text="Profil enseignant — EduPlay"
+                       style="-fx-font-size: 11px; -fx-text-fill: #555577;"/>
+            </VBox>
+            <HBox HBox.hgrow="ALWAYS"/>
+            <Button text="✕" onAction="#closeForm"
+                    style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
+                           -fx-font-size: 16px; -fx-cursor: hand; -fx-border-width: 0;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true"
+                    style="-fx-background-color: transparent; -fx-background: transparent;">
+            <VBox spacing="0" style="-fx-padding: 24 32 24 32; -fx-background-color: #F8F9FA;">
+
+                <!-- Indicateur étape -->
+                <HBox spacing="0" style="-fx-padding: 0 0 24 0;">
+                    <VBox alignment="CENTER" prefWidth="80" spacing="6">
+                        <StackPane>
+                            <Circle fx:id="step1Circle" radius="14"
+                                    fill="#E94560"/>
+                            <Label text="1"
+                                   style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        </StackPane>
+                        <Label text="Identité"
+                               style="-fx-font-size: 10px; -fx-text-fill: #E94560; -fx-font-weight: bold;"/>
+                    </VBox>
+                    <Line fx:id="stepLine1" startX="0" endX="60" startY="0" endY="0"
+                          style="-fx-stroke: #DDDDE8;" translateY="14"/>
+                    <VBox alignment="CENTER" prefWidth="80" spacing="6">
+                        <StackPane>
+                            <Circle radius="14" fill="#DDDDE8"/>
+                            <Label text="2"
+                                   style="-fx-text-fill: #9999BB; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        </StackPane>
+                        <Label text="Spécialité"
+                               style="-fx-font-size: 10px; -fx-text-fill: #9999BB;"/>
+                    </VBox>
+                    <Line startX="0" endX="60" startY="0" endY="0"
+                          style="-fx-stroke: #DDDDE8;" translateY="14"/>
+                    <VBox alignment="CENTER" prefWidth="80" spacing="6">
+                        <StackPane>
+                            <Circle radius="14" fill="#DDDDE8"/>
+                            <Label text="3"
+                                   style="-fx-text-fill: #9999BB; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        </StackPane>
+                        <Label text="Accès"
+                               style="-fx-font-size: 10px; -fx-text-fill: #9999BB;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Section 1 : Identité -->
+                <Label text="Identité"
+                       style="-fx-font-size: 11px; -fx-font-weight: bold;
+                              -fx-text-fill: #9999BB; -fx-padding: 0 0 12 0;"/>
+
+                <HBox spacing="16">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Prénom *"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <TextField fx:id="firstNameField" promptText="ex: Karim"
+                                   style="-fx-background-color: white; -fx-border-color: #DDDDE8;
+                                          -fx-border-width: 1; -fx-background-radius: 6;
+                                          -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Nom *"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <TextField fx:id="lastNameField" promptText="ex: Mansouri"
+                                   style="-fx-background-color: white; -fx-border-color: #DDDDE8;
+                                          -fx-border-width: 1; -fx-background-radius: 6;
+                                          -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="16" style="-fx-padding: 14 0 0 0;">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Email *"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <TextField fx:id="emailField" promptText="enseignant@eduplay.com"
+                                   style="-fx-background-color: white; -fx-border-color: #DDDDE8;
+                                          -fx-border-width: 1; -fx-background-radius: 6;
+                                          -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Téléphone"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <TextField fx:id="telephoneField" promptText="+216 XX XXX XXX"
+                                   style="-fx-background-color: white; -fx-border-color: #DDDDE8;
+                                          -fx-border-width: 1; -fx-background-radius: 6;
+                                          -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                    </VBox>
+                </HBox>
+
+                <Separator style="-fx-padding: 20 0 0 0;"/>
+
+                <!-- Section 2 : Spécialité -->
+                <Label text="Spécialité"
+                       style="-fx-font-size: 11px; -fx-font-weight: bold;
+                              -fx-text-fill: #9999BB; -fx-padding: 18 0 12 0;"/>
+
+                <HBox spacing="16">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Matière principale *"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <ComboBox fx:id="specialiteCombo" maxWidth="Infinity"
+                                  promptText="Sélectionner une matière"
+                                  style="-fx-font-size: 13px;"/>
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Niveau d'enseignement"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <ComboBox fx:id="niveauEnseignementCombo" maxWidth="Infinity"
+                                  promptText="Primaire / Collège / Lycée"
+                                  style="-fx-font-size: 13px;"/>
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="6" style="-fx-padding: 14 0 0 0;">
+                    <Label text="Description / Bio courte"
+                           style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                    <TextArea fx:id="bioField" promptText="Présentation de l'enseignant..."
+                              prefRowCount="3" wrapText="true"
+                              style="-fx-background-color: white; -fx-border-color: #DDDDE8;
+                                     -fx-border-width: 1; -fx-background-radius: 6;
+                                     -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                </VBox>
+
+                <Separator style="-fx-padding: 20 0 0 0;"/>
+
+                <!-- Section 3 : Accès -->
+                <Label text="Accès au système"
+                       style="-fx-font-size: 11px; -fx-font-weight: bold;
+                              -fx-text-fill: #9999BB; -fx-padding: 18 0 12 0;"/>
+
+                <HBox spacing="16">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Mot de passe *"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <PasswordField fx:id="passwordField" promptText="Minimum 8 caractères"
+                                       style="-fx-background-color: white; -fx-border-color: #DDDDE8;
+                                              -fx-border-width: 1; -fx-background-radius: 6;
+                                              -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                    </VBox>
+                    <VBox spacing="6" alignment="BOTTOM_LEFT" HBox.hgrow="ALWAYS">
+                        <CheckBox fx:id="activeCheck" text="Compte actif dès création"
+                                  selected="true"
+                                  style="-fx-font-size: 13px; -fx-text-fill: #444466; -fx-padding: 0 0 10 0;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Feedback -->
+                <Label fx:id="feedbackLabel" text="" wrapText="true"
+                       style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
+
+                <!-- Boutons -->
+                <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 24 0 0 0;">
+                    <Button text="Annuler" onAction="#closeForm"
+                            style="-fx-background-color: white; -fx-border-color: #DDDDE8;
+                                   -fx-border-width: 1; -fx-border-radius: 6;
+                                   -fx-background-radius: 6; -fx-text-fill: #555577;
+                                   -fx-font-size: 13px; -fx-padding: 9 20; -fx-cursor: hand;"/>
+                    <Button text="Créer l'enseignant" onAction="#saveTeacher"
+                            style="-fx-background-color: #E94560; -fx-text-fill: white;
+                                   -fx-font-size: 13px; -fx-font-weight: bold;
+                                   -fx-padding: 9 24; -fx-background-radius: 6; -fx-cursor: hand;"/>
+                </HBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>
