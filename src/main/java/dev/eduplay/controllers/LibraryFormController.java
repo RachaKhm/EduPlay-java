@@ -2,13 +2,17 @@ package dev.eduplay.controllers;
 
 import dev.eduplay.entities.Library;
 import dev.eduplay.services.LibraryService;
+import dev.eduplay.tools.ImageLoader;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -17,17 +21,21 @@ import java.io.IOException;
 
 public class LibraryFormController {
 
-    @FXML private Label headerTitle;
-    @FXML private Label headerSubtitle;
-    @FXML private Button submitBtn;
+    @FXML private Label    headerTitle;
+    @FXML private Label    headerSubtitle;
+    @FXML private Button   submitBtn;
 
-    @FXML private TextField nameField;
-    @FXML private TextArea descriptionField;
-    @FXML private TextField minAgeField;
-    @FXML private TextField maxAgeField;
+    @FXML private TextField  nameField;
+    @FXML private TextArea   descriptionField;
+    @FXML private TextField  minAgeField;
+    @FXML private TextField  maxAgeField;
     @FXML private ComboBox<String> levelCombo;
-    @FXML private TextField themeField;
-    @FXML private TextField coverImageField;
+    @FXML private TextField  themeField;
+    @FXML private TextField  coverImageField;   // stocke le chemin COMPLET
+
+    // Preview de l'image choisie
+    @FXML private VBox       imagePreviewBox;   // fx:id dans le FXML
+    @FXML private ImageView  imagePreview;       // fx:id dans le FXML
 
     // Labels d'erreur
     @FXML private Label nameError;
@@ -36,13 +44,16 @@ public class LibraryFormController {
     @FXML private Label levelError;
     @FXML private Label themeError;
 
-    // Flash message
-    @FXML private HBox flashBox;
+    // Flash
+    @FXML private HBox  flashBox;
     @FXML private Label flashLabel;
 
     private final LibraryService service = new LibraryService();
     private Library libraryToEdit = null;
     private Runnable onSaveCallback;
+
+    // Chemin complet du fichier sélectionné
+    private String selectedImagePath = null;
 
     @FXML
     public void initialize() {
@@ -50,7 +61,7 @@ public class LibraryFormController {
                 "Beginner", "Intermediate", "Advanced"
         ));
 
-        // Listeners pour effacer les erreurs en temps réel
+        // Effacer erreurs en temps réel
         nameField.textProperty().addListener((o, ov, nv) -> hideError(nameError));
         minAgeField.textProperty().addListener((o, ov, nv) -> hideError(minAgeError));
         maxAgeField.textProperty().addListener((o, ov, nv) -> hideError(maxAgeError));
@@ -58,25 +69,26 @@ public class LibraryFormController {
         themeField.textProperty().addListener((o, ov, nv) -> hideError(themeError));
     }
 
-    /**
-     * Appeler cette méthode APRÈS le load() pour passer la bibliothèque à modifier.
-     * Passe null pour un ajout.
-     */
     public void setLibraryToEdit(Library lib) {
         this.libraryToEdit = lib;
         if (lib != null) {
-            // Mode modification
             headerTitle.setText("📚 Modifier la bibliothèque");
             headerSubtitle.setText("Modifiez les informations ci-dessous");
             submitBtn.setText("💾  Mettre à jour");
 
             nameField.setText(lib.getName());
-            descriptionField.setText(lib.getDescription());
+            descriptionField.setText(lib.getDescription() != null ? lib.getDescription() : "");
             minAgeField.setText(String.valueOf(lib.getMinAge()));
             maxAgeField.setText(String.valueOf(lib.getMaxAge()));
             levelCombo.setValue(lib.getLevel());
             themeField.setText(lib.getTheme());
-            coverImageField.setText(lib.getCoverImage() != null ? lib.getCoverImage() : "");
+
+            // Afficher l'image existante
+            if (lib.getCoverImage() != null && !lib.getCoverImage().isBlank()) {
+                selectedImagePath = lib.getCoverImage();
+                coverImageField.setText(lib.getCoverImage());
+                showImagePreview(lib.getCoverImage());
+            }
         }
     }
 
@@ -84,120 +96,137 @@ public class LibraryFormController {
         this.onSaveCallback = callback;
     }
 
+    // ── Choisir une image ────────────────────────────────────────
+
+    @FXML
+    private void handleChooseImage() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Choisir une image de couverture");
+        chooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.bmp")
+        );
+
+        // Ouvrir dans le dossier Images de l'utilisateur par défaut
+        File initialDir = new File(System.getProperty("user.home") + "/Pictures");
+        if (!initialDir.exists()) initialDir = new File(System.getProperty("user.home"));
+        chooser.setInitialDirectory(initialDir);
+
+        File file = chooser.showOpenDialog(coverImageField.getScene().getWindow());
+        if (file != null) {
+            selectedImagePath = file.getAbsolutePath();  // chemin COMPLET
+            coverImageField.setText(selectedImagePath);
+            showImagePreview(selectedImagePath);
+        }
+    }
+
+    private void showImagePreview(String path) {
+        Image img = ImageLoader.load(path);
+        if (img != null) {
+            imagePreview.setImage(img);
+            imagePreview.setFitWidth(200);
+            imagePreview.setFitHeight(120);
+            imagePreview.setPreserveRatio(true);
+            imagePreview.setSmooth(true);
+            imagePreviewBox.setVisible(true);
+            imagePreviewBox.setManaged(true);
+        } else {
+            imagePreviewBox.setVisible(false);
+            imagePreviewBox.setManaged(false);
+        }
+    }
+
+    // ── Soumettre ────────────────────────────────────────────────
+
     @FXML
     private void handleSubmit() {
         if (!validateForm()) return;
 
-        String name = nameField.getText().trim();
-        String description = descriptionField.getText().trim();
-        String coverImage = coverImageField.getText().trim();
-        int minAge = Integer.parseInt(minAgeField.getText().trim());
-        int maxAge = Integer.parseInt(maxAgeField.getText().trim());
-        String level = levelCombo.getValue();
-        String theme = themeField.getText().trim();
+        // On sauvegarde le chemin COMPLET (ou ce qui est dans le champ)
+        String imagePath = selectedImagePath != null
+                ? selectedImagePath
+                : coverImageField.getText().trim();
+
+        Library lib = new Library(
+                nameField.getText().trim(),
+                descriptionField.getText().trim(),
+                imagePath,
+                Integer.parseInt(minAgeField.getText().trim()),
+                Integer.parseInt(maxAgeField.getText().trim()),
+                levelCombo.getValue(),
+                themeField.getText().trim()
+        );
 
         if (libraryToEdit == null) {
-            // AJOUT
-            service.ajouter(new Library(name, description, coverImage, minAge, maxAge, level, theme));
+            service.ajouter(lib);
             showFlash("✅  Bibliothèque ajoutée avec succès !", true);
         } else {
-            // MODIFICATION
-            service.modifier(new Library(libraryToEdit.getId(), name, description, coverImage, minAge, maxAge, level, theme));
+            lib = new Library(
+                    libraryToEdit.getId(),
+                    lib.getName(), lib.getDescription(), lib.getCoverImage(),
+                    lib.getMinAge(), lib.getMaxAge(), lib.getLevel(), lib.getTheme()
+            );
+            service.modifier(lib);
             showFlash("✏️  Bibliothèque mise à jour avec succès !", true);
         }
 
-        // Refresh callback + retour après 1.5s
         if (onSaveCallback != null) onSaveCallback.run();
+
         new Thread(() -> {
             try { Thread.sleep(1500); } catch (InterruptedException ignored) {}
             javafx.application.Platform.runLater(this::retourIndex);
         }).start();
     }
 
-    @FXML
-    private void handleRetour() {
-        retourIndex();
-    }
+    @FXML private void handleRetour() { retourIndex(); }
 
-    @FXML
-    private void handleChooseImage() {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Choisir une image de couverture");
-        chooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp")
-        );
-        File file = chooser.showOpenDialog(coverImageField.getScene().getWindow());
-        if (file != null) {
-            coverImageField.setText(file.getName());
-        }
-    }
-
-    // ── Validation ────────────────────────────────────────────
+    // ── Validation ───────────────────────────────────────────────
 
     private boolean validateForm() {
         boolean valid = true;
 
         String name = nameField.getText().trim();
         if (name.isEmpty()) {
-            showError(nameError, "Le nom est obligatoire.");
-            valid = false;
+            showError(nameError, "Le nom est obligatoire."); valid = false;
         } else if (name.length() < 3 || name.length() > 20) {
-            showError(nameError, "Le nom doit contenir entre 3 et 20 caractères.");
-            valid = false;
+            showError(nameError, "Entre 3 et 20 caractères."); valid = false;
         }
 
         try {
             int min = Integer.parseInt(minAgeField.getText().trim());
-            if (min < 3) {
-                showError(minAgeError, "L'âge minimum doit être au moins 3 ans.");
-                valid = false;
-            }
+            if (min < 3) { showError(minAgeError, "Minimum 3 ans."); valid = false; }
         } catch (NumberFormatException e) {
-            showError(minAgeError, "Veuillez entrer un nombre valide.");
-            valid = false;
+            showError(minAgeError, "Nombre invalide."); valid = false;
         }
 
         try {
             int max = Integer.parseInt(maxAgeField.getText().trim());
-            if (max > 18) {
-                showError(maxAgeError, "L'âge maximum ne doit pas dépasser 18 ans.");
-                valid = false;
-            }
+            if (max > 18) { showError(maxAgeError, "Maximum 18 ans."); valid = false; }
         } catch (NumberFormatException e) {
-            showError(maxAgeError, "Veuillez entrer un nombre valide.");
-            valid = false;
+            showError(maxAgeError, "Nombre invalide."); valid = false;
         }
 
-        if (!minAgeField.getText().trim().isEmpty() && !maxAgeField.getText().trim().isEmpty()) {
-            try {
-                int min = Integer.parseInt(minAgeField.getText().trim());
-                int max = Integer.parseInt(maxAgeField.getText().trim());
-                if (min >= max) {
-                    showError(maxAgeError, "L'âge maximum doit être supérieur à l'âge minimum.");
-                    valid = false;
-                }
-            } catch (NumberFormatException ignored) {}
-        }
+        try {
+            int min = Integer.parseInt(minAgeField.getText().trim());
+            int max = Integer.parseInt(maxAgeField.getText().trim());
+            if (min >= max) { showError(maxAgeError, "Max doit être > Min."); valid = false; }
+        } catch (NumberFormatException ignored) {}
 
         if (levelCombo.getValue() == null) {
-            showError(levelError, "Veuillez sélectionner un niveau.");
-            valid = false;
+            showError(levelError, "Sélectionnez un niveau."); valid = false;
         }
 
         String theme = themeField.getText().trim();
         if (theme.isEmpty()) {
-            showError(themeError, "Le thème est obligatoire.");
-            valid = false;
+            showError(themeError, "Le thème est obligatoire."); valid = false;
         } else if (theme.length() < 2 || theme.length() > 20) {
-            showError(themeError, "Le thème doit contenir entre 2 et 20 caractères.");
-            valid = false;
+            showError(themeError, "Entre 2 et 20 caractères."); valid = false;
         }
 
         return valid;
     }
 
-    private void showError(Label label, String message) {
-        label.setText("⚠️ " + message);
+    private void showError(Label label, String msg) {
+        label.setText("⚠️ " + msg);
         label.setVisible(true);
         label.setManaged(true);
     }
@@ -221,13 +250,10 @@ public class LibraryFormController {
 
     private void retourIndex() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/LibraryIndex.fxml"));
-            Parent root = loader.load();
+            Parent root = FXMLLoader.load(getClass().getResource("/LibraryIndex.fxml"));
             Stage stage = (Stage) nameField.getScene().getWindow();
             stage.setScene(new Scene(root, 1050, 700));
             stage.setTitle("EduPlay – Gestion des Bibliothèques");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 }

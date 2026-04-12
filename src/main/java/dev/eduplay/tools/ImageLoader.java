@@ -1,17 +1,11 @@
 package dev.eduplay.tools;
 
 import javafx.scene.image.Image;
-
 import java.io.File;
 import java.net.URL;
 
 /**
- * Charge une image depuis N'IMPORTE QUEL chemin :
- *  - Chemin absolu Windows   : C:\Users\...\image.jpg
- *  - Chemin absolu Linux/Mac : /home/.../image.jpg
- *  - Nom de fichier seul     : image.jpg
- *  - Chemin relatif          : uploads/image.jpg
- *  - URL http/https          : https://...
+ * Charge une image depuis n'importe quel type de chemin.
  */
 public class ImageLoader {
 
@@ -20,7 +14,6 @@ public class ImageLoader {
             "src/main/resources/images/",
             "src/main/resources/",
             "uploads/",
-            "images/",
             System.getProperty("user.home") + "/Pictures/",
             System.getProperty("user.home") + "/Downloads/",
             System.getProperty("user.home") + "/Desktop/",
@@ -34,39 +27,28 @@ public class ImageLoader {
             try { return new Image(path, true); } catch (Exception ignored) {}
         }
 
-        // 2. Chemin absolu existant
-        File absolute = new File(path);
-        if (absolute.isAbsolute() && absolute.exists()) {
-            return fromFile(absolute);
-        }
+        // 2. Chemin absolu direct (C:\... ou /home/...)
+        File f = new File(path);
+        if (f.exists()) return fromFile(f);
 
-        // 3. Chemin relatif existant
-        File relative = new File(path);
-        if (relative.exists()) {
-            return fromFile(relative);
-        }
-
-        // 4. Nom seul -> chercher dans les dossiers connus
-        String filename = new File(path).getName();
+        // 3. Nom seul ou chemin relatif -> chercher dans dossiers connus
+        String filename = f.getName();
         for (String dir : SEARCH_DIRS) {
             File candidate = new File(dir + filename);
             if (candidate.exists()) return fromFile(candidate);
         }
 
-        // 5. Classpath
+        // 4. Classpath (resources/)
         try {
-            URL resource = ImageLoader.class.getResource("/" + filename);
-            if (resource != null) return new Image(resource.toExternalForm());
+            URL res = ImageLoader.class.getResource("/" + filename);
+            if (res != null) return new Image(res.toExternalForm());
         } catch (Exception ignored) {}
 
         return null;
     }
 
     private static Image fromFile(File file) {
-        try {
-            return new Image(file.toURI().toString());
-        } catch (Exception e) {
-            return null;
-        }
+        try { return new Image(file.toURI().toString()); }
+        catch (Exception e) { return null; }
     }
 }
