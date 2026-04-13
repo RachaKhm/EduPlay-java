@@ -172,7 +172,7 @@ public class MainController {
 
     public void goToAddResource(int eventId, String eventTitle) {
         try {
-            System.out.println("Navigation vers Ajout de ressource pour: " + eventTitle);
+            System.out.println("Navigation vers Ajout de ressource");
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/add_resource.fxml"));
             Parent root = loader.load();
             AddResourceController controller = loader.getController();
@@ -239,6 +239,28 @@ public class MainController {
     }
 
 
+    public void goToResourceDetail(int eventId, String eventTitle, EventResource resource) {
+        try {
+            System.out.println("Navigation vers Détails de la ressource ID: " + resource.getId());
 
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/resource_detail.fxml"));
+            Parent root = loader.load();
+
+            ResourceDetailController controller = loader.getController();
+            controller.setMainController(this);
+            controller.setEventInfo(eventId, eventTitle);
+            controller.setResource(resource);
+
+            contentContainer.getChildren().clear();
+            contentContainer.getChildren().add(root);
+
+            if (primaryStage != null) {
+                primaryStage.setTitle("EduPlay - Détails - " + resource.getTitle());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            showErrorMessage("Impossible d'ouvrir la page des détails");
+        }
+    }
 
 }

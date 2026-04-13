@@ -36,9 +36,16 @@ public class AddResourceController {
 
     @FXML
     public void initialize() {
+        System.out.println("AddResourceController initialisé");
         service = new EventResourceService();
+
+        // Initialisation du ComboBox
+        typeCombo.getItems().addAll("VIDEO", "DOCUMENT", "LIEN", "CHECKLIST", "PLANNING");
+        typeCombo.setValue("VIDEO");
+
         setupActions();
         setupTypeListener();
+        setupValidation();
     }
 
     public void setMainController(MainController mainController) {
@@ -51,7 +58,7 @@ public class AddResourceController {
         eventTitleLabel.setText("Pour : " + eventTitle);
     }
 
-    // ✅ Méthode pour la modification (reçoit l'objet complet)
+    // ✅ Méthode pour la modification
     public void setResourceToModify(EventResource resource) {
         this.resourceToModify = resource;
         this.isModification = true;
@@ -85,6 +92,7 @@ public class AddResourceController {
         });
     }
 
+    // ✅ Afficher/Masquer les champs selon le type
     private void updateFieldsVisibility() {
         String type = typeCombo.getValue();
 
@@ -96,10 +104,52 @@ public class AddResourceController {
         if ("DOCUMENT".equals(type)) {
             filePathBox.setVisible(true);
             filePathBox.setManaged(true);
-        } else if ("LIEN".equals(type)) {
+        } else if ("LIEN".equals(type) || "VIDEO".equals(type)) {
             urlBox.setVisible(true);
             urlBox.setManaged(true);
         }
+    }
+
+    // ✅ Contrôles de saisie
+    private void setupValidation() {
+        // Le titre ne peut pas être vide
+        titleField.textProperty().addListener((obs, old, newVal) -> {
+            if (newVal == null || newVal.trim().isEmpty()) {
+                titleField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 8;");
+            } else {
+                titleField.setStyle("-fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 8;");
+            }
+        });
+
+        // Validation du champ fichier
+        filePathField.textProperty().addListener((obs, old, newVal) -> {
+            if ("DOCUMENT".equals(typeCombo.getValue())) {
+                if (newVal == null || newVal.trim().isEmpty()) {
+                    filePathField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 8;");
+                } else {
+                    filePathField.setStyle("-fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 8;");
+                }
+            }
+        });
+
+        // Validation du champ URL
+        urlField.textProperty().addListener((obs, old, newVal) -> {
+            String type = typeCombo.getValue();
+            if ("LIEN".equals(type) || "VIDEO".equals(type)) {
+                if (newVal == null || newVal.trim().isEmpty()) {
+                    urlField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 8;");
+                } else if (!isValidUrl(newVal)) {
+                    urlField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 8;");
+                } else {
+                    urlField.setStyle("-fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 8;");
+                }
+            }
+        });
+    }
+
+    // ✅ Vérifier si l'URL est valide
+    private boolean isValidUrl(String url) {
+        return url.matches("^(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})([/\\w .-]*)*/?$");
     }
 
     private void browseFile() {
@@ -107,7 +157,11 @@ public class AddResourceController {
         fileChooser.setTitle("Sélectionner un fichier");
 
         FileChooser.ExtensionFilter allFiles = new FileChooser.ExtensionFilter("Tous les fichiers", "*.*");
-        fileChooser.getExtensionFilters().add(allFiles);
+        FileChooser.ExtensionFilter pdfFiles = new FileChooser.ExtensionFilter("PDF", "*.pdf");
+        FileChooser.ExtensionFilter imageFiles = new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg");
+        FileChooser.ExtensionFilter docFiles = new FileChooser.ExtensionFilter("Documents", "*.doc", "*.docx", "*.txt");
+
+        fileChooser.getExtensionFilters().addAll(pdfFiles, imageFiles, docFiles, allFiles);
 
         Stage stage = (Stage) browseFileBtn.getScene().getWindow();
         File file = fileChooser.showOpenDialog(stage);
@@ -124,6 +178,7 @@ public class AddResourceController {
         String filePath = filePathField.getText().trim();
         String url = urlField.getText().trim();
 
+        // ✅ CONTROLES DE SAISIE
         if (type == null || type.isEmpty()) {
             showError("Veuillez sélectionner un type");
             return;
@@ -131,6 +186,13 @@ public class AddResourceController {
 
         if (title.isEmpty()) {
             showError("Le titre est obligatoire");
+            titleField.requestFocus();
+            return;
+        }
+
+        if (title.length() < 3) {
+            showError("Le titre doit contenir au moins 3 caractères");
+            titleField.requestFocus();
             return;
         }
 
@@ -139,8 +201,14 @@ public class AddResourceController {
             return;
         }
 
-        if ("LIEN".equals(type) && url.isEmpty()) {
+        if (("LIEN".equals(type) || "VIDEO".equals(type)) && url.isEmpty()) {
             showError("Veuillez saisir une URL");
+            return;
+        }
+
+        if (("LIEN".equals(type) || "VIDEO".equals(type)) && !isValidUrl(url)) {
+            showError("Veuillez saisir une URL valide (ex: https://example.com)");
+            urlField.requestFocus();
             return;
         }
 
@@ -167,6 +235,7 @@ public class AddResourceController {
                 showSuccess("✅ Ressource ajoutée avec succès !");
             }
 
+            // Retour à la liste après succès
             new Thread(() -> {
                 try {
                     Thread.sleep(1500);

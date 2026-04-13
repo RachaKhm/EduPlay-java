@@ -5,7 +5,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Font?>
 
-<?import java.lang.String?>
 <ScrollPane xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dev.eduplay.controllers.AddResourceController"
             style="-fx-background-color: #f3f4f6; -fx-background: #f3f4f6;"
@@ -42,15 +41,7 @@
                         <!-- Type -->
                         <VBox spacing="5">
                             <Label text="Type *" style="-fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-size: 14px;"/>
-                            <ComboBox fx:id="typeCombo" promptText="Sélectionnez un type" prefWidth="300" style="-fx-padding: 10; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #e2e8f0;">
-                                <items>
-                                    <String fx:value="VIDEO"/>
-                                    <String fx:value="DOCUMENT"/>
-                                    <String fx:value="LIEN"/>
-                                    <String fx:value="CHECKLIST"/>
-                                    <String fx:value="PLANNING"/>
-                                </items>
-                            </ComboBox>
+                            <ComboBox fx:id="typeCombo" promptText="Sélectionnez un type" prefWidth="300" style="-fx-padding: 10; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #e2e8f0;"/>
                         </VBox>
 
                         <!-- Titre -->

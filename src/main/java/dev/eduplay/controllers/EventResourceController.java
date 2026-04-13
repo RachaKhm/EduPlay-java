@@ -5,8 +5,6 @@ import dev.eduplay.services.EventResourceService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
@@ -19,8 +17,10 @@ import java.util.stream.Collectors;
 
 public class EventResourceController {
 
+    // FXML COMPOSANTS - LES NOMS DOIVENT CORRESPONDRE EXACTEMENT AUX fx:id DANS LE FXML
     @FXML private Button backBtn;
     @FXML private Button addResourceBtn;
+    @FXML private Label eventTitleLabel;
     @FXML private Label eventSubtitleLabel;
     @FXML private Label resourceCountLabel;
     @FXML private TextField searchField;
@@ -69,7 +69,8 @@ public class EventResourceController {
     public void setEventId(int eventId, String eventTitle) {
         this.eventId = eventId;
         this.eventTitle = eventTitle;
-        eventSubtitleLabel.setText("Événement : " + eventTitle);
+        eventTitleLabel.setText("📚 " + eventTitle);
+        eventSubtitleLabel.setText("Gérer les ressources pour cet événement");
         loadResources();
     }
 
@@ -202,20 +203,9 @@ public class EventResourceController {
     }
 
     private void voirRessource(EventResource resource) {
-        String details = "📌 Titre: " + resource.getTitle() +
-                "\n📂 Type: " + resource.getType();
-
-        if (resource.getContext() != null && !resource.getContext().isEmpty()) {
-            details += "\n📝 Contexte: " + resource.getContext();
+        if (mainController != null) {
+            mainController.goToResourceDetail(eventId, eventTitle, resource);
         }
-        if (resource.getUrl() != null && !resource.getUrl().isEmpty()) {
-            details += "\n🔗 URL: " + resource.getUrl();
-        }
-        if (resource.getFilePath() != null && !resource.getFilePath().isEmpty()) {
-            details += "\n📁 Fichier: " + resource.getFilePath();
-        }
-
-        showAlert("Détails de la ressource", details);
     }
 
     private void modifierRessource(EventResource resource) {
