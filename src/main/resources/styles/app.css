@@ -1,0 +1,237 @@
+/* =============================================
+   EduPlay — app.css
+   Styles globaux JavaFX / SceneBuilder
+   ============================================= */
+
+/* ── Reset & base ─────────────────────────── */
+.root {
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+    -fx-font-size: 13px;
+    -fx-background-color: #F8F9FA;
+}
+
+/* ── ScrollPane transparent ──────────────── */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* ── TableView ────────────────────────────── */
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #E8E8F0;
+    -fx-border-width: 0;
+    -fx-table-cell-border-color: #F4F4FA;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #F4F4FA;
+    -fx-border-color: #E8E8F0;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-size: 38px;
+}
+
+.table-view .column-header .label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #9999BB;
+    -fx-padding: 0 8;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: #F4F4FA;
+    -fx-border-width: 0 0 1 0;
+    -fx-cell-size: 46px;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #F8F8FF;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #EEF2FF;
+}
+
+.table-row-cell:selected .text {
+    -fx-fill: #22223A;
+}
+
+.table-cell {
+    -fx-padding: 0 12;
+    -fx-text-fill: #444466;
+    -fx-font-size: 13px;
+}
+
+/* ── TextField & PasswordField ────────────── */
+.text-field,
+.password-field {
+    -fx-background-color: white;
+    -fx-border-color: #DDDDE8;
+    -fx-border-width: 1;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-padding: 9 12;
+    -fx-font-size: 13px;
+    -fx-text-fill: #22223A;
+    -fx-prompt-text-fill: #AAAACC;
+}
+
+.text-field:focused,
+.password-field:focused {
+    -fx-border-color: #E94560;
+    -fx-border-width: 1.5;
+    -fx-effect: null;
+}
+
+/* ── ComboBox ─────────────────────────────── */
+.combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #DDDDE8;
+    -fx-border-width: 1;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-font-size: 13px;
+}
+
+.combo-box:focused {
+    -fx-border-color: #E94560;
+}
+
+.combo-box-popup .list-cell {
+    -fx-background-color: white;
+    -fx-text-fill: #444466;
+    -fx-padding: 8 12;
+    -fx-font-size: 13px;
+}
+
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #F0F0FF;
+}
+
+.combo-box-popup .list-cell:selected {
+    -fx-background-color: #EEF2FF;
+    -fx-text-fill: #22223A;
+}
+
+/* ── Button styles ────────────────────────── */
+.button {
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+}
+
+.button:hover {
+    -fx-opacity: 0.88;
+}
+
+.button:pressed {
+    -fx-opacity: 0.75;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* ── CheckBox ─────────────────────────────── */
+.check-box {
+    -fx-text-fill: #444466;
+    -fx-font-size: 13px;
+}
+
+.check-box .box {
+    -fx-background-color: white;
+    -fx-border-color: #DDDDE8;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #E94560;
+    -fx-border-color: #E94560;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: white;
+}
+
+/* ── Separator ────────────────────────────── */
+.separator .line {
+    -fx-border-color: #E8E8F0;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* ── TextArea ─────────────────────────────── */
+.text-area {
+    -fx-background-color: white;
+    -fx-border-color: #DDDDE8;
+    -fx-border-width: 1;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-font-size: 13px;
+    -fx-text-fill: #22223A;
+}
+
+.text-area:focused {
+    -fx-border-color: #E94560;
+}
+
+.text-area .content {
+    -fx-background-color: white;
+    -fx-background-radius: 6;
+}
+
+/* ── Alert dialogs ────────────────────────── */
+.dialog-pane {
+    -fx-background-color: white;
+    -fx-border-color: #E8E8F0;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: #F4F4FA;
+}
+
+.dialog-pane .content {
+    -fx-font-size: 13px;
+    -fx-text-fill: #444466;
+}
+
+.dialog-pane .button-bar .button {
+    -fx-background-color: #E94560;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-padding: 8 20;
+    -fx-background-radius: 6;
+}
+
+/* ── ScrollBar fin ────────────────────────── */
+.scroll-bar {
+    -fx-background-color: transparent;
+    -fx-pref-width: 6px;
+}
+
+.scroll-bar .track {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #DDDDE8;
+    -fx-background-radius: 3;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #BBBBCC;
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-background-color: transparent;
+    -fx-pref-height: 0;
+    -fx-pref-width: 0;
+}
