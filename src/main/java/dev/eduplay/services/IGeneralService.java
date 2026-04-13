@@ -1,5 +1,7 @@
 package dev.eduplay.services;
 
+import dev.eduplay.entities.SchoolEvent;
+
 import java.sql.SQLException;
 import java.util.List;
 

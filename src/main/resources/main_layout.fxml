@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.MainController"
+            style="-fx-background-color: #f3f4f6;">
+
+    <children>
+        <HBox spacing="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+
+            <!-- ==================== SIDEBAR ==================== -->
+            <VBox prefWidth="260" style="-fx-background-color: #1e293b;">
+                <padding>
+                    <Insets top="25" bottom="25" left="20" right="20"/>
+                </padding>
+
+                <children>
+                    <!-- Logo -->
+                    <Label text="🎓 EduPlay" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white; -fx-padding: 0 0 30 0;"/>
+
+                    <!-- Menu Super Admin -->
+                    <Label text="Super Admin" style="-fx-font-size: 11px; -fx-text-fill: #94a3b8; -fx-padding: 0 0 10 0; -fx-font-weight: bold;"/>
+                    <Separator style="-fx-background-color: #334155;"/>
+
+                    <!-- Menu items -->
+                    <VBox spacing="5" style="-fx-padding: 15 0 0 0;">
+                        <Label text="📊 Dashboard" style="-fx-text-fill: #cbd5e1; -fx-font-size: 13px; -fx-cursor: hand;"/>
+                        <Label text="▼ Séances" style="-fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-padding: 10 0 0 15; -fx-cursor: hand;"/>
+                        <Label text="Inscriptions Séances" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-padding: 0 0 0 30; -fx-cursor: hand;"/>
+                        <Label text="Produits" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-padding: 0 0 0 30; -fx-cursor: hand;"/>
+                        <Label text="Commandes" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-padding: 0 0 0 30; -fx-cursor: hand;"/>
+
+                        <!-- ÉVÉNEMENTS (actif) -->
+                        <Label text="▼ ÉVÉNEMENTS" style="-fx-text-fill: #fbbf24; -fx-font-size: 13px; -fx-padding: 10 0 0 15; -fx-cursor: hand;"/>
+                        <Label fx:id="menuEvents" text="Events" style="-fx-text-fill: #fbbf24; -fx-font-size: 12px; -fx-padding: 0 0 0 30; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                        <Label fx:id="menuInscriptions" text="Inscriptions Events" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-padding: 0 0 0 30; -fx-cursor: hand;"/>
+                        <Label fx:id="menuScanner" text="Scanner tickets" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-padding: 0 0 0 30; -fx-cursor: hand;"/>
+
+                        <Label text="▼ BIBLIOTHÈQUE" style="-fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-padding: 10 0 0 15; -fx-cursor: hand;"/>
+                        <Label text="Library" style="-fx-text-fill: #94a3b8; -fx-font-size: 12px; -fx-padding: 0 0 0 30; -fx-cursor: hand;"/>
+                    </VBox>
+                </children>
+            </VBox>
+
+            <!-- ==================== CONTENEUR DE CONTENU ==================== -->
+            <StackPane fx:id="contentContainer" HBox.hgrow="ALWAYS" style="-fx-background-color: #f3f4f6;">
+                <!-- Le contenu des pages sera chargé ici dynamiquement -->
+            </StackPane>
+
+        </HBox>
+    </children>
+</AnchorPane>

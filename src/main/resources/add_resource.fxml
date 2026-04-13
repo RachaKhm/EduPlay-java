@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<?import java.lang.String?>
+<ScrollPane xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.AddResourceController"
+            style="-fx-background-color: #f3f4f6; -fx-background: #f3f4f6;"
+            fitToWidth="true" fitToHeight="false">
+
+    <content>
+        <VBox spacing="20" style="-fx-background-color: #f3f4f6;" alignment="TOP_CENTER">
+
+            <padding>
+                <Insets top="25" right="35" bottom="25" left="35"/>
+            </padding>
+
+            <children>
+                <!-- En-tête -->
+                <VBox spacing="0" style="-fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+                    <HBox alignment="CENTER_LEFT" style="-fx-background-color: linear-gradient(to right, #8b5cf6, #6d28d9); -fx-background-radius: 16 16 0 0; -fx-padding: 20 25;">
+                        <VBox HBox.hgrow="ALWAYS">
+                            <Label text="📎 Ajouter une ressource" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;">
+                                <font><Font name="System Bold" size="24"/></font>
+                            </Label>
+                            <Label fx:id="eventTitleLabel" text="Pour l'événement" style="-fx-text-fill: #ddd6fe; -fx-font-size: 13px; -fx-padding: 5 0 0 0;"/>
+                        </VBox>
+                        <Button fx:id="cancelBtn" text="← Retour" style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 12; -fx-cursor: hand;"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Carte formulaire -->
+                <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);">
+                    <padding>
+                        <Insets top="25" right="25" bottom="25" left="25"/>
+                    </padding>
+
+                    <children>
+                        <!-- Type -->
+                        <VBox spacing="5">
+                            <Label text="Type *" style="-fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-size: 14px;"/>
+                            <ComboBox fx:id="typeCombo" promptText="Sélectionnez un type" prefWidth="300" style="-fx-padding: 10; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #e2e8f0;">
+                                <items>
+                                    <String fx:value="VIDEO"/>
+                                    <String fx:value="DOCUMENT"/>
+                                    <String fx:value="LIEN"/>
+                                    <String fx:value="CHECKLIST"/>
+                                    <String fx:value="PLANNING"/>
+                                </items>
+                            </ComboBox>
+                        </VBox>
+
+                        <!-- Titre -->
+                        <VBox spacing="5">
+                            <Label text="Titre *" style="-fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-size: 14px;"/>
+                            <TextField fx:id="titleField" promptText="Ex: Guide de l'événement" style="-fx-padding: 12; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #e2e8f0; -fx-background-color: white; -fx-font-size: 14px;"/>
+                        </VBox>
+
+                        <!-- Contexte / Description -->
+                        <VBox spacing="5">
+                            <Label text="Contexte / Description" style="-fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-size: 14px;"/>
+                            <TextArea fx:id="contextArea" promptText="Description détaillée de la ressource..." prefHeight="100" wrapText="true" style="-fx-padding: 12; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #e2e8f0; -fx-background-color: white; -fx-font-size: 14px;"/>
+                        </VBox>
+
+                        <!-- File Path (pour DOCUMENT) -->
+                        <VBox fx:id="filePathBox" spacing="5" visible="false" managed="false">
+                            <Label text="Chemin du fichier" style="-fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-size: 14px;"/>
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <TextField fx:id="filePathField" promptText="Ex: /uploads/documents/guide.pdf" HBox.hgrow="ALWAYS" style="-fx-padding: 12; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #e2e8f0;"/>
+                                <Button fx:id="browseFileBtn" text="📁 Parcourir" style="-fx-background-color: #e2e8f0; -fx-text-fill: #1e293b; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                            </HBox>
+                        </VBox>
+
+                        <!-- URL (pour LIEN) -->
+                        <VBox fx:id="urlBox" spacing="5" visible="false" managed="false">
+                            <Label text="URL" style="-fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-size: 14px;"/>
+                            <TextField fx:id="urlField" promptText="Ex: https://example.com/document" style="-fx-padding: 12; -fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #e2e8f0; -fx-background-color: white; -fx-font-size: 14px;"/>
+                        </VBox>
+
+                        <!-- Message -->
+                        <Label fx:id="messageLabel" wrapText="true" style="-fx-font-size: 13px;"/>
+
+                        <!-- Boutons -->
+                        <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+                            <Button fx:id="submitBtn" text="✅ Enregistrer" style="-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-padding: 12 30; -fx-background-radius: 25; -fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+                        </HBox>
+                    </children>
+                </VBox>
+            </children>
+        </VBox>
+    </content>
+</ScrollPane>

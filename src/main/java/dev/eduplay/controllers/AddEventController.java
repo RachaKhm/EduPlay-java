@@ -31,38 +31,30 @@ public class AddEventController {
     @FXML private ComboBox<Integer> endHourCombo;
     @FXML private ComboBox<Integer> endMinuteCombo;
     @FXML private TextField locationField;
-    @FXML private TextField imagePathField;
     @FXML private Button browseImageBtn;
     @FXML private Button submitBtn;
     @FXML private Button cancelBtn;
     @FXML private Label messageLabel;
+    @FXML private Label fileNameLabel;
     @FXML private StackPane imagePreviewPane;
-    @FXML private Label noImageLabel;
 
     // ==================== ATTRIBUTS ====================
     private SchoolEventService service;
     private File selectedImageFile;
     private static final String UPLOAD_DIR = "uploads/events/";
+    private MainController mainController;
+    private Integer eventIdToModify = null;
 
     // ==================== INITIALISATION ====================
     @FXML
     public void initialize() {
-        // Initialisation du service
+        System.out.println("AddEventController initialisé");
         service = new SchoolEventService();
-
-        // Remplir les ComboBox des heures et minutes
         initHourMinuteCombos();
-
-        // Configurer la validation des dates
         setupDateValidation();
-
-        // Configurer les actions des boutons
         setupActions();
-
-        // Configurer la validation en temps réel
         setupLiveValidation();
 
-        // Valeurs par défaut
         startDatePicker.setValue(LocalDate.now());
         endDatePicker.setValue(LocalDate.now());
         startHourCombo.setValue(9);
@@ -71,7 +63,45 @@ public class AddEventController {
         endMinuteCombo.setValue(0);
     }
 
-    // Remplir les ComboBox (heures 0-23, minutes 0-59)
+    public void setMainController(MainController mainController) {
+        System.out.println("MainController reçu par AddEventController");
+        this.mainController = mainController;
+    }
+
+    public void setEventToModify(int eventId) {
+        System.out.println("setEventToModify appelé avec ID: " + eventId);
+        this.eventIdToModify = eventId;
+        submitBtn.setText("Modifier");
+
+        try {
+            SchoolEvent event = service.recupererParId(eventId);
+            if (event != null) {
+                System.out.println("Événement trouvé: " + event.getTitle());
+                titleField.setText(event.getTitle());
+                descriptionArea.setText(event.getDescription());
+                locationField.setText(event.getLocation());
+
+                if (event.getStartDate() != null) {
+                    startDatePicker.setValue(event.getStartDate().toLocalDate());
+                    startHourCombo.setValue(event.getStartDate().getHour());
+                    startMinuteCombo.setValue(event.getStartDate().getMinute());
+                }
+
+                if (event.getEndDate() != null) {
+                    endDatePicker.setValue(event.getEndDate().toLocalDate());
+                    endHourCombo.setValue(event.getEndDate().getHour());
+                    endMinuteCombo.setValue(event.getEndDate().getMinute());
+                }
+            } else {
+                System.out.println("Événement non trouvé pour l'ID: " + eventId);
+                showError("Événement non trouvé");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Erreur lors du chargement de l'événement");
+        }
+    }
+
     private void initHourMinuteCombos() {
         for (int i = 0; i < 24; i++) {
             startHourCombo.getItems().add(i);
@@ -83,9 +113,7 @@ public class AddEventController {
         }
     }
 
-    // Validation des dates (empêcher les dates passées)
     private void setupDateValidation() {
-        // Désactiver les dates passées pour DatePicker début
         startDatePicker.setDayCellFactory(picker -> new DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
@@ -97,7 +125,6 @@ public class AddEventController {
             }
         });
 
-        // Désactiver les dates passées pour DatePicker fin
         endDatePicker.setDayCellFactory(picker -> new DateCell() {
             @Override
             public void updateItem(LocalDate date, boolean empty) {
@@ -109,7 +136,6 @@ public class AddEventController {
             }
         });
 
-        // Si la date de début change, ajuster la date de fin si nécessaire
         startDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null && endDatePicker.getValue() != null && endDatePicker.getValue().isBefore(newVal)) {
                 endDatePicker.setValue(newVal);
@@ -117,73 +143,63 @@ public class AddEventController {
         });
     }
 
-    // Configuration des actions des boutons
     private void setupActions() {
         submitBtn.setOnAction(e -> ajouterEvent());
         cancelBtn.setOnAction(e -> fermerFormulaire());
         browseImageBtn.setOnAction(e -> parcourirImage());
     }
 
-    // Validation en temps réel (bordure rouge si invalide)
     private void setupLiveValidation() {
         titleField.textProperty().addListener((obs, old, newVal) -> {
             if (newVal != null && !isValidTitle(newVal)) {
-                titleField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 5;");
+                titleField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 8;");
             } else {
-                titleField.setStyle("-fx-border-color: #ddd; -fx-border-width: 1; -fx-border-radius: 5;");
+                titleField.setStyle("-fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 8;");
             }
         });
 
         descriptionArea.textProperty().addListener((obs, old, newVal) -> {
             if (newVal != null && !isValidDescription(newVal)) {
-                descriptionArea.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 5;");
+                descriptionArea.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 8;");
             } else {
-                descriptionArea.setStyle("-fx-border-color: #ddd; -fx-border-width: 1; -fx-border-radius: 5;");
+                descriptionArea.setStyle("-fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 8;");
             }
         });
 
         locationField.textProperty().addListener((obs, old, newVal) -> {
             if (newVal != null && !isValidLocation(newVal)) {
-                locationField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 5;");
+                locationField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 8;");
             } else {
-                locationField.setStyle("-fx-border-color: #ddd; -fx-border-width: 1; -fx-border-radius: 5;");
+                locationField.setStyle("-fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 8;");
             }
         });
     }
 
-    // ==================== VALIDATION DES CHAMPS ====================
-
-    // Vérifier si le texte contient des lettres (pas que des chiffres)
     private boolean containsLetter(String text) {
         return text.matches(".*[a-zA-ZàâäéèêëîïôöùûüçÀÂÄÉÈÊËÎÏÔÖÙÛÜÇ].*");
     }
 
-    // Valider le titre
     private boolean isValidTitle(String title) {
         if (title == null) return false;
         title = title.trim();
         return title.length() >= 3 && containsLetter(title);
     }
 
-    // Valider la description
     private boolean isValidDescription(String description) {
         if (description == null) return false;
         return description.trim().length() >= 10;
     }
 
-    // Valider le lieu
     private boolean isValidLocation(String location) {
         if (location == null) return false;
         location = location.trim();
         return location.length() >= 3 && containsLetter(location);
     }
 
-    // ==================== PARCOURIR IMAGE ====================
     private void parcourirImage() {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Sélectionner une image pour l'événement");
+        fileChooser.setTitle("Sélectionner une image");
 
-        // Filtrer les fichiers image
         FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter(
                 "Fichiers image", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp"
         );
@@ -194,12 +210,13 @@ public class AddEventController {
 
         if (file != null) {
             selectedImageFile = file;
-            imagePathField.setText(file.getAbsolutePath());
+            if (fileNameLabel != null) {
+                fileNameLabel.setText(file.getName());
+            }
             afficherApercuImage(file);
         }
     }
 
-    // Afficher l'aperçu de l'image
     private void afficherApercuImage(File imageFile) {
         try {
             Image image = new Image(imageFile.toURI().toString(), 200, 120, true, true);
@@ -210,23 +227,19 @@ public class AddEventController {
 
             imagePreviewPane.getChildren().clear();
             imagePreviewPane.getChildren().add(imageView);
-            noImageLabel.setVisible(false);
+            imagePreviewPane.setVisible(true);
+            imagePreviewPane.setManaged(true);
         } catch (Exception e) {
             System.err.println("Erreur chargement image: " + e.getMessage());
         }
     }
 
-    // Copier l'image dans le dossier uploads
     private String copyImageToUploads() {
-        if (selectedImageFile == null) {
-            return null;
-        }
+        if (selectedImageFile == null) return null;
 
         try {
             File uploadDir = new File(UPLOAD_DIR);
-            if (!uploadDir.exists()) {
-                uploadDir.mkdirs();
-            }
+            if (!uploadDir.exists()) uploadDir.mkdirs();
 
             String timestamp = String.valueOf(System.currentTimeMillis());
             String extension = "";
@@ -237,17 +250,14 @@ public class AddEventController {
             File destFile = new File(uploadDir, newFileName);
 
             Files.copy(selectedImageFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
             return UPLOAD_DIR + newFileName;
-
         } catch (IOException e) {
             e.printStackTrace();
-            showError("Erreur lors de la copie de l'image: " + e.getMessage());
+            showError("Erreur lors de la copie de l'image");
             return null;
         }
     }
 
-    // ==================== CONVERSION DATE ====================
     private LocalDateTime getDateTimeFromPicker(DatePicker datePicker, ComboBox<Integer> hourCombo, ComboBox<Integer> minuteCombo) {
         if (datePicker.getValue() == null || hourCombo.getValue() == null || minuteCombo.getValue() == null) {
             return null;
@@ -255,19 +265,15 @@ public class AddEventController {
         return LocalDateTime.of(datePicker.getValue(), LocalTime.of(hourCombo.getValue(), minuteCombo.getValue()));
     }
 
-    // ==================== AJOUTER ÉVÉNEMENT ====================
     private void ajouterEvent() {
-        // Désactiver le bouton pendant l'ajout
         submitBtn.setDisable(true);
-        submitBtn.setText("Ajout en cours...");
+        submitBtn.setText("Enregistrement...");
 
         try {
-            // ========== RÉCUPÉRATION DES VALEURS ==========
             String title = titleField.getText();
             String description = descriptionArea.getText();
             String location = locationField.getText();
 
-            // ========== VALIDATION DU TITRE ==========
             if (!isValidTitle(title)) {
                 showError("Le titre doit contenir au moins 3 caractères (dont des lettres)");
                 titleField.requestFocus();
@@ -275,7 +281,6 @@ public class AddEventController {
                 return;
             }
 
-            // ========== VALIDATION DE LA DESCRIPTION ==========
             if (!isValidDescription(description)) {
                 showError("La description doit contenir au moins 10 caractères");
                 descriptionArea.requestFocus();
@@ -283,7 +288,6 @@ public class AddEventController {
                 return;
             }
 
-            // ========== VALIDATION DU LIEU ==========
             if (!isValidLocation(location)) {
                 showError("Le lieu doit contenir au moins 3 caractères (dont des lettres)");
                 locationField.requestFocus();
@@ -291,7 +295,6 @@ public class AddEventController {
                 return;
             }
 
-            // ========== VALIDATION DES DATES ==========
             if (startDatePicker.getValue() == null) {
                 showError("La date de début est obligatoire");
                 resetButton();
@@ -325,31 +328,54 @@ public class AddEventController {
                 return;
             }
 
-            // ========== CRÉATION DE L'OBJET SCHOOL EVENT ==========
-            SchoolEvent event = new SchoolEvent();
-            event.setTitle(title.trim());
-            event.setDescription(description.trim());
-            event.setStartDate(startDateTime);
-            event.setEndDate(endDateTime);
-            event.setLocation(location.trim());
-            event.setLatitude(null);
-            event.setLongitude(null);
-
-            // Copier l'image si sélectionnée
             String imagePath = copyImageToUploads();
-            event.setImagePath(imagePath);
 
-            // ========== INSERTION DANS LA BASE DE DONNÉES ==========
-            service.ajouter(event);
+            if (eventIdToModify != null) {
+                // MODIFICATION
+                System.out.println("Modification de l'événement ID: " + eventIdToModify);
+                SchoolEvent event = service.recupererParId(eventIdToModify);
+                if (event != null) {
+                    event.setTitle(title.trim());
+                    event.setDescription(description.trim());
+                    event.setStartDate(startDateTime);
+                    event.setEndDate(endDateTime);
+                    event.setLocation(location.trim());
+                    if (imagePath != null) event.setImagePath(imagePath);
+                    service.modifier(event);
+                    System.out.println("Événement modifié avec succès");
+                    showSuccess("✅ Événement modifié avec succès !");
+                } else {
+                    showError("Événement non trouvé");
+                    resetButton();
+                    return;
+                }
+            } else {
+                // AJOUT
+                System.out.println("Ajout d'un nouvel événement");
+                SchoolEvent event = new SchoolEvent();
+                event.setTitle(title.trim());
+                event.setDescription(description.trim());
+                event.setStartDate(startDateTime);
+                event.setEndDate(endDateTime);
+                event.setLocation(location.trim());
+                event.setImagePath(imagePath);
+                service.ajouter(event);
+                System.out.println("Événement ajouté avec succès");
+                showSuccess("✅ Événement créé avec succès !");
+            }
 
-            // ========== SUCCÈS ==========
-            showSuccess("✅ Événement créé avec succès !");
-
-            // Fermer la fenêtre après 1.5 secondes
+            // Retour à la liste après succès
             new Thread(() -> {
                 try {
                     Thread.sleep(1500);
-                    javafx.application.Platform.runLater(this::fermerFormulaire);
+                    javafx.application.Platform.runLater(() -> {
+                        if (mainController != null) {
+                            System.out.println("Retour à la liste des événements");
+                            mainController.goToEventList();
+                        } else {
+                            System.out.println("mainController est null, impossible de retourner à la liste");
+                        }
+                    });
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
@@ -366,26 +392,26 @@ public class AddEventController {
         }
     }
 
-    // Réactiver le bouton après erreur
     private void resetButton() {
         submitBtn.setDisable(false);
-        submitBtn.setText("Créer l'événement");
+        submitBtn.setText(eventIdToModify != null ? "Modifier" : "Enregistrer");
     }
 
-    // ==================== FERMETURE ====================
     private void fermerFormulaire() {
-        Stage stage = (Stage) cancelBtn.getScene().getWindow();
-        stage.close();
+        if (mainController != null) {
+            mainController.goToEventList();
+        }
     }
 
-    // ==================== MESSAGES ====================
     private void showError(String message) {
         messageLabel.setText("❌ " + message);
         messageLabel.setStyle("-fx-text-fill: #e74c3c;");
+        messageLabel.setVisible(true);
     }
 
     private void showSuccess(String message) {
         messageLabel.setText("✅ " + message);
         messageLabel.setStyle("-fx-text-fill: #27ae60;");
+        messageLabel.setVisible(true);
     }
 }
