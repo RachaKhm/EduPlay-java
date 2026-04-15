@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+
+<!--
+    MainView.fxml
+    ─────────────────────────────────────────────────────────────
+    Shell principal chargé après le login.
+    Structure : Sidebar (gauche) + Topbar + ContentArea (droite).
+
+    Le MainController :
+      • injecte le Router dans le StackPane contentArea
+      • délègue TOUTE la navigation à SidebarController via Router
+
+    NE PAS dupliquer cette vue — elle est la seule vue "coquille".
+    ─────────────────────────────────────────────────────────────
+-->
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.MainController"
+            prefWidth="1100" prefHeight="700">
+
+    <!-- ═══ SIDEBAR (injectée via fx:include) ═══
+         SidebarController est automatiquement instancié.
+         La sidebar lit AppContext.getRole() pour afficher
+         uniquement les boutons du rôle connecté.
+    -->
+    <left>
+        <fx:include fx:id="sidebar" source="/views/auth/Sidebar.fxml"/>
+    </left>
+
+    <!-- ═══ ZONE PRINCIPALE ═══ -->
+    <center>
+        <BorderPane>
+
+            <!-- Topbar -->
+            <top>
+                <HBox styleClass="topbar" alignment="CENTER_LEFT">
+                    <Label fx:id="topbarTitle"
+                           text="Tableau de bord"
+                           styleClass="topbar-title"/>
+                    <HBox HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="topbarUser"
+                           text=""
+                           styleClass="topbar-user"/>
+                </HBox>
+            </top>
+
+            <!-- Contenu dynamique : le Router.go() remplace ce StackPane -->
+            <center>
+                <StackPane fx:id="contentArea"
+                           style="-fx-padding: 28; -fx-background-color: -ep-bg-page;"/>
+            </center>
+
+        </BorderPane>
+    </center>
+
+</BorderPane>
