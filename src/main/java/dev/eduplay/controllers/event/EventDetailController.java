@@ -1,5 +1,6 @@
-package dev.eduplay.controllers;
+package dev.eduplay.controllers.event;
 
+import dev.eduplay.controllers.event.MainController;
 import dev.eduplay.entities.SchoolEvent;
 import dev.eduplay.services.SchoolEventService;
 import javafx.fxml.FXML;
@@ -50,6 +51,9 @@ public class EventDetailController {
 
     public void setEvent(SchoolEvent event) {
         this.currentEvent = event;
+        System.out.println("=== Chargement de l'événement ===");
+        System.out.println("Titre: " + event.getTitle());
+        System.out.println("ImagePath: " + event.getImagePath());
         displayEventDetails();
     }
 
@@ -98,20 +102,27 @@ public class EventDetailController {
     }
 
     private void loadImage() {
-        String imagePath = currentEvent.getImagePath();
-        if (imagePath != null && !imagePath.isEmpty()) {
-            File imageFile = new File(imagePath);
+        String imageName = currentEvent.getImagePath();
+        System.out.println("Nom de l'image: " + imageName);
+
+        if (imageName != null && !imageName.isEmpty()) {
+            // Chemin fixe vers le dossier des images
+            File imageFile = new File("uploads/events/" + imageName);
+            System.out.println("Chemin complet: " + imageFile.getAbsolutePath());
+
             if (imageFile.exists()) {
                 try {
-                    Image image = new Image(imageFile.toURI().toString(), 600, 250, true, true);
+                    Image image = new Image(imageFile.toURI().toString());
                     eventImageView.setImage(image);
                     eventImageView.setVisible(true);
                     noImageLabel.setVisible(false);
+                    System.out.println("✅ Image chargée!");
                 } catch (Exception e) {
-                    System.err.println("Erreur chargement image: " + e.getMessage());
+                    System.err.println("Erreur: " + e.getMessage());
                     showNoImage();
                 }
             } else {
+                System.out.println("❌ Fichier non trouvé");
                 showNoImage();
             }
         } else {
@@ -119,8 +130,17 @@ public class EventDetailController {
         }
     }
 
+    public void updateImage(String newImagePath) {
+        if (newImagePath != null && !newImagePath.isEmpty()) {
+            currentEvent.setImagePath(newImagePath);
+            loadImage();
+        }
+    }
+
     private void showNoImage() {
+        eventImageView.setImage(null);
         eventImageView.setVisible(false);
+        noImageLabel.setText("🖼️ Aucune image disponible");
         noImageLabel.setVisible(true);
     }
 

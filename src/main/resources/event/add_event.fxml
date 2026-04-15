@@ -5,7 +5,7 @@
 <?import javafx.geometry.Insets?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="dev.eduplay.controllers.AddEventController"
+            fx:controller="dev.eduplay.controllers.event.AddEventController"
             style="-fx-background-color: #f3f4f6; -fx-background: #f3f4f6;"
             fitToWidth="true" fitToHeight="false">
 

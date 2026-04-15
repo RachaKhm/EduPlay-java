@@ -1,5 +1,6 @@
-package dev.eduplay.controllers;
+package dev.eduplay.controllers.event;
 
+import dev.eduplay.controllers.event.MainController;
 import dev.eduplay.entities.EventResource;
 import dev.eduplay.services.EventResourceService;
 import javafx.fxml.FXML;

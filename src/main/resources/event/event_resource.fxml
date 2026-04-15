@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Font?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="dev.eduplay.controllers.EventResourceController"
+            fx:controller="dev.eduplay.controllers.event.EventResourceController"
             style="-fx-background-color: #f3f4f6; -fx-background: #f3f4f6;"
             fitToWidth="true" fitToHeight="false">
 

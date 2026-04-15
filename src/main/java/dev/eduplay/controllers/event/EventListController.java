@@ -1,5 +1,6 @@
-package dev.eduplay.controllers;
+package dev.eduplay.controllers.event;
 
+import dev.eduplay.controllers.event.MainController;
 import dev.eduplay.entities.SchoolEvent;
 import dev.eduplay.services.SchoolEventService;
 import javafx.collections.FXCollections;
@@ -10,7 +11,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,6 +62,8 @@ public class EventListController {
         sortCombo.setValue("startDate");
         orderToggle.setText("⬇️ Desc");
         orderToggle.setSelected(false);
+
+        cleanExpiredEvents();
 
         loadEvents();
 
@@ -169,14 +174,26 @@ public class EventListController {
         });
     }
 
+    @FXML private Button refreshBtn;
     private void setupActions() {
         addBtn.setOnAction(e -> goToAddEvent());
         prevBtn.setOnAction(e -> pagePrecedente());
         nextBtn.setOnAction(e -> pageSuivante());
+        refreshBtn.setOnAction(e -> refreshManually());
+    }
+
+    @FXML
+    private void refreshManually() {
+        System.out.println("🔄 Rafraîchissement manuel de la liste des événements...");
+        cleanExpiredEvents();
+        loadEvents();
+        showAlert("Rafraîchissement", "✅ La liste des événements a été actualisée");
     }
 
     private void loadEvents() {
         try {
+            cleanExpiredEvents();
+
             List<SchoolEvent> events = service.recuperer();
             originalEvents.setAll(events);
             applyFiltersAndSort();
@@ -279,13 +296,14 @@ public class EventListController {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmation");
         confirm.setHeaderText("Supprimer l'événement");
-        confirm.setContentText("Êtes-vous sûr de vouloir supprimer l'événement \"" + event.getTitle() + "\" ?");
+        confirm.setContentText("Êtes-vous sûr de vouloir supprimer l'événement \"" + event.getTitle() + "\" ?\n\nToutes les ressources associées seront également supprimées.");
 
         if (confirm.showAndWait().get() == ButtonType.OK) {
             try {
-                service.supprimer(event);
+                // Utiliser la nouvelle méthode qui supprime aussi les ressources
+                service.supprimerAvecRessources(event);
                 loadEvents();
-                showAlert("Succès", "Événement supprimé avec succès");
+                showAlert("Succès", "✅ Événement et ses ressources supprimés avec succès");
             } catch (SQLException e) {
                 showAlert("Erreur", "Impossible de supprimer l'événement: " + e.getMessage());
                 e.printStackTrace();
@@ -307,4 +325,38 @@ public class EventListController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+
+    private void cleanExpiredEvents() {
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            List<SchoolEvent> allEvents = service.recuperer();
+            List<SchoolEvent> expiredEvents = new ArrayList<>();
+
+            for (SchoolEvent event : allEvents) {
+                if (event.getEndDate() != null && event.getEndDate().isBefore(now)) {
+                    expiredEvents.add(event);
+                }
+            }
+
+            if (!expiredEvents.isEmpty()) {
+                for (SchoolEvent event : expiredEvents) {
+                    // Utiliser la nouvelle méthode qui supprime aussi les ressources
+                    service.supprimerAvecRessources(event);
+                    System.out.println("🗑️ Événement expiré supprimé: " + event.getTitle());
+                }
+                showAlert("Nettoyage automatique",
+                        expiredEvents.size() + " événement(s) supprimé(s) (dates dépassées)");
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors du nettoyage des événements: " + e.getMessage());
+        }
+    }
+
+    public void refreshAndClean() {
+        System.out.println("🔄 Rafraîchissement et nettoyage des événements...");
+        cleanExpiredEvents();
+        loadEvents();
+    }
+
 }

@@ -1,4 +1,4 @@
-package dev.eduplay.controllers;
+package dev.eduplay.controllers.event;
 
 import dev.eduplay.entities.SchoolEvent;
 import dev.eduplay.services.SchoolEventService;
@@ -238,22 +238,27 @@ public class AddEventController {
         if (selectedImageFile == null) return null;
 
         try {
-            File uploadDir = new File(UPLOAD_DIR);
-            if (!uploadDir.exists()) uploadDir.mkdirs();
-
-            String timestamp = String.valueOf(System.currentTimeMillis());
-            String extension = "";
-            if (selectedImageFile.getName().contains(".")) {
-                extension = selectedImageFile.getName().substring(selectedImageFile.getName().lastIndexOf("."));
+            // Créer le dossier s'il n'existe pas
+            File uploadDir = new File("uploads/events/");
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
             }
-            String newFileName = "event_" + timestamp + extension;
-            File destFile = new File(uploadDir, newFileName);
 
-            Files.copy(selectedImageFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            return UPLOAD_DIR + newFileName;
+            // Garder le nom original du fichier
+            String originalName = selectedImageFile.getName();
+            File destFile = new File(uploadDir, originalName);
+
+            // Copier le fichier
+            java.nio.file.Files.copy(selectedImageFile.toPath(), destFile.toPath(),
+                    java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+            System.out.println("✅ Image copiée: " + destFile.getAbsolutePath());
+
+            // Retourner juste le nom du fichier (pas le chemin complet)
+            return originalName;
+
         } catch (IOException e) {
             e.printStackTrace();
-            showError("Erreur lors de la copie de l'image");
             return null;
         }
     }

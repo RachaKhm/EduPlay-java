@@ -1,6 +1,6 @@
 package dev.eduplay.mains;
 
-import dev.eduplay.controllers.MainController;
+import dev.eduplay.controllers.event.MainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,7 +11,7 @@ public class MainFX extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/main_layout.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/event/main_layout.fxml"));
         Parent root = loader.load();
 
         MainController controller = loader.getController();

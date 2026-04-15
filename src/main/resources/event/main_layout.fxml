@@ -5,7 +5,7 @@
 <?import javafx.geometry.Insets?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="dev.eduplay.controllers.MainController"
+            fx:controller="dev.eduplay.controllers.event.MainController"
             style="-fx-background-color: #f3f4f6;">
 
     <children>

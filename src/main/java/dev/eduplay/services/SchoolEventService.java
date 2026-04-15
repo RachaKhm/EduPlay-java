@@ -97,8 +97,6 @@ public class SchoolEventService implements IGeneralService<SchoolEvent> {
         return events;
     }
 
-    // ==================== MÉTHODE SPÉCIFIQUE (SANS @Override) ====================
-    // Cette méthode n'est PAS dans l'interface IGeneralService
     public SchoolEvent recupererParId(int id) throws SQLException {
         String sql = "SELECT * FROM school_event WHERE id = ?";
         PreparedStatement pst = cn.prepareStatement(sql);
@@ -121,4 +119,37 @@ public class SchoolEventService implements IGeneralService<SchoolEvent> {
         }
         return null;
     }
+
+
+    /**
+     * Supprime un événement et toutes ses ressources associées
+     */
+    public void supprimerAvecRessources(SchoolEvent event) throws SQLException {
+        cn.setAutoCommit(false);
+
+        try {
+            // 1. Supprimer les ressources
+            String sqlResources = "DELETE FROM event_resource WHERE event_id = ?";
+            PreparedStatement psResources = cn.prepareStatement(sqlResources);
+            psResources.setInt(1, event.getId());
+            int resourcesDeleted = psResources.executeUpdate();
+            System.out.println("📄 " + resourcesDeleted + " ressource(s) supprimée(s)");
+
+            // 2. Supprimer l'événement
+            String sqlEvent = "DELETE FROM school_event WHERE id = ?";
+            PreparedStatement psEvent = cn.prepareStatement(sqlEvent);
+            psEvent.setInt(1, event.getId());
+            int eventDeleted = psEvent.executeUpdate();
+            System.out.println("🗑️ Événement supprimé: " + event.getTitle());
+
+            cn.commit();
+
+        } catch (SQLException e) {
+            cn.rollback();
+            throw e;
+        } finally {
+            cn.setAutoCommit(true);
+        }
+    }
+
 }
