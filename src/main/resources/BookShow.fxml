@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="dev.eduplay.controllers.BookShowController"
+      style="-fx-background-color: #f1f5f9;" spacing="0">
+
+    <!-- HEADER -->
+    <VBox style="-fx-background-color: linear-gradient(to right,#6366f1,#9333ea);
+                 -fx-padding: 28 32 24 32;" spacing="12">
+        <HBox alignment="CENTER_LEFT" spacing="16">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label fx:id="titleLabel"
+                       style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label fx:id="authorLabel"
+                       style="-fx-font-size: 14px; -fx-text-fill: #c7d2fe;"/>
+            </VBox>
+            <Button text="←  Retour" onAction="#handleRetour"
+                    style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white;
+                           -fx-font-weight: bold; -fx-font-size: 13px; -fx-background-radius: 12;
+                           -fx-padding: 10 18; -fx-border-color: rgba(255,255,255,0.35);
+                           -fx-border-width: 1; -fx-border-radius: 12; -fx-cursor: hand;"/>
+            <Button text="✏  Modifier" onAction="#handleModifier"
+                    style="-fx-background-color: white; -fx-text-fill: #6366f1;
+                           -fx-font-weight: bold; -fx-font-size: 13px;
+                           -fx-background-radius: 12; -fx-padding: 10 18; -fx-cursor: hand;"/>
+        </HBox>
+        <!-- Badges -->
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Label fx:id="typeBadgeLabel"
+                   style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;
+                          -fx-background-radius: 20; -fx-padding: 5 14;"/>
+            <Label fx:id="ageBadgeLabel"
+                   style="-fx-background-color: rgba(255,255,255,0.18); -fx-text-fill: white;
+                          -fx-font-size: 12px; -fx-font-weight: bold; -fx-background-radius: 20;
+                          -fx-padding: 5 14; -fx-border-color: rgba(255,255,255,0.3);
+                          -fx-border-width: 1; -fx-border-radius: 20;"/>
+            <Label fx:id="languageBadgeLabel"
+                   style="-fx-background-color: rgba(255,255,255,0.18); -fx-text-fill: white;
+                          -fx-font-size: 12px; -fx-font-weight: bold; -fx-background-radius: 20;
+                          -fx-padding: 5 14; -fx-border-color: rgba(255,255,255,0.3);
+                          -fx-border-width: 1; -fx-border-radius: 20;"/>
+        </HBox>
+    </VBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-background: #f1f5f9;">
+        <VBox style="-fx-padding: 24 32;" spacing="20">
+
+            <!-- Image de couverture -->
+            <VBox fx:id="imageContainer" managed="false" visible="false"
+                  style="-fx-background-color: #e2e8f0; -fx-background-radius: 16;
+                         -fx-border-radius: 16; -fx-max-height: 240; -fx-overflow: hidden;">
+                <ImageView fx:id="coverImageView" fitWidth="980" fitHeight="240"
+                           preserveRatio="false" smooth="true"/>
+            </VBox>
+
+            <!-- Corps : Résumé (gauche) + Infos+Actions (droite) -->
+            <HBox spacing="20" alignment="TOP_LEFT">
+
+                <!-- GAUCHE : Résumé + Image section -->
+                <VBox HBox.hgrow="ALWAYS" spacing="16">
+
+                    <!-- Image card (si présente, affichée ici aussi) -->
+                    <VBox fx:id="imageCardContainer" managed="false" visible="false"
+                          style="-fx-background-color: white; -fx-background-radius: 16;
+                                 -fx-border-color: #e2e8f0; -fx-border-width: 1;
+                                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,3);
+                                 -fx-padding: 22;" spacing="14">
+                        <HBox spacing="14" alignment="CENTER_LEFT">
+                            <HBox style="-fx-background-color: #eef2ff; -fx-background-radius: 12; -fx-padding: 10;"
+                                  alignment="CENTER">
+                                <Label text="🖼" style="-fx-font-size: 18px;"/>
+                            </HBox>
+                            <VBox spacing="2">
+                                <Label text="Image de couverture"
+                                       style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                                <Label text="Visuel de la ressource"
+                                       style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                            </VBox>
+                        </HBox>
+                        <ImageView fx:id="coverImageCard" fitWidth="500" fitHeight="220"
+                                   preserveRatio="true" smooth="true"
+                                   style="-fx-effect: dropshadow(gaussian,rgba(0,0,0,0.1),8,0,0,2);"/>
+                    </VBox>
+
+                    <!-- Résumé -->
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 16;
+                                 -fx-border-color: #e2e8f0; -fx-border-width: 1;
+                                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,3);
+                                 -fx-padding: 22;" spacing="14">
+                        <HBox spacing="14" alignment="CENTER_LEFT">
+                            <HBox style="-fx-background-color: #eff6ff; -fx-background-radius: 12; -fx-padding: 10;"
+                                  alignment="CENTER">
+                                <Label text="💬" style="-fx-font-size: 18px;"/>
+                            </HBox>
+                            <VBox spacing="2">
+                                <Label text="Résumé"
+                                       style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                                <Label text="Synopsis et description"
+                                       style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                            </VBox>
+                        </HBox>
+                        <Separator/>
+                        <Label fx:id="summaryLabel"
+                               style="-fx-background-color: #f8fafc; -fx-background-radius: 12;
+                                      -fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 12;
+                                      -fx-padding: 16; -fx-font-size: 14px; -fx-text-fill: #374151;"
+                               wrapText="true"/>
+                    </VBox>
+                </VBox>
+
+                <!-- DROITE : Infos + PDF + Actions -->
+                <VBox spacing="16" prefWidth="320" minWidth="300">
+
+                    <!-- Informations -->
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 16;
+                                 -fx-border-color: #e2e8f0; -fx-border-width: 1;
+                                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,3);
+                                 -fx-padding: 22;" spacing="14">
+                        <HBox spacing="14" alignment="CENTER_LEFT">
+                            <HBox style="-fx-background-color: #f0fdf4; -fx-background-radius: 12; -fx-padding: 10;"
+                                  alignment="CENTER">
+                                <Label text="ℹ" style="-fx-font-size: 18px; -fx-text-fill: #16a34a;"/>
+                            </HBox>
+                            <VBox spacing="2">
+                                <Label text="Informations"
+                                       style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                                <Label text="Détails techniques"
+                                       style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Auteur -->
+                        <VBox spacing="4"
+                              style="-fx-background-color: linear-gradient(to right,#eef2ff,#f5f3ff);
+                                     -fx-background-radius: 12; -fx-border-color: #c7d2fe;
+                                     -fx-border-width: 1; -fx-border-radius: 12; -fx-padding: 14;">
+                            <Label text="👤 Auteur" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #4f46e5;"/>
+                            <Label fx:id="authorInfoLabel"
+                                   style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                        </VBox>
+
+                        <!-- Tranche d'âge -->
+                        <VBox spacing="8"
+                              style="-fx-background-color: linear-gradient(to right,#eff6ff,#eef2ff);
+                                     -fx-background-radius: 12; -fx-border-color: #bfdbfe;
+                                     -fx-border-width: 1; -fx-border-radius: 12; -fx-padding: 14;">
+                            <Label text="📊 Tranche d'âge"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1e40af;"/>
+                            <Label fx:id="ageRangeLabel"
+                                   style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1e3a8a;"/>
+                            <VBox spacing="4">
+                                <HBox>
+                                    <Label fx:id="minAgeLabel" style="-fx-font-size: 11px; -fx-text-fill: #3b82f6;"/>
+                                    <Region HBox.hgrow="ALWAYS"/>
+                                    <Label fx:id="maxAgeLabel" style="-fx-font-size: 11px; -fx-text-fill: #3b82f6;"/>
+                                </HBox>
+                                <StackPane style="-fx-background-color: #bfdbfe; -fx-background-radius: 4;" prefHeight="8">
+                                    <HBox alignment="CENTER_LEFT">
+                                        <Region fx:id="ageProgressBar" prefHeight="8"
+                                                style="-fx-background-color: linear-gradient(to right,#6366f1,#9333ea);
+                                                       -fx-background-radius: 4;"/>
+                                    </HBox>
+                                </StackPane>
+                            </VBox>
+                        </VBox>
+
+                        <!-- Type -->
+                        <HBox alignment="CENTER_LEFT"
+                              style="-fx-background-color: linear-gradient(to right,#f8fafc,#f1f5f9);
+                                     -fx-background-radius: 12; -fx-border-color: #e2e8f0;
+                                     -fx-border-width: 1; -fx-border-radius: 12; -fx-padding: 14;">
+                            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                <Label text="📚 Type de ressource"
+                                       style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                                <Label fx:id="typeInfoLabel"
+                                       style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                            </VBox>
+                            <Label fx:id="typeEmojiLabel" style="-fx-font-size: 28px;"/>
+                        </HBox>
+
+                        <!-- Langue -->
+                        <VBox spacing="4"
+                              style="-fx-background-color: linear-gradient(to right,#fefce8,#fef9c3);
+                                     -fx-background-radius: 12; -fx-border-color: #fde68a;
+                                     -fx-border-width: 1; -fx-border-radius: 12; -fx-padding: 14;">
+                            <Label text="🌍 Langue" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #92400e;"/>
+                            <Label fx:id="languageInfoLabel"
+                                   style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                        </VBox>
+
+                        <!-- Bibliothèque -->
+                        <VBox spacing="4"
+                              style="-fx-background-color: linear-gradient(to right,#faf5ff,#ede9fe);
+                                     -fx-background-radius: 12; -fx-border-color: #d8b4fe;
+                                     -fx-border-width: 1; -fx-border-radius: 12; -fx-padding: 14;">
+                            <Label text="🏛 Bibliothèque" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #7c3aed;"/>
+                            <Label fx:id="libraryInfoLabel"
+                                   style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- PDF -->
+                    <VBox fx:id="pdfCard" managed="false" visible="false"
+                          style="-fx-background-color: white; -fx-background-radius: 16;
+                                 -fx-border-color: #e2e8f0; -fx-border-width: 1;
+                                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,3);
+                                 -fx-padding: 22;" spacing="14">
+                        <HBox spacing="14" alignment="CENTER_LEFT">
+                            <HBox style="-fx-background-color: #fff1f2; -fx-background-radius: 12; -fx-padding: 10;"
+                                  alignment="CENTER">
+                                <Label text="📄" style="-fx-font-size: 18px;"/>
+                            </HBox>
+                            <VBox spacing="2">
+                                <Label text="Fichier PDF"
+                                       style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                                <Label text="Document téléchargeable"
+                                       style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                            </VBox>
+                        </HBox>
+                        <Button text="📥  Ouvrir le PDF" onAction="#handleOpenPdf" maxWidth="Infinity"
+                                style="-fx-background-color: linear-gradient(to right,#ef4444,#f97316);
+                                       -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px;
+                                       -fx-background-radius: 12; -fx-padding: 12; -fx-cursor: hand;"/>
+                    </VBox>
+
+                    <!-- Actions -->
+                    <VBox style="-fx-background-color: white; -fx-background-radius: 16;
+                                 -fx-border-color: #e2e8f0; -fx-border-width: 1;
+                                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,3);
+                                 -fx-padding: 22;" spacing="14">
+                        <HBox spacing="14" alignment="CENTER_LEFT">
+                            <HBox style="-fx-background-color: #fef2f2; -fx-background-radius: 12; -fx-padding: 10;"
+                                  alignment="CENTER">
+                                <Label text="🗑" style="-fx-font-size: 18px;"/>
+                            </HBox>
+                            <VBox spacing="2">
+                                <Label text="Actions"
+                                       style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                                <Label text="Gestion de la ressource"
+                                       style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                            </VBox>
+                        </HBox>
+                        <Button text="✏  Modifier" onAction="#handleModifier" maxWidth="Infinity"
+                                style="-fx-background-color: #eef2ff; -fx-text-fill: #6366f1;
+                                       -fx-font-weight: bold; -fx-font-size: 13px;
+                                       -fx-background-radius: 12; -fx-padding: 14;
+                                       -fx-border-color: #c7d2fe; -fx-border-width: 2;
+                                       -fx-border-radius: 12; -fx-cursor: hand;"/>
+                        <Button text="🗑  Supprimer" onAction="#handleSupprimer" maxWidth="Infinity"
+                                style="-fx-background-color: #fef2f2; -fx-text-fill: #dc2626;
+                                       -fx-font-weight: bold; -fx-font-size: 13px;
+                                       -fx-background-radius: 12; -fx-padding: 14;
+                                       -fx-border-color: #fecaca; -fx-border-width: 2;
+                                       -fx-border-radius: 12; -fx-cursor: hand;"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+        </VBox>
+    </ScrollPane>
+</VBox>
