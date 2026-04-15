@@ -30,7 +30,7 @@ public class LoginController {
 
         if (email.isBlank() || password.isBlank()) { showError("Remplissez tous les champs."); return; }
 
-        User user = userService.getAll().stream()
+        User user = userService.recuperer().stream()
                 .filter(u -> email.equalsIgnoreCase(u.getEmail()))
                 .findFirst().orElse(null);
 

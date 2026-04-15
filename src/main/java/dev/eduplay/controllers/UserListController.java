@@ -1,5 +1,6 @@
 package dev.eduplay.controllers;
 
+import dev.eduplay.core.Router;
 import dev.eduplay.entities.User;
 import dev.eduplay.services.UserService;
 import javafx.collections.FXCollections;
@@ -20,80 +21,89 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * UserListController
+ * ─────────────────────────────────────────────────────────────
+ * Liste paginée des utilisateurs avec recherche et filtres.
+ * Styles des badges : définis dans app.css, appliqués via
+ * getStyleClass().add("badge-admin") etc
+ * ─────────────────────────────────────────────────────────────
+ */
 public class UserListController {
 
-    @FXML private TableView<User> userTable;
-    @FXML private TableColumn<User, Integer> colId;
-    @FXML private TableColumn<User, String>  colFirstName;
-    @FXML private TableColumn<User, String>  colLastName;
-    @FXML private TableColumn<User, String>  colEmail;
-    @FXML private TableColumn<User, String>  colType;
-    @FXML private TableColumn<User, Boolean> colActive;
-    @FXML private TableColumn<User, Void>    colActions;
+    /* ── FXML bindings ─────────────────────────────────────── */
 
-    @FXML private TextField      searchField;
+    @FXML private TableView<User>             userTable;
+    @FXML private TableColumn<User, Integer>  colId;
+    @FXML private TableColumn<User, String>   colFirstName;
+    @FXML private TableColumn<User, String>   colLastName;
+    @FXML private TableColumn<User, String>   colEmail;
+    @FXML private TableColumn<User, String>   colType;
+    @FXML private TableColumn<User, Boolean>  colActive;
+    @FXML private TableColumn<User, Void>     colActions;
+
+    @FXML private TextField       searchField;
     @FXML private ComboBox<String> typeFilter;
-    @FXML private Label          statusLabel;
+    @FXML private Label           statusLabel;
 
-    private final UserService userService = new UserService();
-    private ObservableList<User> allUsers = FXCollections.observableArrayList();
+    /* ── Services et état ───────────────────────────────────── */
 
-    // ─────────────────────────────────────────
+    private final UserService              userService = new UserService();
+    private final ObservableList<User>     allUsers    = FXCollections.observableArrayList();
+
+    /* ── Initialisation ────────────────────────────────────── */
+
+    @FXML
     public void initialize() {
         setupColumns();
         setupActionColumn();
 
         typeFilter.getItems().addAll("Tous", "admin", "enseignant", "parent", "enfant");
         typeFilter.setValue("Tous");
-        typeFilter.valueProperty().addListener((obs, o, n) -> applyFilters());
+        typeFilter.valueProperty().addListener((obs, oldVal, newVal) -> applyFilters());
 
         loadUsers();
     }
 
-    // ── Binding colonnes ──────────────────────
+    /* ── Configuration des colonnes ────────────────────────── */
+
     private void setupColumns() {
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colFirstName.setCellValueFactory(new PropertyValueFactory<>("firstName"));
         colLastName.setCellValueFactory(new PropertyValueFactory<>("lastName"));
         colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
 
-        // Colonne Type : badge coloré selon la valeur
+        // Colonne Type : badge coloré (style CSS)
         colType.setCellValueFactory(new PropertyValueFactory<>("type"));
         colType.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(String type, boolean empty) {
                 super.updateItem(type, empty);
-                if (empty || type == null) {
-                    setGraphic(null);
-                    return;
-                }
-                Label badge = new Label(type);
-                badge.setStyle(getBadgeStyle(type));
+                if (empty || type == null) { setGraphic(null); return; }
+                Label badge = new Label(type.toUpperCase());
+                badge.getStyleClass().add(resolveBadgeClass(type));
                 setGraphic(badge);
                 setText(null);
             }
         });
 
-        // Colonne Actif : Oui / Non avec couleur
+        // Colonne Statut : badge actif/inactif (style CSS)
         colActive.setCellValueFactory(new PropertyValueFactory<>("active"));
         colActive.setCellFactory(col -> new TableCell<>() {
             @Override
             protected void updateItem(Boolean active, boolean empty) {
                 super.updateItem(active, empty);
                 if (empty || active == null) { setGraphic(null); return; }
-                Label lbl = new Label(active ? "Actif" : "Inactif");
-                lbl.setStyle(active
-                        ? "-fx-background-color: #D4F7E8; -fx-text-fill: #1A7A4A; " +
-                        "-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-size: 11px;"
-                        : "-fx-background-color: #FFE8E8; -fx-text-fill: #C0304A; " +
-                        "-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-size: 11px;");
-                setGraphic(lbl);
+                Label badge = new Label(active ? "Actif" : "Inactif");
+                badge.getStyleClass().add(active ? "badge-actif" : "badge-inactif");
+                setGraphic(badge);
                 setText(null);
             }
         });
     }
 
-    // ── CellFactory boutons Actions ───────────
+    /* ── Colonne Actions ───────────────────────────────────── */
+
     private void setupActionColumn() {
         colActions.setCellFactory(new Callback<>() {
             @Override
@@ -104,26 +114,20 @@ public class UserListController {
                     private final HBox   box       = new HBox(6, btnEdit, btnDelete);
 
                     {
-                        btnEdit.setStyle(
-                                "-fx-background-color: #4A90D9; -fx-text-fill: white;" +
-                                        "-fx-font-size: 11px; -fx-padding: 4 10;" +
-                                        "-fx-background-radius: 4; -fx-cursor: hand;");
-                        btnDelete.setStyle(
-                                "-fx-background-color: #E94560; -fx-text-fill: white;" +
-                                        "-fx-font-size: 11px; -fx-padding: 4 10;" +
-                                        "-fx-background-radius: 4; -fx-cursor: hand;");
+                        // Styles via CSS classes (app.css)
+                        btnEdit.getStyleClass().add("btn-icon-edit");
+                        btnDelete.getStyleClass().add("btn-icon-delete");
+                        box.setStyle("-fx-alignment: CENTER;");
 
                         btnEdit.setOnAction(e -> {
                             User u = getTableView().getItems().get(getIndex());
-                            openEditForm(u);
+                            openForm(u);
                         });
 
                         btnDelete.setOnAction(e -> {
                             User u = getTableView().getItems().get(getIndex());
                             confirmAndDelete(u);
                         });
-
-                        box.setStyle("-fx-alignment: CENTER;");
                     }
 
                     @Override
@@ -136,41 +140,44 @@ public class UserListController {
         });
     }
 
-    // ── Chargement ────────────────────────────
+    /* ── Chargement des données ────────────────────────────── */
+
     private void loadUsers() {
-        allUsers.setAll(userService.getAll());
+        allUsers.setAll(userService.recuperer());
         userTable.setItems(allUsers);
         updateStatus();
     }
 
-    // ── Filtres / Recherche ───────────────────
+    /* ── Filtres et recherche ──────────────────────────────── */
+
     @FXML
     public void search() {
         applyFilters();
     }
 
     private void applyFilters() {
-        String kw   = searchField.getText().toLowerCase().trim();
-        String type = typeFilter.getValue();
+        String keyword = searchField.getText().toLowerCase().trim();
+        String type    = typeFilter.getValue();
 
         List<User> filtered = allUsers.stream()
                 .filter(u -> "Tous".equals(type) || type.equals(u.getType()))
-                .filter(u -> kw.isEmpty()
-                        || (u.getFirstName() != null && u.getFirstName().toLowerCase().contains(kw))
-                        || (u.getLastName()  != null && u.getLastName().toLowerCase().contains(kw))
-                        || (u.getEmail()     != null && u.getEmail().toLowerCase().contains(kw)))
+                .filter(u -> keyword.isEmpty()
+                        || containsIgnoreCase(u.getFirstName(), keyword)
+                        || containsIgnoreCase(u.getLastName(),  keyword)
+                        || containsIgnoreCase(u.getEmail(),     keyword))
                 .collect(Collectors.toList());
 
         userTable.setItems(FXCollections.observableArrayList(filtered));
         updateStatus();
     }
 
-    // ── Actions tableau ───────────────────────
+    /* ── Actions du tableau ────────────────────────────────── */
+
     @FXML
     public void deleteUser() {
         User selected = userTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            alert(Alert.AlertType.WARNING, "Sélectionnez un utilisateur.");
+            showAlert(Alert.AlertType.WARNING, "Sélectionnez un utilisateur.");
             return;
         }
         confirmAndDelete(selected);
@@ -186,7 +193,7 @@ public class UserListController {
             userService.supprimer(user);
             allUsers.remove(user);
             applyFilters();
-            alert(Alert.AlertType.INFORMATION, "Utilisateur supprimé.");
+            showAlert(Alert.AlertType.INFORMATION, "Utilisateur supprimé.");
         }
     }
 
@@ -194,7 +201,7 @@ public class UserListController {
     public void toggleActiveUser() {
         User selected = userTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            alert(Alert.AlertType.WARNING, "Sélectionnez un utilisateur.");
+            showAlert(Alert.AlertType.WARNING, "Sélectionnez un utilisateur.");
             return;
         }
         selected.setActive(!selected.isActive());
@@ -209,7 +216,8 @@ public class UserListController {
         loadUsers();
     }
 
-    // ── Navigation ────────────────────────────
+    /* ── Ouverture du formulaire ────────────────────────────── */
+
     @FXML
     public void openAddUserForm() {
         openForm(null);
@@ -219,16 +227,17 @@ public class UserListController {
     public void editSelectedUser() {
         User selected = userTable.getSelectionModel().getSelectedItem();
         if (selected == null) {
-            alert(Alert.AlertType.WARNING, "Sélectionnez un utilisateur à modifier.");
+            showAlert(Alert.AlertType.WARNING, "Sélectionnez un utilisateur à modifier.");
             return;
         }
-        openEditForm(selected);
+        openForm(selected);
     }
 
-    private void openEditForm(User user) {
-        openForm(user);
-    }
-
+    /**
+     * Ouvre le formulaire utilisateur en fenêtre modale.
+     *
+     * @param user null = mode création, non-null = mode édition
+     */
     private void openForm(User user) {
         try {
             FXMLLoader loader = new FXMLLoader(
@@ -240,38 +249,47 @@ public class UserListController {
 
             Stage stage = new Stage();
             stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle(user == null ? "Nouvel utilisateur" : "Modifier — " + user.getFullName());
+            stage.setTitle(user == null
+                    ? "Nouvel utilisateur"
+                    : "Modifier — " + user.getFullName());
             stage.setScene(new Scene(root));
-            stage.setOnHidden(e -> loadUsers()); // refresh après fermeture
+            stage.setOnHidden(e -> loadUsers()); // rafraîchir après fermeture
             stage.show();
 
         } catch (IOException e) {
-            alert(Alert.AlertType.ERROR, "Impossible d'ouvrir le formulaire : " + e.getMessage());
+            showAlert(Alert.AlertType.ERROR,
+                    "Impossible d'ouvrir le formulaire : " + e.getMessage());
         }
     }
 
-    // ── Utilitaires ───────────────────────────
+    /* ── Utilitaires ───────────────────────────────────────── */
+
     private void updateStatus() {
         int count = userTable.getItems().size();
-        statusLabel.setText(count + " utilisateur" + (count > 1 ? "s" : "") + " affiché" + (count > 1 ? "s" : ""));
+        if (statusLabel != null) {
+            statusLabel.setText(count + " utilisateur"
+                    + (count > 1 ? "s" : "")
+                    + " affiché"
+                    + (count > 1 ? "s" : ""));
+        }
     }
 
-    private void alert(Alert.AlertType type, String message) {
+    private void showAlert(Alert.AlertType type, String message) {
         new Alert(type, message, ButtonType.OK).showAndWait();
     }
 
-    private String getBadgeStyle(String type) {
+    /** Classe CSS du badge selon le type utilisateur. */
+    private String resolveBadgeClass(String type) {
         return switch (type) {
-            case "admin"      -> "-fx-background-color: #F0E8FF; -fx-text-fill: #6030A0; " +
-                    "-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-size: 11px;";
-            case "enseignant" -> "-fx-background-color: #FFF0E0; -fx-text-fill: #A05010; " +
-                    "-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-size: 11px;";
-            case "parent"     -> "-fx-background-color: #E0F0FF; -fx-text-fill: #105090; " +
-                    "-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-size: 11px;";
-            case "enfant"     -> "-fx-background-color: #E0FFE8; -fx-text-fill: #106030; " +
-                    "-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-size: 11px;";
-            default           -> "-fx-background-color: #F0F0F0; -fx-text-fill: #606060; " +
-                    "-fx-padding: 3 10; -fx-background-radius: 12; -fx-font-size: 11px;";
+            case "admin"      -> "badge-admin";
+            case "enseignant" -> "badge-enseignant";
+            case "parent"     -> "badge-parent";
+            case "enfant"     -> "badge-enfant";
+            default           -> "badge-default";
         };
+    }
+
+    private boolean containsIgnoreCase(String value, String keyword) {
+        return value != null && value.toLowerCase().contains(keyword);
     }
 }
