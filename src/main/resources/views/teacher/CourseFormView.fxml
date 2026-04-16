@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.eduplay.controllers.teacher.CourseFormController"
+      spacing="12" prefWidth="520"
+      style="-fx-background-color: #F8F9FA; -fx-padding: 18;">
+
+    <Label fx:id="formTitle" text="Nouveau cours"
+           style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #22223A;"/>
+    <Label text="Le cours reste en brouillon jusqu'à validation par un administrateur."
+           style="-fx-font-size: 12px; -fx-text-fill: #9999BB;"/>
+
+    <Separator opacity="0.35"/>
+
+    <VBox spacing="6" style="-fx-background-color: white; -fx-padding: 14; -fx-background-radius: 12;
+                             -fx-border-color: #E9EAF2; -fx-border-radius: 12; -fx-border-width: 1;">
+
+        <Label text="Titre" style="-fx-text-fill:#444466;-fx-font-size:12px;-fx-font-weight:bold;"/>
+        <TextField fx:id="titleField" promptText="Ex: Initiation à Java"
+                   style="-fx-background-radius: 10; -fx-border-radius: 10;
+                          -fx-border-color: #E2E3EE; -fx-padding: 10 12;
+                          -fx-background-color: #FBFBFF;"/>
+
+        <Label text="Description" style="-fx-text-fill:#444466;-fx-font-size:12px;-fx-font-weight:bold;"/>
+        <TextArea fx:id="descriptionField" promptText="Décrivez le contenu et les objectifs..."
+                  prefRowCount="4" wrapText="true"
+                  style="-fx-background-radius: 10; -fx-border-radius: 10;
+                         -fx-border-color: #E2E3EE; -fx-padding: 10 12;
+                         -fx-background-color: #FBFBFF;"/>
+
+        <HBox spacing="10">
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label text="Durée (minutes)" style="-fx-text-fill:#444466;-fx-font-size:12px;-fx-font-weight:bold;"/>
+                <TextField fx:id="durationField" promptText="Ex: 90"
+                           style="-fx-background-radius: 10; -fx-border-radius: 10;
+                                  -fx-border-color: #E2E3EE; -fx-padding: 10 12;
+                                  -fx-background-color: #FBFBFF;"/>
+            </VBox>
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label text="Niveau" style="-fx-text-fill:#444466;-fx-font-size:12px;-fx-font-weight:bold;"/>
+                <ComboBox fx:id="levelField"
+                          style="-fx-background-radius: 10; -fx-border-radius: 10;
+                                 -fx-border-color: #E2E3EE; -fx-background-color: #FBFBFF;"/>
+            </VBox>
+        </HBox>
+
+        <Label text="Document PDF" style="-fx-text-fill:#444466;-fx-font-size:12px;-fx-font-weight:bold;"/>
+        <HBox spacing="8" alignment="CENTER_LEFT">
+            <TextField fx:id="pdfField" promptText="Aucun fichier sélectionné" HBox.hgrow="ALWAYS" editable="false"
+                       style="-fx-background-radius: 10; -fx-border-radius: 10;
+                              -fx-border-color: #E2E3EE; -fx-padding: 10 12;
+                              -fx-background-color: #FBFBFF;"/>
+            <Button fx:id="browsePdfButton" text="Parcourir…"
+                    style="-fx-background-color:#4A90D9;-fx-text-fill:white;-fx-font-weight:bold;
+                           -fx-background-radius:10;-fx-padding:10 14;-fx-cursor:hand;"/>
+        </HBox>
+    </VBox>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button fx:id="cancelButton" text="Annuler"
+                style="-fx-background-color: transparent; -fx-text-fill: #777799;
+                       -fx-font-weight: bold; -fx-background-radius: 10;
+                       -fx-padding: 10 14; -fx-cursor: hand;"/>
+        <Button fx:id="saveButton" text="Créer"
+                style="-fx-background-color:#E94560;-fx-text-fill:white;-fx-font-weight:bold;
+                       -fx-background-radius:10;-fx-padding:10 16;-fx-cursor:hand;"/>
+    </HBox>
+
+</VBox>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      alignment="CENTER" spacing="12" style="-fx-background-color: #F8F9FA; -fx-padding: 32;">
+    <Label text="Mes enfants"
+           style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #22223A;"/>
+    <Label text="Cette section sera complétée prochainement."
+           wrapText="true" maxWidth="400"
+           style="-fx-font-size: 13px; -fx-text-fill: #9999BB;"/>
+</VBox>

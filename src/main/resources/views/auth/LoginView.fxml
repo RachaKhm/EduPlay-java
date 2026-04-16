@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="dev.eduplay.controllers.LoginController"
+           style="-fx-background-color: #1A1A2E;">
+
+    <HBox>
+
+        <!-- ===== PANNEAU GAUCHE (branding) ===== -->
+        <VBox alignment="CENTER" prefWidth="420"
+              style="-fx-background-color: #12122A; -fx-padding: 60;">
+            <VBox spacing="20" alignment="CENTER">
+                <Label text="EduPlay"
+                       style="-fx-font-size: 42px; -fx-font-weight: bold; -fx-text-fill: #E94560;"/>
+                <Label text="Plateforme éducative"
+                       style="-fx-font-size: 16px; -fx-text-fill: #555577;"/>
+
+                <VBox spacing="0" style="-fx-padding: 40 0 0 0;">
+                    <HBox spacing="16" alignment="CENTER_LEFT">
+                        <Label text="●" style="-fx-text-fill: #E94560; -fx-font-size: 10px;"/>
+                        <Label text="Gestion multi-rôles"
+                               style="-fx-font-size: 13px; -fx-text-fill: #8888AA;"/>
+                    </HBox>
+                    <HBox spacing="16" alignment="CENTER_LEFT" style="-fx-padding: 12 0 0 0;">
+                        <Label text="●" style="-fx-text-fill: #E94560; -fx-font-size: 10px;"/>
+                        <Label text="Suivi des apprentissages"
+                               style="-fx-font-size: 13px; -fx-text-fill: #8888AA;"/>
+                    </HBox>
+                    <HBox spacing="16" alignment="CENTER_LEFT" style="-fx-padding: 12 0 0 0;">
+                        <Label text="●" style="-fx-text-fill: #E94560; -fx-font-size: 10px;"/>
+                        <Label text="Communication parent-enseignant"
+                               style="-fx-font-size: 13px; -fx-text-fill: #8888AA;"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </VBox>
+
+        <!-- ===== PANNEAU DROIT (formulaire) ===== -->
+        <VBox alignment="CENTER" HBox.hgrow="ALWAYS"
+              style="-fx-background-color: #F8F9FA; -fx-padding: 60 80;">
+
+            <VBox spacing="0" maxWidth="360">
+
+                <Label text="Connexion"
+                       style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #22223A;"/>
+                <Label text="Accédez à votre espace EduPlay"
+                       style="-fx-font-size: 13px; -fx-text-fill: #9999BB; -fx-padding: 6 0 32 0;"/>
+
+                <!-- Email -->
+                <Label text="Email"
+                       style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #555577;"/>
+                <TextField fx:id="emailField"
+                           promptText="votre@email.com"
+                           style="-fx-background-color: white;
+                                  -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                  -fx-background-radius: 8; -fx-border-radius: 8;
+                                  -fx-padding: 11 14; -fx-font-size: 14px;
+                                  -fx-margin: 6 0 0 0;"/>
+
+                <!-- Password -->
+                <Label text="Mot de passe"
+                       style="-fx-font-size: 12px; -fx-font-weight: bold;
+                              -fx-text-fill: #555577; -fx-padding: 16 0 0 0;"/>
+                <PasswordField fx:id="passwordField"
+                               promptText="••••••••"
+                               onAction="#handleLogin"
+                               style="-fx-background-color: white;
+                                      -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                      -fx-background-radius: 8; -fx-border-radius: 8;
+                                      -fx-padding: 11 14; -fx-font-size: 14px;
+                                      -fx-margin: 6 0 0 0;"/>
+
+                <!-- Erreur -->
+                <Label fx:id="errorLabel"
+                       text=""
+                       wrapText="true"
+                       style="-fx-font-size: 12px; -fx-text-fill: #E94560;
+                              -fx-padding: 10 0 0 0;"/>
+
+                <!-- Bouton connexion -->
+                <Button text="Se connecter"
+                        onAction="#handleLogin"
+                        maxWidth="Infinity"
+                        style="-fx-background-color: #E94560;
+                               -fx-text-fill: white; -fx-font-size: 14px;
+                               -fx-font-weight: bold; -fx-padding: 12;
+                               -fx-background-radius: 8; -fx-cursor: hand;
+                               -fx-border-width: 0;
+                               -fx-margin: 24 0 0 0;"/>
+
+                <!-- Version -->
+                <Label text="EduPlay v1.0 — ESPRIT 2026"
+                       style="-fx-font-size: 11px; -fx-text-fill: #BBBBCC;
+                              -fx-padding: 32 0 0 0; -fx-alignment: CENTER;"
+                       maxWidth="Infinity"/>
+            </VBox>
+        </VBox>
+
+    </HBox>
+</StackPane>
