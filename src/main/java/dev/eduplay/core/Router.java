@@ -1,6 +1,8 @@
 package dev.eduplay.core;
 
 import dev.eduplay.entities.EventRegistration;
+import dev.eduplay.entities.EventResource;
+import dev.eduplay.entities.SchoolEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -23,7 +25,6 @@ public class Router {
     private static final Map<String, String> routes    = new HashMap<>();
     private static Consumer<String> onRouteChange;
 
-    // ==================== AJOUT 1 : Map pour les paramètres temporaires ====================
     private static final Map<String, Object> routeParams = new HashMap<>();
 
     public static void init(StackPane contentArea) {
@@ -39,27 +40,29 @@ public class Router {
         routes.put("teachers",        "/views/admin/UserListView.fxml");
         routes.put("parents",         "/views/admin/UserListView.fxml");
 
-        // Enseignant — FXML à créer par le collègue module Cours
+        // Enseignant
         routes.put("teacher_dashboard", "/views/teacher/TeacherDashboardView.fxml");
         routes.put("teacher_courses",   "/views/teacher/CoursesView.fxml");
         routes.put("teacher_students",  "/views/teacher/StudentsView.fxml");
 
-        // Parent — FXML à créer par le collègue module Événements
+        // Parent
         routes.put("parent_dashboard", "/views/parent/ParentDashboardView.fxml");
         routes.put("parent_children",  "/views/parent/ChildrenView.fxml");
         routes.put("parent_events",    "/views/parent/EventsView.fxml");
 
-        // Enfant — FXML à créer par le collègue module Jeux/Cours
+        // Enfant
         routes.put("child_dashboard",  "/views/child/ChildDashboardView.fxml");
         routes.put("child_courses",    "/views/child/MyCoursesView.fxml");
         routes.put("child_games",      "/views/child/GamesView.fxml");
 
-        // ==================== AJOUT 2 : Routes pour Events ====================
+        // Routes pour Events
         routes.put("event_list",        "/views/event/event_list.fxml");
         routes.put("add_event",         "/views/event/add_event.fxml");
+        routes.put("edit_event",        "/views/event/edit_event.fxml");
         routes.put("event_detail",      "/views/event/event_detail.fxml");
         routes.put("event_resource",    "/views/event/event_resource.fxml");
         routes.put("add_resource",      "/views/event/add_resource.fxml");
+        routes.put("edit_resource",     "/views/event/edit_resource.fxml");
         routes.put("resource_detail",   "/views/event/resource_detail.fxml");
         routes.put("registration_list", "/views/registration/registration_list.fxml");
         routes.put("registration_detail", "/views/registration/registration_detail.fxml");
@@ -69,14 +72,18 @@ public class Router {
         routes.put("profile", "/views/shared/ProfileView.fxml");
     }
 
-    // ==================== AJOUT 3 : Méthode go avec paramètres ====================
     public static void go(String route, Object... params) {
+        System.out.println("=== Router.go avec paramètres ===");
+        System.out.println("Route: " + route);
+        for (int i = 0; i < params.length; i++) {
+            System.out.println("param" + i + ": " + params[i]);
+        }
+
         if (!routes.containsKey(route)) {
             System.err.println("[Router] Route inconnue : " + route);
             return;
         }
 
-        // Stocker les paramètres
         routeParams.clear();
         if (params != null && params.length > 0) {
             for (int i = 0; i < params.length; i++) {
@@ -105,15 +112,23 @@ public class Router {
                     FXMLLoader loader = new FXMLLoader(resource);
                     view = loader.load();
 
-                    // ==================== AJOUT 4 : Passer les paramètres au controller ====================
                     Object controller = loader.getController();
                     if (controller != null) {
-                        // Pour l'édition d'événement
-                        if ("add_event".equals(route) && routeParams.containsKey("param0")) {
+                        // Pour l'ajout d'événement (pas de paramètre)
+                        if ("add_event".equals(route)) {
+                            // Rien à faire, c'est un ajout
+                        }
+                        // Pour la modification d'événement
+                        if ("edit_event".equals(route) && routeParams.containsKey("param0")) {
                             try {
-                                controller.getClass().getMethod("setEventToModify", int.class)
-                                        .invoke(controller, (int) routeParams.get("param0"));
-                            } catch (Exception e) {}
+                                Object param = routeParams.get("param0");
+                                if (param instanceof SchoolEvent) {
+                                    controller.getClass().getMethod("setEvent", SchoolEvent.class)
+                                            .invoke(controller, param);
+                                }
+                            } catch (Exception e) {
+                                System.err.println("Erreur setEvent: " + e.getMessage());
+                            }
                         }
                         // Pour les détails d'événement
                         if ("event_detail".equals(route) && routeParams.containsKey("param0")) {
@@ -124,22 +139,96 @@ public class Router {
                                 System.err.println("Erreur setEventId: " + e.getMessage());
                             }
                         }
-                        // Pour les ressources
+                        // Pour event_resource
                         if ("event_resource".equals(route)) {
+                            if (routeParams.containsKey("param0")) {
+                                try {
+                                    controller.getClass().getMethod("setEventId", int.class, String.class)
+                                            .invoke(controller, (int) routeParams.get("param0"), (String) routeParams.get("param1"));
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setEventId event_resource: " + e.getMessage());
+                                }
+                            }
+                        }
+                        // Pour add_resource (AJOUT)
+                        if ("add_resource".equals(route)) {
                             if (routeParams.containsKey("param0")) {
                                 try {
                                     controller.getClass().getMethod("setEventId", int.class)
                                             .invoke(controller, (int) routeParams.get("param0"));
-                                } catch (Exception e) {}
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setEventId add_resource: " + e.getMessage());
+                                }
                             }
                             if (routeParams.containsKey("param1")) {
                                 try {
                                     controller.getClass().getMethod("setEventTitle", String.class)
                                             .invoke(controller, (String) routeParams.get("param1"));
-                                } catch (Exception e) {}
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setEventTitle add_resource: " + e.getMessage());
+                                }
                             }
                         }
-                        // ==================== AJOUT POUR LES INSCRIPTIONS ====================
+                        // Pour edit_resource (MODIFICATION)
+                        if ("edit_resource".equals(route)) {
+                            if (routeParams.containsKey("param0")) {
+                                try {
+                                    controller.getClass().getMethod("setEventId", int.class)
+                                            .invoke(controller, (int) routeParams.get("param0"));
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setEventId edit_resource: " + e.getMessage());
+                                }
+                            }
+                            if (routeParams.containsKey("param1")) {
+                                try {
+                                    controller.getClass().getMethod("setEventTitle", String.class)
+                                            .invoke(controller, (String) routeParams.get("param1"));
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setEventTitle edit_resource: " + e.getMessage());
+                                }
+                            }
+                            if (routeParams.containsKey("param2")) {
+                                try {
+                                    Object param = routeParams.get("param2");
+                                    if (param instanceof EventResource) {
+                                        controller.getClass().getMethod("setResource", EventResource.class)
+                                                .invoke(controller, param);
+                                    }
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setResource edit_resource: " + e.getMessage());
+                                }
+                            }
+                        }
+                        // Pour resource_detail
+                        if ("resource_detail".equals(route)) {
+                            if (routeParams.containsKey("param0")) {
+                                try {
+                                    controller.getClass().getMethod("setEventId", int.class)
+                                            .invoke(controller, (int) routeParams.get("param0"));
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setEventId resource_detail: " + e.getMessage());
+                                }
+                            }
+                            if (routeParams.containsKey("param1")) {
+                                try {
+                                    controller.getClass().getMethod("setEventTitle", String.class)
+                                            .invoke(controller, (String) routeParams.get("param1"));
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setEventTitle resource_detail: " + e.getMessage());
+                                }
+                            }
+                            if (routeParams.containsKey("param2")) {
+                                try {
+                                    Object param = routeParams.get("param2");
+                                    if (param instanceof EventResource) {
+                                        controller.getClass().getMethod("setResource", EventResource.class)
+                                                .invoke(controller, param);
+                                    }
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setResource resource_detail: " + e.getMessage());
+                                }
+                            }
+                        }
                         // Pour les détails d'inscription
                         if ("registration_detail".equals(route) && routeParams.containsKey("param0")) {
                             try {
@@ -155,7 +244,7 @@ public class Router {
                                 System.err.println("Erreur setRegistration: " + e.getMessage());
                             }
                         }
-// Pour la modification d'inscription
+                        // Pour la modification d'inscription
                         if ("edit_registration".equals(route) && routeParams.containsKey("param0")) {
                             try {
                                 Object param = routeParams.get("param0");
@@ -167,7 +256,7 @@ public class Router {
                                             .invoke(controller, param);
                                 }
                             } catch (Exception e) {
-                                System.err.println("Erreur setRegistration: " + e.getMessage());
+                                System.err.println("Erreur setRegistration edit: " + e.getMessage());
                             }
                         }
                     }
@@ -196,8 +285,8 @@ public class Router {
         return box;
     }
 
-    public static void reload(String route)                  { viewCache.remove(route); currentRoute = ""; go(route); }
-    public static String getCurrentRoute()                   { return currentRoute; }
+    public static void reload(String route) { viewCache.remove(route); currentRoute = ""; go(route); }
+    public static String getCurrentRoute() { return currentRoute; }
     public static void setOnRouteChange(Consumer<String> l) { onRouteChange = l; }
-    public static void clearCache()                         { viewCache.clear(); currentRoute = ""; routeParams.clear(); }
+    public static void clearCache() { viewCache.clear(); currentRoute = ""; routeParams.clear(); }
 }

@@ -40,18 +40,25 @@ public class ResourceDetailController {
 
     @FXML
     public void initialize() {
+        System.out.println("ResourceDetailController initialisé");
         service = new EventResourceService();
         setupActions();
     }
 
-    public void setEventInfo(int eventId, String eventTitle) {
+    public void setEventId(int eventId) {
         this.eventId = eventId;
+        System.out.println("setEventId reçu: " + eventId);
+    }
+
+    public void setEventTitle(String eventTitle) {
         this.eventTitle = eventTitle;
+        System.out.println("setEventTitle reçu: " + eventTitle);
         eventInfoLabel.setText("Événement : " + eventTitle);
     }
 
     public void setResource(EventResource resource) {
         this.currentResource = resource;
+        System.out.println("setResource reçu: " + resource.getTitle());
         displayResourceDetails();
     }
 
@@ -68,27 +75,17 @@ public class ResourceDetailController {
 
         titleValue.setText(currentResource.getTitle());
 
-        // Style du type avec badge
         String type = currentResource.getType();
         String typeStyle = "";
         switch (type) {
-            case "VIDEO":
-                typeStyle = "-fx-text-fill: #ef4444;";
-                break;
-            case "DOCUMENT":
-                typeStyle = "-fx-text-fill: #3b82f6;";
-                break;
-            case "LIEN":
-                typeStyle = "-fx-text-fill: #10b981;";
-                break;
-            case "CHECKLIST":
-                typeStyle = "-fx-text-fill: #f59e0b;";
-                break;
-            case "PLANNING":
-                typeStyle = "-fx-text-fill: #8b5cf6;";
-                break;
+            case "VIDEO": typeStyle = "-fx-text-fill: #ef4444; -fx-font-weight: bold;"; break;
+            case "DOCUMENT": typeStyle = "-fx-text-fill: #3b82f6; -fx-font-weight: bold;"; break;
+            case "LIEN": typeStyle = "-fx-text-fill: #10b981; -fx-font-weight: bold;"; break;
+            case "CHECKLIST": typeStyle = "-fx-text-fill: #f59e0b; -fx-font-weight: bold;"; break;
+            case "PLANNING": typeStyle = "-fx-text-fill: #8b5cf6; -fx-font-weight: bold;"; break;
+            default: typeStyle = "-fx-font-weight: bold;";
         }
-        typeValue.setStyle(typeStyle + " -fx-font-weight: bold; -fx-font-size: 14px;");
+        typeValue.setStyle(typeStyle);
         typeValue.setText(type);
 
         if (currentResource.getCreatedAt() != null) {
@@ -97,7 +94,6 @@ public class ResourceDetailController {
 
         contextValue.setText(currentResource.getContext() != null ? currentResource.getContext() : "Aucune description");
 
-        // Gestion de l'URL
         if (currentResource.getUrl() != null && !currentResource.getUrl().isEmpty()) {
             urlValue.setText(currentResource.getUrl());
             urlBox.setVisible(true);
@@ -107,7 +103,6 @@ public class ResourceDetailController {
             urlBox.setManaged(false);
         }
 
-        // Gestion du fichier
         if (currentResource.getFilePath() != null && !currentResource.getFilePath().isEmpty()) {
             filePathValue.setText(currentResource.getFilePath());
             filePathBox.setVisible(true);
@@ -148,15 +143,14 @@ public class ResourceDetailController {
         }
     }
 
-    // ✅ CORRIGÉ : Utilise Router au lieu de mainController
     private void goBack() {
         Router.go("event_resource", eventId, eventTitle);
     }
 
-    // ✅ CORRIGÉ : Utilise Router au lieu de mainController
+    // ✅ CORRIGÉ : Utilise edit_resource au lieu de add_resource
     private void goToEdit() {
         if (currentResource != null) {
-            Router.go("add_resource", eventId, eventTitle, currentResource);
+            Router.go("edit_resource", eventId, eventTitle, currentResource);
         }
     }
 

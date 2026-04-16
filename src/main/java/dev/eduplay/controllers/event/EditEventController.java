@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-public class AddEventController {
+public class EditEventController {
 
     @FXML private TextField titleField;
     @FXML private TextArea descriptionArea;
@@ -41,61 +41,50 @@ public class AddEventController {
     private SchoolEventService service;
     private File selectedImageFile;
     private static final String UPLOAD_DIR = "uploads/events/";
-    private Integer eventIdToModify = null;
-    private boolean isModification = false;
+    private SchoolEvent currentEvent;
 
     @FXML
     public void initialize() {
-        System.out.println("AddEventController initialisé");
+        System.out.println("EditEventController initialisé");
         service = new SchoolEventService();
+
         initHourMinuteCombos();
         setupDateValidation();
         setupActions();
         setupLiveValidation();
 
-        startDatePicker.setValue(LocalDate.now());
-        endDatePicker.setValue(LocalDate.now());
         startHourCombo.setValue(9);
         startMinuteCombo.setValue(0);
         endHourCombo.setValue(17);
         endMinuteCombo.setValue(0);
-
-        isModification = false;
-        submitBtn.setText("Créer l'événement");
     }
 
-    public void setEventToModify(int eventId) {
-        this.eventIdToModify = eventId;
-        this.isModification = true;
-        submitBtn.setText("Modifier l'événement");
+    public void setEvent(SchoolEvent event) {
+        this.currentEvent = event;
+        loadEventData();
+    }
 
-        System.out.println("Mode MODIFICATION - ID: " + eventId);
+    private void loadEventData() {
+        if (currentEvent == null) return;
 
-        try {
-            SchoolEvent event = service.recupererParId(eventId);
-            if (event != null) {
-                titleField.setText(event.getTitle());
-                descriptionArea.setText(event.getDescription());
-                locationField.setText(event.getLocation());
+        titleField.setText(currentEvent.getTitle());
+        descriptionArea.setText(currentEvent.getDescription());
+        locationField.setText(currentEvent.getLocation());
 
-                if (event.getStartDate() != null) {
-                    startDatePicker.setValue(event.getStartDate().toLocalDate());
-                    startHourCombo.setValue(event.getStartDate().getHour());
-                    startMinuteCombo.setValue(event.getStartDate().getMinute());
-                }
+        if (currentEvent.getStartDate() != null) {
+            startDatePicker.setValue(currentEvent.getStartDate().toLocalDate());
+            startHourCombo.setValue(currentEvent.getStartDate().getHour());
+            startMinuteCombo.setValue(currentEvent.getStartDate().getMinute());
+        }
 
-                if (event.getEndDate() != null) {
-                    endDatePicker.setValue(event.getEndDate().toLocalDate());
-                    endHourCombo.setValue(event.getEndDate().getHour());
-                    endMinuteCombo.setValue(event.getEndDate().getMinute());
-                }
+        if (currentEvent.getEndDate() != null) {
+            endDatePicker.setValue(currentEvent.getEndDate().toLocalDate());
+            endHourCombo.setValue(currentEvent.getEndDate().getHour());
+            endMinuteCombo.setValue(currentEvent.getEndDate().getMinute());
+        }
 
-                if (event.getImagePath() != null) {
-                    fileNameLabel.setText(event.getImagePath());
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (currentEvent.getImagePath() != null) {
+            fileNameLabel.setText(currentEvent.getImagePath());
         }
     }
 
@@ -141,8 +130,8 @@ public class AddEventController {
     }
 
     private void setupActions() {
-        submitBtn.setOnAction(e -> ajouterEvent());
-        cancelBtn.setOnAction(e -> fermerFormulaire());
+        submitBtn.setOnAction(e -> updateEvent());
+        cancelBtn.setOnAction(e -> goBack());
         browseImageBtn.setOnAction(e -> parcourirImage());
     }
 
@@ -207,9 +196,7 @@ public class AddEventController {
 
         if (file != null) {
             selectedImageFile = file;
-            if (fileNameLabel != null) {
-                fileNameLabel.setText(file.getName());
-            }
+            fileNameLabel.setText(file.getName());
             afficherApercuImage(file);
         }
     }
@@ -221,7 +208,6 @@ public class AddEventController {
             imageView.setPreserveRatio(true);
             imageView.setFitWidth(200);
             imageView.setFitHeight(120);
-
             imagePreviewPane.getChildren().clear();
             imagePreviewPane.getChildren().add(imageView);
             imagePreviewPane.setVisible(true);
@@ -235,19 +221,15 @@ public class AddEventController {
         if (selectedImageFile == null) return null;
 
         try {
-            File uploadDir = new File("uploads/events/");
+            File uploadDir = new File(UPLOAD_DIR);
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
 
             String originalName = selectedImageFile.getName();
             File destFile = new File(uploadDir, originalName);
-
             Files.copy(selectedImageFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-            System.out.println("✅ Image copiée: " + destFile.getAbsolutePath());
             return originalName;
-
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -261,9 +243,9 @@ public class AddEventController {
         return LocalDateTime.of(datePicker.getValue(), LocalTime.of(hourCombo.getValue(), minuteCombo.getValue()));
     }
 
-    private void ajouterEvent() {
+    private void updateEvent() {
         submitBtn.setDisable(true);
-        submitBtn.setText(isModification ? "Modification..." : "Enregistrement...");
+        submitBtn.setText("Mise à jour...");
 
         try {
             String title = titleField.getText();
@@ -326,33 +308,16 @@ public class AddEventController {
 
             String imagePath = copyImageToUploads();
 
-            if (isModification && eventIdToModify != null) {
-                SchoolEvent event = service.recupererParId(eventIdToModify);
-                if (event != null) {
-                    event.setTitle(title.trim());
-                    event.setDescription(description.trim());
-                    event.setStartDate(startDateTime);
-                    event.setEndDate(endDateTime);
-                    event.setLocation(location.trim());
-                    if (imagePath != null) event.setImagePath(imagePath);
-                    service.modifier(event);
-                    showSuccess("✅ Événement modifié avec succès !");
-                } else {
-                    showError("Événement non trouvé");
-                    resetButton();
-                    return;
-                }
-            } else {
-                SchoolEvent event = new SchoolEvent();
-                event.setTitle(title.trim());
-                event.setDescription(description.trim());
-                event.setStartDate(startDateTime);
-                event.setEndDate(endDateTime);
-                event.setLocation(location.trim());
-                event.setImagePath(imagePath);
-                service.ajouter(event);
-                showSuccess("✅ Événement créé avec succès !");
-            }
+            currentEvent.setTitle(title.trim());
+            currentEvent.setDescription(description.trim());
+            currentEvent.setStartDate(startDateTime);
+            currentEvent.setEndDate(endDateTime);
+            currentEvent.setLocation(location.trim());
+            if (imagePath != null) currentEvent.setImagePath(imagePath);
+
+            service.modifier(currentEvent);
+
+            showSuccess("✅ Événement modifié avec succès !");
 
             new Thread(() -> {
                 try {
@@ -378,10 +343,10 @@ public class AddEventController {
 
     private void resetButton() {
         submitBtn.setDisable(false);
-        submitBtn.setText(isModification ? "Modifier" : "Créer l'événement");
+        submitBtn.setText("✅ Mettre à jour");
     }
 
-    private void fermerFormulaire() {
+    private void goBack() {
         Router.go("event_list");
     }
 

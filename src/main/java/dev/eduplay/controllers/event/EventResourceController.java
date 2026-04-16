@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 
 public class EventResourceController {
 
-    // FXML COMPOSANTS
     @FXML private Button backBtn;
     @FXML private Button addResourceBtn;
+    @FXML private Button refreshBtn;
     @FXML private Label eventTitleLabel;
     @FXML private Label eventSubtitleLabel;
     @FXML private Label resourceCountLabel;
@@ -62,6 +62,15 @@ public class EventResourceController {
     }
 
     public void setEventId(int eventId, String eventTitle) {
+        System.out.println("=== EventResourceController.setEventId ===");
+        System.out.println("eventId reçu: " + eventId);
+        System.out.println("eventTitle reçu: " + eventTitle);
+
+        if (eventId <= 0) {
+            System.err.println("ERREUR: eventId invalide reçu");
+            return;
+        }
+
         this.eventId = eventId;
         this.eventTitle = eventTitle;
         eventTitleLabel.setText("📚 " + eventTitle);
@@ -114,6 +123,7 @@ public class EventResourceController {
     private void setupActions() {
         backBtn.setOnAction(e -> goBack());
         addResourceBtn.setOnAction(e -> goToAddResource());
+        refreshBtn.setOnAction(e -> refreshManually());
         prevBtn.setOnAction(e -> pagePrecedente());
         nextBtn.setOnAction(e -> pageSuivante());
     }
@@ -136,12 +146,20 @@ public class EventResourceController {
 
     private void loadResources() {
         try {
+            System.out.println("Chargement des ressources pour eventId: " + eventId);
             List<EventResource> resources = service.recupererParEventId(eventId);
             allResources.setAll(resources);
             filterResources();
         } catch (SQLException e) {
             showAlert("Erreur", "Impossible de charger les ressources: " + e.getMessage());
         }
+    }
+
+    @FXML
+    private void refreshManually() {
+        System.out.println("🔄 Rafraîchissement manuel des ressources...");
+        loadResources();
+        showAlert("Rafraîchissement", "✅ La liste des ressources a été actualisée");
     }
 
     private void filterResources() {
@@ -196,14 +214,17 @@ public class EventResourceController {
         }
     }
 
-    // ✅ CORRIGÉ : Utilise Router au lieu de mainController
     private void voirRessource(EventResource resource) {
+        System.out.println("=== voirRessource ===");
+        System.out.println("resource ID: " + resource.getId());
         Router.go("resource_detail", eventId, eventTitle, resource);
     }
 
-    // ✅ CORRIGÉ : Utilise Router au lieu de mainController
+    // ✅ MODIFICATION - utilise edit_resource.fxml
     private void modifierRessource(EventResource resource) {
-        Router.go("add_resource", eventId, eventTitle, resource);
+        System.out.println("=== modifierRessource ===");
+        System.out.println("resource ID: " + resource.getId());
+        Router.go("edit_resource", eventId, eventTitle, resource);
     }
 
     private void supprimerRessource(EventResource resource) {
@@ -223,13 +244,22 @@ public class EventResourceController {
         }
     }
 
-    // ✅ CORRIGÉ : Utilise Router au lieu de mainController
     private void goBack() {
         Router.go("event_detail", eventId);
     }
 
-    // ✅ CORRIGÉ : Utilise Router au lieu de mainController
+    // ✅ AJOUT - utilise add_resource.fxml
     private void goToAddResource() {
+        System.out.println("=== goToAddResource ===");
+        System.out.println("eventId: " + eventId);
+        System.out.println("eventTitle: " + eventTitle);
+
+        if (eventId <= 0) {
+            System.err.println("ERREUR: eventId invalide (" + eventId + ")");
+            showAlert("Erreur", "ID de l'événement invalide");
+            return;
+        }
+
         Router.go("add_resource", eventId, eventTitle);
     }
 
@@ -240,6 +270,4 @@ public class EventResourceController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
-
 }

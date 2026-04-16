@@ -45,13 +45,11 @@ public class EventDetailController {
         setupActions();
     }
 
-    // ✅ Méthode appelée par Router
     public void setEventId(int eventId) {
         System.out.println("=== setEventId appelé avec ID: " + eventId);
         try {
             SchoolEvent event = service.recupererParId(eventId);
             if (event != null) {
-                System.out.println("✅ Événement trouvé: " + event.getTitle());
                 setEvent(event);
             } else {
                 System.out.println("❌ Événement non trouvé pour l'ID: " + eventId);
@@ -66,8 +64,6 @@ public class EventDetailController {
         this.currentEvent = event;
         System.out.println("=== Affichage des détails ===");
         System.out.println("Titre: " + event.getTitle());
-        System.out.println("Lieu: " + event.getLocation());
-        System.out.println("Description: " + event.getDescription());
         displayEventDetails();
     }
 
@@ -96,93 +92,53 @@ public class EventDetailController {
             return;
         }
 
-        System.out.println("=== Affichage des détails de l'événement ===");
-
-        // Titre
         eventTitleLabel.setText("📌 " + currentEvent.getTitle());
         titleValue.setText(currentEvent.getTitle());
-
-        // Lieu
         locationValue.setText(currentEvent.getLocation() != null ? currentEvent.getLocation() : "Non spécifié");
 
-        // Dates
         if (currentEvent.getStartDate() != null) {
             startDateValue.setText(currentEvent.getStartDate().format(dateFormatter));
-        } else {
-            startDateValue.setText("Non spécifiée");
         }
-
         if (currentEvent.getEndDate() != null) {
             endDateValue.setText(currentEvent.getEndDate().format(dateFormatter));
-        } else {
-            endDateValue.setText("Non spécifiée");
         }
-
         if (currentEvent.getCreatedAt() != null) {
             createdAtValue.setText(currentEvent.getCreatedAt().format(dateFormatter));
-        } else {
-            createdAtValue.setText("Non spécifiée");
         }
 
-        // Description
         descriptionValue.setText(currentEvent.getDescription() != null ? currentEvent.getDescription() : "Aucune description");
 
-        // Latitude/Longitude
         if (currentEvent.getLatitude() != null && currentEvent.getLongitude() != null &&
                 !currentEvent.getLatitude().isEmpty() && !currentEvent.getLongitude().isEmpty()) {
             latitudeValue.setText(currentEvent.getLatitude());
             longitudeValue.setText(currentEvent.getLongitude());
             locationBox.setVisible(true);
             locationBox.setManaged(true);
-        } else {
-            locationBox.setVisible(false);
-            locationBox.setManaged(false);
         }
 
-        // Image
         loadImage();
     }
 
     private void loadImage() {
         String imagePath = currentEvent.getImagePath();
-        System.out.println("=== CHARGEMENT IMAGE ===");
-        System.out.println("ImagePath brut: " + imagePath);
-
-        if (imagePath == null || imagePath.isEmpty()) {
-            System.out.println("❌ Aucun chemin d'image");
-            showNoImage();
-            return;
-        }
-
-        // Essayer différents chemins possibles
-        String[] pathsToTry = {
-                imagePath,  // Chemin direct de la BD
-                "uploads/events/" + imagePath,  // Dossier uploads
-                "src/main/resources/uploads/events/" + imagePath,  // Dans resources
-                System.getProperty("user.dir") + "/uploads/events/" + imagePath,  // Depuis racine projet
-                "C:/Users/MSI/IdeaProjects/EduPlay-Java/uploads/events/" + imagePath  // Chemin absolu
-        };
-
-        for (String path : pathsToTry) {
-            File file = new File(path);
-            System.out.println("Test: " + file.getAbsolutePath() + " - Existe: " + file.exists());
-
-            if (file.exists()) {
+        if (imagePath != null && !imagePath.isEmpty()) {
+            File imageFile = new File("uploads/events/" + imagePath);
+            if (imageFile.exists()) {
                 try {
-                    Image image = new Image(file.toURI().toString());
+                    Image image = new Image(imageFile.toURI().toString());
                     eventImageView.setImage(image);
                     eventImageView.setVisible(true);
                     noImageLabel.setVisible(false);
-                    System.out.println("✅ IMAGE CHARGÉE depuis: " + path);
-                    return;
+                    System.out.println("✅ Image chargée!");
                 } catch (Exception e) {
-                    System.err.println("Erreur chargement: " + e.getMessage());
+                    showNoImage();
                 }
+            } else {
+                showNoImage();
             }
+        } else {
+            showNoImage();
         }
-
-        System.out.println("❌ IMAGE NON TROUVÉE après tous les essais");
-        showNoImage();
     }
 
     private void showNoImage() {
@@ -193,14 +149,13 @@ public class EventDetailController {
     }
 
     private void goBack() {
-        System.out.println("goBack() - Retour à la liste");
         Router.go("event_list");
     }
 
+    // ✅ CORRIGÉ : Utilise edit_event au lieu de add_event
     private void goToEdit() {
-        System.out.println("goToEdit() - ID: " + currentEvent.getId());
         if (currentEvent != null) {
-            Router.go("add_event", currentEvent.getId());
+            Router.go("edit_event", currentEvent);
         }
     }
 
@@ -223,7 +178,6 @@ public class EventDetailController {
     }
 
     private void goToResources() {
-        System.out.println("goToResources() - ID: " + currentEvent.getId() + ", Titre: " + currentEvent.getTitle());
         if (currentEvent != null) {
             Router.go("event_resource", currentEvent.getId(), currentEvent.getTitle());
         }

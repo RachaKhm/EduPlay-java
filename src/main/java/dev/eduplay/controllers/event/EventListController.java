@@ -33,6 +33,7 @@ public class EventListController {
     @FXML private Button prevBtn;
     @FXML private Button nextBtn;
     @FXML private Label pageInfo;
+    @FXML private Button refreshBtn;
 
     private SchoolEventService service;
     private ObservableList<SchoolEvent> originalEvents;
@@ -145,7 +146,7 @@ public class EventListController {
 
                     modifierBtn.setOnAction(e -> {
                         System.out.println("Modifier événement ID: " + event.getId());
-                        Router.go("add_event", event.getId());
+                        Router.go("edit_event", event);
                     });
 
                     supprimerBtn.setOnAction(e -> supprimerEvent(event));
@@ -161,6 +162,7 @@ public class EventListController {
             System.out.println("Nouvel événement");
             Router.go("add_event");
         });
+        refreshBtn.setOnAction(e -> refreshManually());
         prevBtn.setOnAction(e -> pagePrecedente());
         nextBtn.setOnAction(e -> pageSuivante());
     }
@@ -182,6 +184,7 @@ public class EventListController {
                     service.supprimerAvecRessources(event);
                     System.out.println("🗑️ Événement expiré supprimé: " + event.getTitle());
                 }
+                showAlert("Nettoyage automatique", expiredEvents.size() + " événement(s) expiré(s) supprimé(s)");
             }
         } catch (SQLException e) {
             System.err.println("Erreur lors du nettoyage: " + e.getMessage());
@@ -198,6 +201,13 @@ public class EventListController {
             showAlert("Erreur", "Impossible de charger les événements: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    @FXML
+    private void refreshManually() {
+        System.out.println("🔄 Rafraîchissement manuel des événements...");
+        loadEvents();
+        showAlert("Rafraîchissement", "✅ La liste des événements a été actualisée");
     }
 
     private void applyFiltersAndSort() {

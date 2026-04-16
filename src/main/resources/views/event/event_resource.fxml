@@ -39,6 +39,7 @@
                         <TextField fx:id="searchField" promptText="🔍 Rechercher par titre..." prefWidth="250" style="-fx-padding: 10 15; -fx-background-radius: 12; -fx-border-color: #e5e7eb; -fx-border-radius: 12;"/>
                         <ComboBox fx:id="typeFilterCombo" prefWidth="140" promptText="Tous les types" style="-fx-padding: 8; -fx-background-radius: 12; -fx-border-color: #e5e7eb; -fx-border-radius: 12;"/>
                         <Button fx:id="addResourceBtn" text="➕ Nouvelle ressource" style="-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 12; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(139,92,246,0.3), 5, 0, 0, 2);"/>
+                        <Button fx:id="refreshBtn" text="🔄 Rafraîchir" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 8; -fx-cursor: hand;"/>
                     </HBox>
                 </VBox>
 

@@ -2,7 +2,6 @@ package dev.eduplay.controllers.event;
 
 import dev.eduplay.core.Router;
 import dev.eduplay.entities.EventResource;
-import dev.eduplay.entities.SchoolEvent;
 import dev.eduplay.services.EventResourceService;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -12,10 +11,8 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.List;
 
-public class AddResourceController {
+public class EditResourceController {
 
     @FXML private Button cancelBtn;
     @FXML private Button submitBtn;
@@ -33,19 +30,14 @@ public class AddResourceController {
     private EventResourceService service;
     private int eventId;
     private String eventTitle;
-    private EventResource resourceToModify;
-    private boolean isModification = false;
+    private EventResource currentResource;
 
     @FXML
     public void initialize() {
-        System.out.println("AddResourceController initialisé");
+        System.out.println("EditResourceController initialisé");
         service = new EventResourceService();
 
         typeCombo.getItems().addAll("VIDEO", "DOCUMENT", "LIEN", "CHECKLIST", "PLANNING");
-        typeCombo.setValue("VIDEO");
-
-        isModification = false;
-        submitBtn.setText("✅ Enregistrer");
 
         setupActions();
         setupTypeListener();
@@ -54,7 +46,7 @@ public class AddResourceController {
 
     public void setEventId(int eventId) {
         this.eventId = eventId;
-        System.out.println("setEventId (int) reçu: " + eventId);
+        System.out.println("setEventId reçu: " + eventId);
     }
 
     public void setEventTitle(String eventTitle) {
@@ -63,29 +55,24 @@ public class AddResourceController {
         eventTitleLabel.setText("Pour : " + eventTitle);
     }
 
-    public void setEventId(int eventId, String eventTitle) {
-        this.eventId = eventId;
-        this.eventTitle = eventTitle;
-        System.out.println("setEventId (int, String) reçu: " + eventId + ", " + eventTitle);
-        eventTitleLabel.setText("Pour : " + eventTitle);
+    public void setResource(EventResource resource) {
+        this.currentResource = resource;
+        System.out.println("setResource reçu: " + resource.getTitle());
+        loadResourceData();
     }
 
-    public void setResourceToModify(EventResource resource) {
-        this.resourceToModify = resource;
-        this.isModification = true;
+    private void loadResourceData() {
+        if (currentResource == null) return;
 
-        eventTitleLabel.setText("✏️ Modification : " + resource.getTitle());
-        submitBtn.setText("✅ Mettre à jour");
+        typeCombo.setValue(currentResource.getType());
+        titleField.setText(currentResource.getTitle());
+        contextArea.setText(currentResource.getContext());
 
-        typeCombo.setValue(resource.getType());
-        titleField.setText(resource.getTitle());
-        contextArea.setText(resource.getContext());
-
-        if (resource.getFilePath() != null && !resource.getFilePath().isEmpty()) {
-            filePathField.setText(resource.getFilePath());
+        if (currentResource.getFilePath() != null && !currentResource.getFilePath().isEmpty()) {
+            filePathField.setText(currentResource.getFilePath());
         }
-        if (resource.getUrl() != null && !resource.getUrl().isEmpty()) {
-            urlField.setText(resource.getUrl());
+        if (currentResource.getUrl() != null && !currentResource.getUrl().isEmpty()) {
+            urlField.setText(currentResource.getUrl());
         }
 
         updateFieldsVisibility();
@@ -93,7 +80,7 @@ public class AddResourceController {
 
     private void setupActions() {
         cancelBtn.setOnAction(e -> goBack());
-        submitBtn.setOnAction(e -> saveResource());
+        submitBtn.setOnAction(e -> updateResource());
         browseFileBtn.setOnAction(e -> browseFile());
     }
 
@@ -128,43 +115,10 @@ public class AddResourceController {
                 titleField.setStyle("-fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 8;");
             }
         });
-
-        filePathField.textProperty().addListener((obs, old, newVal) -> {
-            if ("DOCUMENT".equals(typeCombo.getValue())) {
-                if (newVal == null || newVal.trim().isEmpty()) {
-                    filePathField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 8;");
-                } else {
-                    filePathField.setStyle("-fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 8;");
-                }
-            }
-        });
-
-        urlField.textProperty().addListener((obs, old, newVal) -> {
-            String type = typeCombo.getValue();
-            if ("LIEN".equals(type) || "VIDEO".equals(type)) {
-                if (newVal == null || newVal.trim().isEmpty()) {
-                    urlField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 8;");
-                } else if (!isValidUrl(newVal)) {
-                    urlField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 8;");
-                } else {
-                    urlField.setStyle("-fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 8;");
-                }
-            }
-        });
     }
 
     private boolean isValidUrl(String url) {
         return url.matches("^(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})([/\\w .-]*)*/?$");
-    }
-
-    private boolean resourceExists(String title, String type) throws SQLException {
-        List<EventResource> existingResources = service.recupererParEventId(eventId);
-        for (EventResource resource : existingResources) {
-            if (resource.getTitle().equalsIgnoreCase(title) && resource.getType().equals(type)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private void browseFile() {
@@ -186,18 +140,12 @@ public class AddResourceController {
         }
     }
 
-    private void saveResource() {
+    private void updateResource() {
         String type = typeCombo.getValue();
         String title = titleField.getText().trim();
         String context = contextArea.getText().trim();
         String filePath = filePathField.getText().trim();
         String url = urlField.getText().trim();
-
-        System.out.println("=== SAVE RESOURCE ===");
-        System.out.println("eventId: " + eventId);
-        System.out.println("type: " + type);
-        System.out.println("title: " + title);
-        System.out.println("isModification: " + isModification);
 
         if (type == null || type.isEmpty()) {
             showError("Veuillez sélectionner un type");
@@ -216,63 +164,16 @@ public class AddResourceController {
             return;
         }
 
-        if ("DOCUMENT".equals(type) && filePath.isEmpty()) {
-            showError("Veuillez sélectionner un fichier");
-            return;
-        }
-
-        if (("LIEN".equals(type) || "VIDEO".equals(type)) && url.isEmpty()) {
-            showError("Veuillez saisir une URL");
-            return;
-        }
-
-        if (("LIEN".equals(type) || "VIDEO".equals(type)) && !isValidUrl(url)) {
-            showError("Veuillez saisir une URL valide (ex: https://example.com)");
-            urlField.requestFocus();
-            return;
-        }
-
-        if (!isModification) {
-            try {
-                if (resourceExists(title, type)) {
-                    showError("❌ Une ressource avec le même titre et le même type existe déjà !");
-                    return;
-                }
-            } catch (SQLException e) {
-                System.err.println("Erreur lors de la vérification des doublons: " + e.getMessage());
-            }
-        }
-
         try {
-            if (isModification && resourceToModify != null) {
-                resourceToModify.setType(type);
-                resourceToModify.setTitle(title);
-                resourceToModify.setContext(context.isEmpty() ? null : context);
-                resourceToModify.setFilePath(filePath.isEmpty() ? null : filePath);
-                resourceToModify.setUrl(url.isEmpty() ? null : url);
-                service.modifier(resourceToModify);
-                showSuccess("✅ Ressource modifiée avec succès !");
-            } else {
-                if (eventId <= 0) {
-                    showError("Erreur: ID de l'événement invalide (" + eventId + ")");
-                    return;
-                }
+            currentResource.setType(type);
+            currentResource.setTitle(title);
+            currentResource.setContext(context.isEmpty() ? null : context);
+            currentResource.setFilePath(filePath.isEmpty() ? null : filePath);
+            currentResource.setUrl(url.isEmpty() ? null : url);
 
-                SchoolEvent event = new SchoolEvent();
-                event.setId(eventId);
+            service.modifier(currentResource);
 
-                EventResource resource = new EventResource();
-                resource.setType(type);
-                resource.setTitle(title);
-                resource.setContext(context.isEmpty() ? null : context);
-                resource.setFilePath(filePath.isEmpty() ? null : filePath);
-                resource.setUrl(url.isEmpty() ? null : url);
-                resource.setCreatedAt(LocalDateTime.now());
-                resource.setEvent(event);
-
-                service.ajouter(resource);
-                showSuccess("✅ Ressource ajoutée avec succès !");
-            }
+            showSuccess("✅ Ressource modifiée avec succès !");
 
             new Thread(() -> {
                 try {
@@ -286,9 +187,8 @@ public class AddResourceController {
             }).start();
 
         } catch (SQLException e) {
-            System.err.println("SQL Error: " + e.getMessage());
-            e.printStackTrace();
             showError("Erreur base de données: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
