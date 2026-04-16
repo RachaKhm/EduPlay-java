@@ -50,6 +50,8 @@ public class SidebarController {
     @FXML private Button btnUsers;
     @FXML private Button btnTeachers;
     @FXML private Button btnParents;
+    @FXML private Button btnLibrary;
+    @FXML private Button btnResource;
 
     /* ── Boutons Enseignant ────────────────────────────────── */
 
@@ -68,6 +70,7 @@ public class SidebarController {
     @FXML private Label  sectionChild;
     @FXML private Button btnMyCoursesChild;
     @FXML private Button btnGames;
+    @FXML private Button btnChildLibrary;
 
     /* ── Tous les boutons de navigation (pour reset actif) ─── */
 
@@ -80,10 +83,10 @@ public class SidebarController {
         // Collecte de tous les boutons nav
         allNavButtons = Arrays.asList(
                 btnDashboard,
-                btnUsers, btnTeachers, btnParents,
+                btnUsers, btnTeachers, btnParents, btnLibrary, btnResource,
                 btnCourses, btnStudents,
                 btnChildren, btnEvents,
-                btnMyCoursesChild, btnGames,
+                btnMyCoursesChild, btnGames, btnChildLibrary,
                 btnProfile
         );
 
@@ -111,12 +114,15 @@ public class SidebarController {
     @FXML private void showUsers()          { Router.go("users"); }
     @FXML private void showTeachers()       { Router.go("teachers"); }
     @FXML private void showParents()        { Router.go("parents"); }
+    @FXML private void showLibrary()        { Router.go("library_index"); }
+    @FXML private void showResource()       { Router.go("admin_resource_index"); }
     @FXML private void showCourses()        { Router.go("teacher_courses"); }
     @FXML private void showStudents()       { Router.go("teacher_students"); }
     @FXML private void showChildren()       { Router.go("parent_children"); }
     @FXML private void showEvents()         { Router.go("parent_events"); }
     @FXML private void showMyCoursesChild() { Router.go("child_courses"); }
     @FXML private void showGames()          { Router.go("child_games"); }
+    @FXML private void showChildLibrary()   { Router.go("child_library"); }
 
     @FXML
     private void handleLogout() {
@@ -140,15 +146,12 @@ public class SidebarController {
      * Utilise les classes CSS de app.css (.nav-btn / .nav-btn-active).
      */
     public void syncActiveButton(String route) {
-        // Reset tous les boutons visibles → état inactif
+        String activeStyle = "-fx-background-color: #EFF6FF; -fx-border-color: #DBEAFE; -fx-border-width: 1; -fx-border-radius: 12; -fx-background-radius: 12; -fx-text-fill: #2563EB; -fx-font-size: 14px; -fx-font-weight: bold; -fx-alignment: CENTER_LEFT; -fx-padding: 12 16; -fx-cursor: hand;";
+        String inactiveStyle = "-fx-background-color: transparent; -fx-text-fill: #374151; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT; -fx-padding: 12 16; -fx-background-radius: 12; -fx-cursor: hand;";
+
         allNavButtons.stream()
                 .filter(b -> b != null && b.isVisible())
-                .forEach(b -> {
-                    b.getStyleClass().remove("nav-btn-active");
-                    if (!b.getStyleClass().contains("nav-btn")) {
-                        b.getStyleClass().add("nav-btn");
-                    }
-                });
+                .forEach(b -> b.setStyle(inactiveStyle));
 
         // Identifier le bouton de la route active
         Button active = switch (route) {
@@ -165,16 +168,16 @@ public class SidebarController {
             case "parent_events"     -> btnEvents;
             case "child_courses"     -> btnMyCoursesChild;
             case "child_games"       -> btnGames;
+            case "library_index"     -> btnLibrary;
+            case "admin_resource_index" -> btnResource;
+            case "child_library"     -> btnChildLibrary;
             case "profile"           -> btnProfile;
             default                  -> btnDashboard;
         };
 
         // Appliquer la classe active
         if (active != null && active.isVisible()) {
-            active.getStyleClass().remove("nav-btn");
-            if (!active.getStyleClass().contains("nav-btn-active")) {
-                active.getStyleClass().add("nav-btn-active");
-            }
+            active.setStyle(activeStyle);
         }
     }
 
@@ -190,6 +193,8 @@ public class SidebarController {
         setVisible(btnUsers,     false);
         setVisible(btnTeachers,  false);
         setVisible(btnParents,   false);
+        setVisible(btnLibrary,   false);
+        setVisible(btnResource,  false);
 
         // Sections enseignant
         setVisible(sectionTeacher, false);
@@ -205,6 +210,7 @@ public class SidebarController {
         setVisible(sectionChild,      false);
         setVisible(btnMyCoursesChild, false);
         setVisible(btnGames,          false);
+        setVisible(btnChildLibrary,   false);
     }
 
     /**
@@ -219,6 +225,8 @@ public class SidebarController {
                 setVisible(btnUsers,    true);
                 setVisible(btnTeachers, true);
                 setVisible(btnParents,  true);
+                setVisible(btnLibrary,  true);
+                setVisible(btnResource, true);
             }
             case "enseignant" -> {
                 setVisible(sectionTeacher, true);
@@ -234,6 +242,7 @@ public class SidebarController {
                 setVisible(sectionChild,      true);
                 setVisible(btnMyCoursesChild, true);
                 setVisible(btnGames,          true);
+                setVisible(btnChildLibrary,   true);
             }
         }
     }

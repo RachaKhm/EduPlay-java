@@ -22,6 +22,8 @@ public class Router {
     private static final Map<String, String> routes    = new HashMap<>();
     private static Consumer<String> onRouteChange;
 
+    private static Object transitData;
+
     public static void init(StackPane contentArea) {
         container = contentArea;
         viewCache.clear();
@@ -34,6 +36,13 @@ public class Router {
         routes.put("users",           "/views/admin/UserListView.fxml");
         routes.put("teachers",        "/views/admin/UserListView.fxml");
         routes.put("parents",         "/views/admin/UserListView.fxml");
+        routes.put("library_index",   "/LibraryIndex.fxml");
+        routes.put("library_form",    "/LibraryForm.fxml");
+        routes.put("library_show",    "/LibraryShow.fxml");
+        routes.put("admin_resource_index", "/ResourceIndex.fxml");
+        routes.put("admin_resource_form",  "/ResourceForm.fxml");
+        routes.put("admin_resource_show",  "/ResourceShow.fxml");
+        routes.put("book_requests_index",  "/BookRequestIndex.fxml");
 
         // Enseignant — FXML à créer par le collègue module Cours
         routes.put("teacher_dashboard", "/views/teacher/TeacherDashboardView.fxml");
@@ -49,6 +58,8 @@ public class Router {
         routes.put("child_dashboard",  "/views/child/ChildDashboardView.fxml");
         routes.put("child_courses",    "/views/child/MyCoursesView.fxml");
         routes.put("child_games",      "/views/child/GamesView.fxml");
+        routes.put("child_resources",  "/views/child/ChildResourceView.fxml");
+        routes.put("child_libraries",  "/views/child/ChildLibraryView.fxml");
 
         // Commun
         routes.put("profile", "/views/shared/ProfileView.fxml");
@@ -96,6 +107,18 @@ public class Router {
     }
 
     public static void reload(String route)                  { viewCache.remove(route); currentRoute = ""; go(route); }
+
+    public static void reload(String route, Object data) {
+        transitData = data;
+        reload(route);
+    }
+
+    public static Object getTransitData() {
+        Object data = transitData;
+        transitData = null; // consommer la donnée
+        return data;
+    }
+
     public static String getCurrentRoute()                   { return currentRoute; }
     public static void setOnRouteChange(Consumer<String> l) { onRouteChange = l; }
     public static void clearCache()                         { viewCache.clear(); currentRoute = ""; }

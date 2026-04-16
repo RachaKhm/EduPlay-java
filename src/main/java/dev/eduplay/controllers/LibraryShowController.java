@@ -77,64 +77,58 @@ public class LibraryShowController {
         themeDetailLabel.setText(library.getTheme());
     }
 
+    @FXML
+    public void initialize() {
+        Object data = dev.eduplay.core.Router.getTransitData();
+        if (data instanceof Library) {
+            setLibrary((Library) data);
+        }
+    }
+
     @FXML private void handleRetour() {
-        navigateTo("/LibraryIndex.fxml", 1050, 700, "EduPlay");
+        dev.eduplay.core.Router.reload("library_index");
     }
 
     @FXML private void handleModifier() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/LibraryForm.fxml"));
-            Parent root = loader.load();
-            LibraryFormController ctrl = loader.getController();
-            ctrl.setLibraryToEdit(library);
-            ctrl.setOnSaveCallback(() -> {});
-            Stage stage = (Stage) libraryNameLabel.getScene().getWindow();
-            stage.setScene(new Scene(root, 860, 680));
-            stage.setTitle("Modifier : " + library.getName());
-        } catch (IOException e) { e.printStackTrace(); }
+        dev.eduplay.core.Router.reload("library_form", library);
     }
 
     @FXML private void handleSupprimer() {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmation");
-        confirm.setHeaderText("Supprimer \u00ab " + library.getName() + " \u00bb ?");
-        confirm.setContentText("Cette action est irr\u00e9versible.");
+        confirm.setTitle("Confirmer la suppression");
+        confirm.setHeaderText(null);
+        confirm.setContentText("Voulez-vous vraiment supprimer cette bibliotheque ?");
+
         confirm.showAndWait().ifPresent(r -> {
             if (r == ButtonType.OK) {
                 service.supprimer(library.getId());
-                navigateTo("/LibraryIndex.fxml", 1050, 700, "EduPlay");
+                dev.eduplay.core.Router.reload("library_index");
             }
         });
-    }
-
-    private void navigateTo(String fxml, double w, double h, String title) {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource(fxml));
-            Stage stage = (Stage) libraryNameLabel.getScene().getWindow();
-            stage.setScene(new Scene(root, w, h));
-            stage.setTitle(title);
-        } catch (IOException e) { e.printStackTrace(); }
     }
 
     private String getLevelBadgeStyle(String level) {
         String base = "-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;" +
                 "-fx-background-radius: 20; -fx-padding: 5 14;";
-        return switch (level == null ? "" : level.toLowerCase()) {
-            case "beginner"     -> base + "-fx-background-color: linear-gradient(to right,#10b981,#059669);";
-            case "intermediate" -> base + "-fx-background-color: linear-gradient(to right,#f59e0b,#d97706);";
-            case "advanced"     -> base + "-fx-background-color: linear-gradient(to right,#ef4444,#dc2626);";
-            case "expert"       -> base + "-fx-background-color: linear-gradient(to right,#ec4899,#be185d);";
-            default -> base + "-fx-background-color: linear-gradient(to right,#6366f1,#4f46e5);";
-        };
+
+        switch (level.toLowerCase()) {
+            case "debutant":
+                return base + "-fx-background-color: #22c55e;";
+            case "intermediaire":
+                return base + "-fx-background-color: #f59e0b;";
+            case "avance":
+                return base + "-fx-background-color: #ef4444;";
+            default:
+                return base + "-fx-background-color: #64748b;";
+        }
     }
 
     private String getLevelEmoji(String level) {
-        return switch (level == null ? "" : level.toLowerCase()) {
-            case "beginner"     -> "\ud83c\udf31";
-            case "intermediate" -> "\u26a1";
-            case "advanced"     -> "\ud83d\udd25";
-            case "expert"       -> "\ud83c\udfc6";
-            default -> "\ud83d\udcda";
-        };
+        switch (level.toLowerCase()) {
+            case "debutant": return "🌱";
+            case "intermediaire": return "⭐";
+            case "avance": return "🔥";
+            default: return "📌";
+        }
     }
 }

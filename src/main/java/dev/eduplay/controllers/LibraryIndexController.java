@@ -197,52 +197,30 @@ public class LibraryIndexController {
     @FXML private void handleNouveauLivre() { ouvrirFormulaire(null); }
 
     private void ouvrirDetail(Library lib) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/LibraryShow.fxml"));
-            Parent root = loader.load();
-            LibraryShowController ctrl = loader.getController();
-            ctrl.setLibrary(lib);
-            Stage stage = (Stage) cardsPane.getScene().getWindow();
-            stage.setScene(new Scene(root, 1050, 700));
-            stage.setTitle("Details : " + lib.getName());
-        } catch (IOException e) { e.printStackTrace(); }
+        dev.eduplay.core.Router.reload("library_show", lib);
     }
 
     private void ouvrirFormulaire(Library lib) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/LibraryForm.fxml"));
-            Parent root = loader.load();
-            LibraryFormController ctrl = loader.getController();
-            ctrl.setLibraryToEdit(lib);
-            ctrl.setOnSaveCallback(this::loadLibraries);
-            Stage stage = (Stage) cardsPane.getScene().getWindow();
-            stage.setScene(new Scene(root, 860, 680));
-            stage.setTitle(lib == null ? "Nouvelle Bibliotheque" : "Modifier : " + lib.getName());
-        } catch (IOException e) { e.printStackTrace(); }
+        dev.eduplay.core.Router.reload("library_form", lib);
     }
 
     private void handleSupprimer(Library lib) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmation de suppression");
-        confirm.setHeaderText("Supprimer \u00ab " + lib.getName() + " \u00bb ?");
-        confirm.setContentText("Cette action est irreversible.");
-        confirm.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
+        confirm.setTitle("Confirmer la suppression");
+        confirm.setHeaderText(null);
+        confirm.setContentText("Voulez-vous vraiment supprimer la bibliotheque '" + lib.getName() + "' ?");
+
+        confirm.showAndWait().ifPresent(r -> {
+            if (r == ButtonType.OK) {
                 service.supprimer(lib.getId());
-                showFlash("\u2705  \u00ab " + lib.getName() + " \u00bb supprimee avec succes !", true);
+                showFlash("Bibliotheque supprimee !");
                 loadLibraries();
             }
         });
     }
 
-    public void showFlash(String message, boolean success) {
-        flashLabel.setText(message);
-        flashBox.setStyle(success
-                ? "-fx-background-color: #f0fdf4; -fx-padding: 10 32; -fx-border-color: #22c55e; -fx-border-width: 0 0 0 4;"
-                : "-fx-background-color: #fef2f2; -fx-padding: 10 32; -fx-border-color: #ef4444; -fx-border-width: 0 0 0 4;");
-        flashLabel.setStyle(success
-                ? "-fx-text-fill: #15803d; -fx-font-weight: bold; -fx-font-size: 13px;"
-                : "-fx-text-fill: #dc2626; -fx-font-weight: bold; -fx-font-size: 13px;");
+    private void showFlash(String msg) {
+        flashLabel.setText(msg);
         flashBox.setVisible(true);
         flashBox.setManaged(true);
         new Thread(() -> {

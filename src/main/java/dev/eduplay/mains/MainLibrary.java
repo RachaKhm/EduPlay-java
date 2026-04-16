@@ -10,7 +10,7 @@ public class MainLibrary {
 
         // Ajouter
         service.ajouter(new Library(
-                "Math Book",
+                "Math Resource",
                 "Livre pour apprendre les maths",
                 "image.jpg",
                 6,

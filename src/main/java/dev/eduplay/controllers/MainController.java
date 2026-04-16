@@ -53,23 +53,30 @@ public class MainController {
     @FXML
     public void initialize() {
         // Afficher le nom de l'utilisateur connecté dans la topbar
+        if (topbarTitle != null) {
+            topbarTitle.setText(AppContext.getFullName());
+        }
         if (topbarUser != null) {
-            topbarUser.setText(AppContext.getFullName()
-                    + "  ·  " + capitalize(AppContext.getRole()));
+            topbarUser.setText(buildInitials(AppContext.getFullName()));
         }
 
         // Enregistrer le contentArea dans le Router
         Router.init(contentArea);
 
-        // Synchroniser le titre de la topbar à chaque changement de route
+        // Synchroniser le titre de la topbar (Non utilisé visuellement mais permet d'éviter l'erreur)
         Router.setOnRouteChange(route -> {
-            if (topbarTitle != null) {
-                topbarTitle.setText(ROUTE_TITLES.getOrDefault(route, "EduPlay"));
-            }
+            // (Optionnel) Ici on pourrait mettre à jour un autre label si l'on voulait afficher la route
         });
 
         // Naviguer vers la page d'accueil du rôle connecté
         Router.go(AppContext.getDefaultRoute());
+    }
+
+    private String buildInitials(String fullName) {
+        if (fullName == null || fullName.isBlank()) return "?";
+        String[] parts = fullName.trim().split("\\s+");
+        if (parts.length == 1) return parts[0].substring(0, 1).toUpperCase();
+        return (parts[0].substring(0, 1) + parts[parts.length - 1].substring(0, 1)).toUpperCase();
     }
 
     /* ── Utilitaires ───────────────────────────────────────── */

@@ -67,6 +67,13 @@ public class LibraryFormController {
         maxAgeField.textProperty().addListener((o, ov, nv) -> hideError(maxAgeError));
         levelCombo.valueProperty().addListener((o, ov, nv) -> hideError(levelError));
         themeField.textProperty().addListener((o, ov, nv) -> hideError(themeError));
+
+        Object data = dev.eduplay.core.Router.getTransitData();
+        if (data instanceof Library) {
+            setLibraryToEdit((Library) data);
+        } else {
+            setLibraryToEdit(null);
+        }
     }
 
     public void setLibraryToEdit(Library lib) {
@@ -249,11 +256,6 @@ public class LibraryFormController {
     }
 
     private void retourIndex() {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/LibraryIndex.fxml"));
-            Stage stage = (Stage) nameField.getScene().getWindow();
-            stage.setScene(new Scene(root, 1050, 700));
-            stage.setTitle("EduPlay – Gestion des Bibliothèques");
-        } catch (IOException e) { e.printStackTrace(); }
+        dev.eduplay.core.Router.reload("library_index");
     }
 }

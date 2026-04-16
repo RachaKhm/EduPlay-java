@@ -157,4 +157,14 @@ public class UserService implements IGeneralService<User> {
 
         return user;
     }
+
+    public User findByLogin(String login) {
+        return recuperer().stream()
+                .filter(u ->
+                        login.equalsIgnoreCase(u.getEmail()) ||
+                                login.equalsIgnoreCase(u.getUsername())
+                )
+                .findFirst()
+                .orElse(null);
+    }
 }
