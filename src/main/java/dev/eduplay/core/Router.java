@@ -58,8 +58,7 @@ public class Router {
         routes.put("child_dashboard",  "/views/child/ChildDashboardView.fxml");
         routes.put("child_courses",    "/views/child/MyCoursesView.fxml");
         routes.put("child_games",      "/views/child/GamesView.fxml");
-        routes.put("child_resources",  "/views/child/ChildResourceView.fxml");
-        routes.put("child_libraries",  "/views/child/ChildLibraryView.fxml");
+
 
         // Commun
         routes.put("profile", "/views/shared/ProfileView.fxml");
