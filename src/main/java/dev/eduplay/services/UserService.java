@@ -157,4 +157,24 @@ public class UserService implements IGeneralService<User> {
 
         return user;
     }
+
+    public User findByLogin(String login) {
+        String query = "SELECT * FROM user WHERE email = ? OR username = ?";
+
+        try (PreparedStatement ps = cnx.prepareStatement(query)) {
+            ps.setString(1, login.trim());
+            ps.setString(2, login.trim());
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return extractUserFromResultSet(rs);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }
