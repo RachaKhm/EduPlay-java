@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane fitToWidth="true" style="-fx-background-color: #F8FAFC;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.eduplay.controllers.ResourceFormController">
+    <VBox spacing="24" style="-fx-padding: 30; -fx-background-color: transparent;">
+        
+        <!-- HEADER AVEC BACKGROUND GRADIENT -->
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: linear-gradient(to right, #6366F1, #9333EA); -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);">
+            <VBox HBox.hgrow="ALWAYS" spacing="8">
+                <Label fx:id="lblHeaderTitle" text="📄 Nouvelle ressource" style="-fx-text-fill: white; -fx-font-size: 32px; -fx-font-weight: bold;"/>
+                <Label fx:id="lblHeaderDesc" text="Créez une nouvelle ressource pour votre collection" style="-fx-text-fill: #E0E7FF; -fx-font-size: 16px;"/>
+            </VBox>
+        </HBox>
+
+        <!-- CONTENU DU FORMULAIRE -->
+        <VBox spacing="20" style="-fx-background-color: white; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 32; -fx-border-color: #F8FAFC; -fx-border-width: 2; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+            
+            <HBox spacing="16" alignment="CENTER_LEFT" style="-fx-padding: 0 0 16 0; -fx-border-color: #F1F5F9; -fx-border-width: 0 0 1 0;">
+                <StackPane style="-fx-background-color: #EEF2FF; -fx-background-radius: 12; -fx-min-width: 48; -fx-min-height: 48;">
+                    <Label text="✏️" style="-fx-font-size: 24px;"/>
+                </StackPane>
+                <Label text="Remplissez les champs ci-dessous pour gérer la ressource" style="-fx-text-fill: #64748B; -fx-font-size: 16px;"/>
+            </HBox>
+
+            <!-- Titre & Auteur -->
+            <VBox spacing="16">
+                <!-- Titre -->
+                <VBox spacing="8">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Titre de la ressource" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label text="Requis" style="-fx-background-color: #FEF2F2; -fx-text-fill: #EF4444; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 2 6; -fx-background-radius: 4;"/>
+                    </HBox>
+                    <TextField fx:id="txtTitle" promptText="Ex: Le Petit Prince" style="-fx-padding: 12; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white;"/>
+                </VBox>
+                
+                <!-- Auteur -->
+                <VBox spacing="8">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Auteur" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label text="Requis" style="-fx-background-color: #FEF2F2; -fx-text-fill: #EF4444; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 2 6; -fx-background-radius: 4;"/>
+                    </HBox>
+                    <TextField fx:id="txtAuthor" promptText="Ex: Antoine de Saint-Exupéry" style="-fx-padding: 12; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white;"/>
+                </VBox>
+            </VBox>
+
+            <!-- Résumé -->
+            <VBox spacing="8">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Résumé" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                </HBox>
+                <TextArea fx:id="txtSummary" promptText="Résumez brièvement..." prefRowCount="4" wrapText="true" style="-fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12;"/>
+            </VBox>
+
+            <!-- Type, Langue, Âges, Library -->
+            <VBox spacing="16">
+                <!-- Bibliothèque -->
+                <VBox spacing="8">
+                    <Label text="Bibliothèque associée" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                    <ComboBox fx:id="comboLibrary" promptText="Sélectionner une bibliothèque..." style="-fx-padding: 6; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white; -fx-pref-width: Infinity;"/>
+                </VBox>
+                
+                <HBox spacing="24">
+                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                        <Label text="Type" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                        <ComboBox fx:id="comboType" promptText="Sélectionner..." style="-fx-padding: 6; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white; -fx-pref-width: 250;"/>
+                    </VBox>
+                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                        <Label text="Langue" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                        <ComboBox fx:id="comboLang" promptText="Sélectionner..." style="-fx-padding: 6; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white; -fx-pref-width: 250;"/>
+                    </VBox>
+                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                        <Label text="Âge min" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                        <TextField fx:id="txtMinAge" promptText="3" style="-fx-padding: 12; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white;"/>
+                    </VBox>
+                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                        <Label text="Âge max" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                        <TextField fx:id="txtMaxAge" promptText="12" style="-fx-padding: 12; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Fichiers -->
+            <HBox spacing="24">
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Image de couverture" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                    <Button fx:id="btnImage" text="Parcourir l'image..." onAction="#handleChooseImage" style="-fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-text-fill: #475569; -fx-padding: 10 20; -fx-background-radius: 8; -fx-border-radius: 8; -fx-cursor: hand;"/>
+                    <Label fx:id="lblImageName" text="Aucun fichier sélectionné" style="-fx-text-fill: #94A3B8; -fx-font-size: 12px;"/>
+                </VBox>
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Document PDF" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                    <Button fx:id="btnPdf" text="Parcourir le PDF..." onAction="#handleChoosePdf" style="-fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-text-fill: #475569; -fx-padding: 10 20; -fx-background-radius: 8; -fx-border-radius: 8; -fx-cursor: hand;"/>
+                    <Label fx:id="lblPdfName" text="Aucun fichier sélectionné" style="-fx-text-fill: #94A3B8; -fx-font-size: 12px;"/>
+                </VBox>
+            </HBox>
+            
+            <HBox spacing="16" alignment="CENTER_RIGHT" style="-fx-padding: 24 0 0 0; -fx-border-color: #F1F5F9; -fx-border-width: 1 0 0 0;">
+                <Button text="Annuler" onAction="#handleCancel" style="-fx-background-color: white; -fx-border-color: #CBD5E1; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 12; -fx-border-radius: 12; -fx-cursor: hand;"/>
+                <Button text="Enregistrer" onAction="#handleSave" style="-fx-background-color: linear-gradient(to right, #6366F1, #9333EA); -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 32; -fx-background-radius: 12; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(99,102,241,0.4), 10, 0, 0, 4);"/>
+            </HBox>
+
+        </VBox>
+    </VBox>
+</ScrollPane>

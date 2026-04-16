@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.eduplay.controllers.ChildLibraryController">
+    <VBox spacing="20" style="-fx-padding: 30; -fx-background-color: #F8FAFC;">
+        
+        <!-- Header Section -->
+        <VBox alignment="CENTER" spacing="10" style="-fx-padding: 0 0 20 0;">
+            <Label text="Explorez Votre Bibliothèque" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #111418;"/>
+            <Label text="Découvrez des histoires incroyables, résolvez des énigmes mathématiques et explorez les merveilles de l'univers !" style="-fx-font-size: 16px; -fx-text-fill: #64748B; -fx-wrap-text: true; -fx-text-alignment: CENTER;" maxWidth="600"/>
+            
+            <HBox alignment="CENTER" style="-fx-padding: 10 0 0 0;">
+                <TextField fx:id="searchField" promptText="Que voulez-vous apprendre aujourd'hui ?" style="-fx-pref-width: 500; -fx-pref-height: 48; -fx-font-size: 16px; -fx-background-radius: 24; -fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 24; -fx-padding: 0 20;"/>
+            </HBox>
+        </VBox>
+
+        <!-- Library Grid Container -->
+        <FlowPane fx:id="libraryContainer" hgap="24" vgap="24" alignment="TOP_CENTER" />
+
+    </VBox>
+</ScrollPane>

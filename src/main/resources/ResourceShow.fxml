@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+
+<ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.eduplay.controllers.ResourceShowController">
+    <VBox spacing="24" style="-fx-padding: 30; -fx-background-color: #F8FAFC;">
+        
+        <!-- HEADER AVEC BACKGROUND GRADIENT -->
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: linear-gradient(to right, #6366F1, #9333EA); -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);">
+            <VBox HBox.hgrow="ALWAYS" spacing="12">
+                <Label fx:id="lblTitle" text="Titre de la ressource" style="-fx-text-fill: white; -fx-font-size: 36px; -fx-font-weight: bold;"/>
+                <Label fx:id="lblAuthor" text="par Auteur" style="-fx-text-fill: #E0E7FF; -fx-font-size: 18px;"/>
+                
+                <HBox spacing="12">
+                    <Label fx:id="lblType" text="Type" style="-fx-background-color: white; -fx-text-fill: #6366F1; -fx-font-weight: bold; -fx-padding: 6 16; -fx-background-radius: 20;"/>
+                    <Label fx:id="lblLang" text="🌍 Fr" style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 16; -fx-background-radius: 20;"/>
+                </HBox>
+            </VBox>
+            
+            <VBox spacing="12">
+                <Button text="⬅ Retour" onAction="#goBack" style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 12; -fx-cursor: hand; -fx-border-color: rgba(255,255,255,0.3); -fx-border-radius: 12;"/>
+                <Button text="✏️ Éditer" onAction="#editResource" style="-fx-background-color: white; -fx-text-fill: #4F46E5; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 12; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);"/>
+            </VBox>
+        </HBox>
+
+        <HBox spacing="24">
+            
+            <!-- COLONNE GAUCHE (Image + Infos Méta) -->
+            <VBox spacing="24" minWidth="300">
+                <VBox style="-fx-background-color: white; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 24; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+                    <Label text="Visuel" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                    <Region prefHeight="16"/>
+                    <VBox fx:id="imgContainer" prefHeight="250" style="-fx-background-color: #F8FAFC; -fx-background-radius: 12; -fx-alignment: center;">
+                        <Label fx:id="imgPlaceholder" text="📘" style="-fx-font-size: 64px;"/>
+                    </VBox>
+                </VBox>
+                
+                <!-- TRANCHE D'AGE -->
+                <VBox style="-fx-background-color: linear-gradient(to right, #EFF6FF, #EEF2FF); -fx-border-color: #DBEAFE; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 24;">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Label text="📊 Tranche d'âge" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1E40AF;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label text="🤖 IA" style="-fx-background-color: #DBEAFE; -fx-text-fill: #1D4ED8; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 4 8; -fx-background-radius: 8;"/>
+                    </HBox>
+                    <Label fx:id="lblAge" text="0 - 0 ans" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1E3A8A; -fx-padding: 12 0 0 0;"/>
+                </VBox>
+            </VBox>
+
+            <!-- COLONNE DROITE (Résumé, Actions) -->
+            <VBox spacing="24" HBox.hgrow="ALWAYS">
+                <VBox style="-fx-background-color: white; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <StackPane style="-fx-background-color: #DBEAFE; -fx-background-radius: 12; -fx-min-width: 48; -fx-min-height: 48;">
+                            <Label text="📝" style="-fx-font-size: 24px;"/>
+                        </StackPane>
+                        <Label text="Résumé" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                    </HBox>
+                    <Region prefHeight="16"/>
+                    <Label fx:id="lblSummary" text="Aucun résumé disponible." style="-fx-font-size: 16px; -fx-text-fill: #475569; -fx-wrap-text: true;"/>
+                </VBox>
+
+                <VBox style="-fx-background-color: white; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <StackPane style="-fx-background-color: #FEE2E2; -fx-background-radius: 12; -fx-min-width: 48; -fx-min-height: 48;">
+                            <Label text="📄" style="-fx-font-size: 24px;"/>
+                        </StackPane>
+                        <Label text="Fichier PDF" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                    </HBox>
+                    <Region prefHeight="16"/>
+                    <Button fx:id="btnDownloadPdf" text="Télécharger le PDF" onAction="#downloadPdf" style="-fx-background-color: linear-gradient(to right, #EF4444, #F97316); -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 12; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(239,68,68,0.4), 10, 0, 0, 4);"/>
+                </VBox>
+            </VBox>
+            
+        </HBox>
+    </VBox>
+</ScrollPane>
