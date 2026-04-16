@@ -24,20 +24,31 @@ public class LoginController {
 
     @FXML
     public void handleLogin() {
-        String email    = emailField.getText().trim();
+
+        String login = emailField.getText().trim();
         String password = passwordField.getText();
         errorLabel.setText("");
 
-        if (email.isBlank() || password.isBlank()) { showError("Remplissez tous les champs."); return; }
+        if (login.isBlank() || password.isBlank()) {
+            showError("Remplissez tous les champs.");
+            return;
+        }
 
-        User user = userService.recuperer().stream()
-                .filter(u -> email.equalsIgnoreCase(u.getEmail()))
-                .findFirst().orElse(null);
+        User user = userService.findByLogin(login);
 
-        if (user == null)         { showError("Email introuvable.");         return; }
-        if (!user.isActive())     { showError("Compte désactivé.");          return; }
+        if (user == null) {
+            showError("Identifiants incorrects.");
+            return;
+        }
+
+        if (!user.isActive()) {
+            showError("Compte désactivé.");
+            return;
+        }
+
         if (!PasswordUtils.checkPassword(password, user.getPassword())) {
-            showError("Mot de passe incorrect."); return;
+            showError("Mot de passe incorrect.");
+            return;
         }
 
         AppContext.setCurrentUser(user);
