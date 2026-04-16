@@ -61,6 +61,18 @@
                 onAction="#showParents"
                 styleClass="nav-btn"/>
 
+        <Label text="ÉVÉNEMENTS" styleClass="sidebar-section-label"/>
+
+        <Button fx:id="btnEventList"
+                text="  Liste des événements"
+                onAction="#showEventList"
+                styleClass="nav-btn"/>
+
+        <Button fx:id="btnRegistrationList"
+                text="  Inscriptions"
+                onAction="#showRegistrationList"
+                styleClass="nav-btn"/>
+
         <!-- ── ENSEIGNANT ── -->
         <Label text="COURS" styleClass="sidebar-section-label" fx:id="sectionTeacher"/>
 
@@ -99,6 +111,9 @@
                 text="  Jeux"
                 onAction="#showGames"
                 styleClass="nav-btn"/>
+
+
+
 
         <!-- Séparateur + Profil (commun) -->
         <VBox style="-fx-padding: 8 0 0 0;

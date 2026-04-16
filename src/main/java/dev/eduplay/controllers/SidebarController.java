@@ -51,6 +51,9 @@ public class SidebarController {
     @FXML private Button btnTeachers;
     @FXML private Button btnParents;
 
+    @FXML private Button btnEventList;
+    @FXML private Button btnRegistrationList;
+
     /* ── Boutons Enseignant ────────────────────────────────── */
 
     @FXML private Label  sectionTeacher;
@@ -117,6 +120,8 @@ public class SidebarController {
     @FXML private void showEvents()         { Router.go("parent_events"); }
     @FXML private void showMyCoursesChild() { Router.go("child_courses"); }
     @FXML private void showGames()          { Router.go("child_games"); }
+    @FXML private void showEventList() {Router.go("event_list");}
+    @FXML private void showRegistrationList() {Router.go("registration_list");}
 
     @FXML
     private void handleLogout() {
@@ -166,6 +171,8 @@ public class SidebarController {
             case "child_courses"     -> btnMyCoursesChild;
             case "child_games"       -> btnGames;
             case "profile"           -> btnProfile;
+            case "event_list"        -> btnEventList;
+            case "registration_list" -> btnRegistrationList;
             default                  -> btnDashboard;
         };
 
