@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.UserFormController"
+            prefWidth="560"
+            style="-fx-background-color: #F8F9FA;">
+
+    <!-- ===== HEADER ===== -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="12"
+              style="-fx-background-color: #1A1A2E;
+                     -fx-padding: 18 24 18 24;">
+            <Label fx:id="formTitle"
+                   text="Nouvel utilisateur"
+                   style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <HBox HBox.hgrow="ALWAYS"/>
+            <Button text="✕"
+                    onAction="#closeForm"
+                    style="-fx-background-color: transparent;
+                           -fx-text-fill: #AAAACC; -fx-font-size: 16px;
+                           -fx-cursor: hand; -fx-border-width: 0;"/>
+        </HBox>
+    </top>
+
+    <!-- ===== FORMULAIRE ===== -->
+    <center>
+        <ScrollPane fitToWidth="true"
+                    style="-fx-background-color: transparent;
+                           -fx-background: transparent;">
+            <VBox spacing="0"
+                  style="-fx-padding: 24 32 24 32; -fx-background-color: #F8F9FA;">
+
+                <!-- Section : Informations générales -->
+                <Label text="Informations générales"
+                       style="-fx-font-size: 11px; -fx-font-weight: bold;
+                              -fx-text-fill: #9999BB; -fx-padding: 0 0 10 0;
+                              letter-spacing: 1;"/>
+
+                <HBox spacing="16">
+                    <!-- Prénom -->
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Prénom *"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <TextField fx:id="firstNameField"
+                                   promptText="ex: Mohamed"
+                                   style="-fx-background-color: white;
+                                          -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                          -fx-background-radius: 6; -fx-border-radius: 6;
+                                          -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                    </VBox>
+                    <!-- Nom -->
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Nom *"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <TextField fx:id="lastNameField"
+                                   promptText="ex: Ben Ali"
+                                   style="-fx-background-color: white;
+                                          -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                          -fx-background-radius: 6; -fx-border-radius: 6;
+                                          -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="6" style="-fx-padding: 14 0 0 0;">
+                    <Label text="Email"
+                           style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                    <TextField fx:id="emailField"
+                               promptText="ex: user@eduplay.com"
+                               style="-fx-background-color: white;
+                                      -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                      -fx-background-radius: 6; -fx-border-radius: 6;
+                                      -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                </VBox>
+
+                <HBox spacing="16" style="-fx-padding: 14 0 0 0;">
+                    <!-- Téléphone -->
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Téléphone"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <TextField fx:id="telephoneField"
+                                   promptText="ex: +216 XX XXX XXX"
+                                   style="-fx-background-color: white;
+                                          -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                          -fx-background-radius: 6; -fx-border-radius: 6;
+                                          -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                    </VBox>
+                    <!-- Type -->
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Type *"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <ComboBox fx:id="typeCombo"
+                                  maxWidth="Infinity"
+                                  style="-fx-font-size: 13px;"/>
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="6" style="-fx-padding: 14 0 0 0;">
+                    <Label text="Adresse"
+                           style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                    <TextField fx:id="adresseField"
+                               promptText="ex: 12 rue de la République, Tunis"
+                               style="-fx-background-color: white;
+                                      -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                      -fx-background-radius: 6; -fx-border-radius: 6;
+                                      -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                </VBox>
+
+                <!-- Séparateur -->
+                <Separator style="-fx-padding: 18 0 0 0;"/>
+
+                <!-- Section : Sécurité -->
+                <Label text="Sécurité"
+                       style="-fx-font-size: 11px; -fx-font-weight: bold;
+                              -fx-text-fill: #9999BB; -fx-padding: 16 0 10 0;"/>
+
+                <VBox spacing="6">
+                    <Label text="Mot de passe *"
+                           style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                    <PasswordField fx:id="passwordField"
+                                   promptText="Minimum 8 caractères"
+                                   style="-fx-background-color: white;
+                                          -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                          -fx-background-radius: 6; -fx-border-radius: 6;
+                                          -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                </VBox>
+
+                <CheckBox fx:id="activeCheck"
+                          text="Compte actif"
+                          selected="true"
+                          style="-fx-font-size: 13px; -fx-text-fill: #444466;
+                                 -fx-padding: 14 0 0 0;"/>
+
+                <!-- Séparateur -->
+                <Separator style="-fx-padding: 18 0 0 0;"/>
+
+                <!-- ===== CHAMPS CONDITIONNELS ===== -->
+
+                <!-- Spécialité (enseignant uniquement) -->
+                <HBox fx:id="specialiteBox" spacing="0" managed="false" visible="false"
+                      style="-fx-padding: 16 0 0 0;">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Spécialité  —  Enseignant"
+                               style="-fx-font-size: 11px; -fx-font-weight: bold;
+                                      -fx-text-fill: #9999BB; -fx-padding: 0 0 4 0;"/>
+                        <TextField fx:id="specialiteField"
+                                   promptText="ex: Mathématiques, Informatique..."
+                                   style="-fx-background-color: white;
+                                          -fx-border-color: #B0C8F0; -fx-border-width: 1;
+                                          -fx-background-radius: 6; -fx-border-radius: 6;
+                                          -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Niveau + Username (enfant uniquement) -->
+                <HBox fx:id="niveauBox" spacing="16" managed="false" visible="false"
+                      style="-fx-padding: 16 0 0 0;">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Niveau  —  Enfant"
+                               style="-fx-font-size: 11px; -fx-font-weight: bold;
+                                      -fx-text-fill: #9999BB; -fx-padding: 0 0 4 0;"/>
+                        <ComboBox fx:id="niveauCombo" maxWidth="Infinity"
+                                  style="-fx-font-size: 13px;"/>
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Nom d'utilisateur"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <TextField fx:id="usernameField"
+                                   promptText="ex: zied123"
+                                   style="-fx-background-color: white;
+                                          -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                          -fx-background-radius: 6; -fx-border-radius: 6;
+                                          -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Feedback message -->
+                <Label fx:id="feedbackLabel"
+                       text=""
+                       wrapText="true"
+                       style="-fx-font-size: 12px; -fx-padding: 12 0 0 0;
+                              -fx-text-fill: #2E9E6E;"/>
+
+                <!-- Boutons -->
+                <HBox spacing="12" alignment="CENTER_RIGHT"
+                      style="-fx-padding: 24 0 0 0;">
+                    <Button text="Annuler"
+                            onAction="#closeForm"
+                            style="-fx-background-color: white;
+                                   -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                   -fx-border-radius: 6; -fx-background-radius: 6;
+                                   -fx-text-fill: #555577; -fx-font-size: 13px;
+                                   -fx-padding: 9 20; -fx-cursor: hand;"/>
+                    <Button text="Enregistrer"
+                            onAction="#saveUser"
+                            style="-fx-background-color: #E94560;
+                                   -fx-text-fill: white; -fx-font-size: 13px;
+                                   -fx-font-weight: bold; -fx-padding: 9 24;
+                                   -fx-background-radius: 6; -fx-cursor: hand;"/>
+                </HBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

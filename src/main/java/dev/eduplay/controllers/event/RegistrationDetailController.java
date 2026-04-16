@@ -1,10 +1,13 @@
 package dev.eduplay.controllers.event;
 
-import dev.eduplay.controllers.event.MainController;
+import dev.eduplay.core.Router;
 import dev.eduplay.entities.EventRegistration;
+import dev.eduplay.services.EventRegistrationService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+
+import java.sql.SQLException;
 
 public class RegistrationDetailController {
 
@@ -15,7 +18,6 @@ public class RegistrationDetailController {
     @FXML private Label eventValue;
     @FXML private Label phoneValue;
 
-    private MainController mainController;
     private EventRegistration currentRegistration;
 
     @FXML
@@ -23,28 +25,41 @@ public class RegistrationDetailController {
         backBtn.setOnAction(e -> goBack());
     }
 
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
+
+    public void setRegistrationId(int registrationId) {
+        try {
+            EventRegistrationService service = new EventRegistrationService();
+            EventRegistration registration = service.recupererParId(registrationId);
+            if (registration != null) {
+                setRegistration(registration);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setRegistration(EventRegistration registration) {
         this.currentRegistration = registration;
-        childNameValue.setText("👶 Enfant: " + registration.getChildFullName());
-        statusValue.setText("🏷️ Statut: " + registration.getStatus());
-        registeredAtValue.setText("📅 Inscrit le: " + registration.getRegisteredAt());
+        displayRegistrationInfo();
+    }
 
-        if (registration.getEvent() != null) {
-            eventValue.setText("📌 Événement: " + registration.getEvent().getTitle());
+    private void displayRegistrationInfo() {
+        if (currentRegistration == null) return;
+
+        childNameValue.setText("👶 Enfant: " + currentRegistration.getChildFullName());
+        statusValue.setText("🏷️ Statut: " + currentRegistration.getStatus());
+        registeredAtValue.setText("📅 Inscrit le: " + currentRegistration.getRegisteredAt());
+
+        if (currentRegistration.getEvent() != null) {
+            eventValue.setText("📌 Événement: " + currentRegistration.getEvent().getTitle());
         }
 
-        if (registration.getParentPhone() != null) {
-            phoneValue.setText("📞 Téléphone: " + registration.getParentPhone());
+        if (currentRegistration.getParentPhone() != null) {
+            phoneValue.setText("📞 Téléphone: " + currentRegistration.getParentPhone());
         }
     }
 
     private void goBack() {
-        if (mainController != null) {
-            mainController.goToRegistrationList();
-        }
+        Router.go("registration_list");
     }
 }

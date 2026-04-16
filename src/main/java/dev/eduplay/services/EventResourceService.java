@@ -26,13 +26,21 @@ public class EventResourceService implements IGeneralService<EventResource> {
         ps.setString(3, resource.getContext());
         ps.setString(4, resource.getFilePath());
         ps.setString(5, resource.getUrl());
-        ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
-        ps.setInt(7, resource.getEvent().getId());
+        ps.setTimestamp(6, Timestamp.valueOf(resource.getCreatedAt()));
+
+        // Vérifier que event n'est pas null
+        if (resource.getEvent() == null) {
+            throw new SQLException("L'événement associé à la ressource est null");
+        }
+
+        ps.setInt(7, resource.getEvent().getId());  // ← Récupère l'ID depuis l'objet Event
+        System.out.println("Insertion ressource avec event_id: " + resource.getEvent().getId());
+
         ps.executeUpdate();
     }
 
     // ✅ MÉTHODE AJOUTER AVEC eventId DIRECTEMENT (pour AddResourceController)
-    public void ajouter(EventResource resource, int eventId) throws SQLException {
+    public void ajouterAvecID(EventResource resource, int eventId) throws SQLException {
         String sql = "INSERT INTO event_resource(type, title, context, file_path, url, created_at, event_id) VALUES(?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement ps = cn.prepareStatement(sql);
         ps.setString(1, resource.getType());

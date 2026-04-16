@@ -1,7 +1,8 @@
 package dev.eduplay.controllers.event;
 
-import dev.eduplay.controllers.event.MainController;
+import dev.eduplay.core.Router;
 import dev.eduplay.entities.EventResource;
+import dev.eduplay.entities.SchoolEvent;
 import dev.eduplay.services.EventResourceService;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -29,7 +30,6 @@ public class AddResourceController {
     @FXML private Label messageLabel;
 
     private EventResourceService service;
-    private MainController mainController;
     private int eventId;
     private String eventTitle;
     private EventResource resourceToModify;
@@ -49,13 +49,12 @@ public class AddResourceController {
         setupValidation();
     }
 
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
-    }
-
     public void setEventId(int eventId, String eventTitle) {
         this.eventId = eventId;
         this.eventTitle = eventTitle;
+        System.out.println("=== AddResourceController - setEventId ===");
+        System.out.println("eventId reçu: " + eventId);
+        System.out.println("eventTitle reçu: " + eventTitle);
         eventTitleLabel.setText("Pour : " + eventTitle);
     }
 
@@ -179,7 +178,12 @@ public class AddResourceController {
         String filePath = filePathField.getText().trim();
         String url = urlField.getText().trim();
 
-        // ✅ CONTROLES DE SAISIE
+        System.out.println("=== SAVE RESOURCE ===");
+        System.out.println("eventId: " + eventId);
+        System.out.println("type: " + type);
+        System.out.println("title: " + title);
+
+        // Validation
         if (type == null || type.isEmpty()) {
             showError("Veuillez sélectionner un type");
             return;
@@ -207,12 +211,6 @@ public class AddResourceController {
             return;
         }
 
-        if (("LIEN".equals(type) || "VIDEO".equals(type)) && !isValidUrl(url)) {
-            showError("Veuillez saisir une URL valide (ex: https://example.com)");
-            urlField.requestFocus();
-            return;
-        }
-
         try {
             if (isModification && resourceToModify != null) {
                 // MODIFICATION
@@ -225,6 +223,15 @@ public class AddResourceController {
                 showSuccess("✅ Ressource modifiée avec succès !");
             } else {
                 // AJOUT
+                if (eventId <= 0) {
+                    showError("Erreur: ID de l'événement invalide (" + eventId + ")");
+                    return;
+                }
+
+                // Créer un objet SchoolEvent avec l'ID
+                SchoolEvent event = new SchoolEvent();
+                event.setId(eventId);
+
                 EventResource resource = new EventResource();
                 resource.setType(type);
                 resource.setTitle(title);
@@ -232,18 +239,18 @@ public class AddResourceController {
                 resource.setFilePath(filePath.isEmpty() ? null : filePath);
                 resource.setUrl(url.isEmpty() ? null : url);
                 resource.setCreatedAt(LocalDateTime.now());
-                service.ajouter(resource, eventId);
+                resource.setEvent(event);
+
+                // Appeler la méthode ajouter
+                service.ajouter(resource);
                 showSuccess("✅ Ressource ajoutée avec succès !");
             }
 
-            // Retour à la liste après succès
             new Thread(() -> {
                 try {
                     Thread.sleep(1500);
                     javafx.application.Platform.runLater(() -> {
-                        if (mainController != null) {
-                            mainController.goToEventResources(eventId, eventTitle);
-                        }
+                        Router.go("event_resource", eventId, eventTitle);
                     });
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
@@ -251,15 +258,15 @@ public class AddResourceController {
             }).start();
 
         } catch (SQLException e) {
-            showError("Erreur base de données: " + e.getMessage());
+            System.err.println("SQL Error: " + e.getMessage());
             e.printStackTrace();
+            showError("Erreur base de données: " + e.getMessage());
         }
     }
 
+    // ✅ CORRIGÉ : Utilise Router au lieu de mainController
     private void goBack() {
-        if (mainController != null) {
-            mainController.goToEventResources(eventId, eventTitle);
-        }
+        Router.go("event_resource", eventId, eventTitle);
     }
 
     private void showError(String message) {

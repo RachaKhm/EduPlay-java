@@ -1,6 +1,6 @@
 package dev.eduplay.controllers.event;
 
-import dev.eduplay.controllers.event.MainController;
+import dev.eduplay.core.Router;
 import dev.eduplay.entities.EventResource;
 import dev.eduplay.services.EventResourceService;
 import javafx.fxml.FXML;
@@ -33,7 +33,6 @@ public class ResourceDetailController {
     @FXML private VBox filePathBox;
 
     private EventResourceService service;
-    private MainController mainController;
     private int eventId;
     private String eventTitle;
     private EventResource currentResource;
@@ -43,10 +42,6 @@ public class ResourceDetailController {
     public void initialize() {
         service = new EventResourceService();
         setupActions();
-    }
-
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
     }
 
     public void setEventInfo(int eventId, String eventTitle) {
@@ -153,15 +148,15 @@ public class ResourceDetailController {
         }
     }
 
+    // ✅ CORRIGÉ : Utilise Router au lieu de mainController
     private void goBack() {
-        if (mainController != null) {
-            mainController.goToEventResources(eventId, eventTitle);
-        }
+        Router.go("event_resource", eventId, eventTitle);
     }
 
+    // ✅ CORRIGÉ : Utilise Router au lieu de mainController
     private void goToEdit() {
-        if (mainController != null && currentResource != null) {
-            mainController.goToEditResource(eventId, eventTitle, currentResource);
+        if (currentResource != null) {
+            Router.go("add_resource", eventId, eventTitle, currentResource);
         }
     }
 

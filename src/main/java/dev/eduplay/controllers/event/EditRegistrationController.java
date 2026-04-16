@@ -1,5 +1,6 @@
 package dev.eduplay.controllers.event;
 
+import dev.eduplay.core.Router;
 import dev.eduplay.entities.EventRegistration;
 import dev.eduplay.services.EventRegistrationService;
 import javafx.fxml.FXML;
@@ -19,48 +20,65 @@ public class EditRegistrationController {
     @FXML private Label messageLabel;
 
     private EventRegistrationService service;
-    private MainController mainController;
+    private int eventId;
+    private String eventTitle;
     private EventRegistration currentRegistration;
 
     @FXML
     public void initialize() {
+        System.out.println("EditRegistrationController initialisé");
         service = new EventRegistrationService();
 
-        // Initialiser le ComboBox
         statusCombo.getItems().clear();
         statusCombo.getItems().addAll("PENDING", "APPROVED", "REJECTED");
 
         setupActions();
     }
 
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
+    // ✅ Méthode appelée par Router avec l'ID
+    public void setRegistrationId(int registrationId) {
+        System.out.println("=== setRegistrationId appelé avec ID: " + registrationId);
+        try {
+            EventRegistration registration = service.recupererParId(registrationId);
+            if (registration != null) {
+                setRegistration(registration);
+            } else {
+                System.out.println("❌ Inscription non trouvée");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
+    // ✅ Méthode appelée par Router avec l'objet
     public void setRegistration(EventRegistration registration) {
         this.currentRegistration = registration;
         displayRegistrationInfo();
     }
 
     private void displayRegistrationInfo() {
-        if (currentRegistration == null) return;
+        if (currentRegistration == null) {
+            System.out.println("❌ currentRegistration est null");
+            return;
+        }
+
+        System.out.println("=== Affichage des infos de l'inscription ===");
+        System.out.println("ID: " + currentRegistration.getId());
+        System.out.println("Enfant: " + currentRegistration.getChildFullName());
+        System.out.println("Statut: " + currentRegistration.getStatus());
 
         childNameLabel.setText(currentRegistration.getChildFullName());
         parentPhoneLabel.setText(currentRegistration.getParentPhone() != null ? currentRegistration.getParentPhone() : "Non spécifié");
 
         if (currentRegistration.getEvent() != null) {
             eventTitleLabel.setText(currentRegistration.getEvent().getTitle());
+            this.eventId = currentRegistration.getEvent().getId();
+            this.eventTitle = currentRegistration.getEvent().getTitle();
         }
 
         statusCombo.setValue(currentRegistration.getStatus());
         notesArea.setText(currentRegistration.getNotes() != null ? currentRegistration.getNotes() : "");
         subtitleLabel.setText("Modification pour : " + currentRegistration.getChildFullName());
-
-        // Log pour déboguer
-        System.out.println("=== Modification inscription ===");
-        System.out.println("ID: " + currentRegistration.getId());
-        System.out.println("Statut actuel: " + currentRegistration.getStatus());
-        System.out.println("Notes actuelles: " + currentRegistration.getNotes());
     }
 
     private void setupActions() {
@@ -82,24 +100,19 @@ public class EditRegistrationController {
         }
 
         try {
-            // Mettre à jour l'objet
             currentRegistration.setStatus(newStatus);
             currentRegistration.setNotes(newNotes.isEmpty() ? null : newNotes);
 
-            // ✅ Appel à la nouvelle méthode modifierBack()
             service.modifierBack(currentRegistration);
 
             System.out.println("✅ Modification réussie !");
             showSuccess("✅ Inscription modifiée avec succès !");
 
-            // Retour à la liste après succès
             new Thread(() -> {
                 try {
                     Thread.sleep(1500);
                     javafx.application.Platform.runLater(() -> {
-                        if (mainController != null) {
-                            mainController.goToRegistrationList();
-                        }
+                        Router.go("registration_list");
                     });
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
@@ -114,9 +127,7 @@ public class EditRegistrationController {
     }
 
     private void goBack() {
-        if (mainController != null) {
-            mainController.goToRegistrationList();
-        }
+        Router.go("registration_list");
     }
 
     private void showError(String message) {
@@ -124,7 +135,6 @@ public class EditRegistrationController {
         messageLabel.setStyle("-fx-text-fill: #e74c3c;");
         messageLabel.setVisible(true);
 
-        // Faire disparaître le message après 3 secondes
         new Thread(() -> {
             try {
                 Thread.sleep(3000);

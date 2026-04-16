@@ -104,11 +104,7 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         ps.setInt(3, registration.getId());
 
         int rowsAffected = ps.executeUpdate();
-        System.out.println("Lignes mises à jour (back-office): " + rowsAffected);
-
-        if (rowsAffected == 0) {
-            throw new SQLException("Aucune inscription trouvée avec l'ID: " + registration.getId());
-        }
+        System.out.println("Lignes mises à jour: " + rowsAffected);
     }
 
     @Override
@@ -150,4 +146,37 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         }
         return registrations;
     }
+
+    /**
+     * Récupère une inscription par son ID
+     * @param id L'ID de l'inscription
+     * @return L'inscription correspondante ou null
+     */
+    public EventRegistration recupererParId(int id) throws SQLException {
+        String sql = "SELECT er.*, se.title as event_title FROM event_registration er " +
+                "LEFT JOIN school_event se ON er.event_id = se.id " +
+                "WHERE er.id = ?";
+        PreparedStatement pst = cn.prepareStatement(sql);
+        pst.setInt(1, id);
+        ResultSet rs = pst.executeQuery();
+
+        if (rs.next()) {
+            EventRegistration registration = new EventRegistration();
+            registration.setId(rs.getInt("id"));
+            registration.setStatus(rs.getString("status"));
+            registration.setRegisteredAt(rs.getTimestamp("registered_at").toLocalDateTime());
+            registration.setChildFullName(rs.getString("child_full_name"));
+            registration.setParentPhone(rs.getString("parent_phone"));
+            registration.setNotes(rs.getString("notes"));
+
+            SchoolEvent event = new SchoolEvent();
+            event.setId(rs.getInt("event_id"));
+            event.setTitle(rs.getString("event_title"));
+            registration.setEvent(event);
+
+            return registration;
+        }
+        return null;
+    }
+
 }

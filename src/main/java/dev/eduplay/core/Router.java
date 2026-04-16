@@ -1,0 +1,203 @@
+package dev.eduplay.core;
+
+import dev.eduplay.entities.EventRegistration;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+
+public class Router {
+
+    private static StackPane container;
+    private static String currentRoute = "";
+
+    private static final Map<String, Node>   viewCache = new HashMap<>();
+    private static final Map<String, String> routes    = new HashMap<>();
+    private static Consumer<String> onRouteChange;
+
+    // ==================== AJOUT 1 : Map pour les paramètres temporaires ====================
+    private static final Map<String, Object> routeParams = new HashMap<>();
+
+    public static void init(StackPane contentArea) {
+        container = contentArea;
+        viewCache.clear();
+        registerRoutes();
+    }
+
+    private static void registerRoutes() {
+        // Admin
+        routes.put("admin_dashboard", "/views/admin/DashboardView.fxml");
+        routes.put("users",           "/views/admin/UserListView.fxml");
+        routes.put("teachers",        "/views/admin/UserListView.fxml");
+        routes.put("parents",         "/views/admin/UserListView.fxml");
+
+        // Enseignant — FXML à créer par le collègue module Cours
+        routes.put("teacher_dashboard", "/views/teacher/TeacherDashboardView.fxml");
+        routes.put("teacher_courses",   "/views/teacher/CoursesView.fxml");
+        routes.put("teacher_students",  "/views/teacher/StudentsView.fxml");
+
+        // Parent — FXML à créer par le collègue module Événements
+        routes.put("parent_dashboard", "/views/parent/ParentDashboardView.fxml");
+        routes.put("parent_children",  "/views/parent/ChildrenView.fxml");
+        routes.put("parent_events",    "/views/parent/EventsView.fxml");
+
+        // Enfant — FXML à créer par le collègue module Jeux/Cours
+        routes.put("child_dashboard",  "/views/child/ChildDashboardView.fxml");
+        routes.put("child_courses",    "/views/child/MyCoursesView.fxml");
+        routes.put("child_games",      "/views/child/GamesView.fxml");
+
+        // ==================== AJOUT 2 : Routes pour Events ====================
+        routes.put("event_list",        "/views/event/event_list.fxml");
+        routes.put("add_event",         "/views/event/add_event.fxml");
+        routes.put("event_detail",      "/views/event/event_detail.fxml");
+        routes.put("event_resource",    "/views/event/event_resource.fxml");
+        routes.put("add_resource",      "/views/event/add_resource.fxml");
+        routes.put("resource_detail",   "/views/event/resource_detail.fxml");
+        routes.put("registration_list", "/views/registration/registration_list.fxml");
+        routes.put("registration_detail", "/views/registration/registration_detail.fxml");
+        routes.put("edit_registration", "/views/registration/edit_registration.fxml");
+
+        // Commun
+        routes.put("profile", "/views/shared/ProfileView.fxml");
+    }
+
+    // ==================== AJOUT 3 : Méthode go avec paramètres ====================
+    public static void go(String route, Object... params) {
+        if (!routes.containsKey(route)) {
+            System.err.println("[Router] Route inconnue : " + route);
+            return;
+        }
+
+        // Stocker les paramètres
+        routeParams.clear();
+        if (params != null && params.length > 0) {
+            for (int i = 0; i < params.length; i++) {
+                routeParams.put("param" + i, params[i]);
+            }
+        }
+
+        go(route);
+    }
+
+    public static void go(String route) {
+        if (!routes.containsKey(route)) {
+            System.err.println("[Router] Route inconnue : " + route);
+            return;
+        }
+        if (route.equals(currentRoute)) return;
+
+        try {
+            Node view = viewCache.get(route);
+
+            if (view == null) {
+                URL resource = Router.class.getResource(routes.get(route));
+                if (resource == null) {
+                    view = makePlaceholder(route);
+                } else {
+                    FXMLLoader loader = new FXMLLoader(resource);
+                    view = loader.load();
+
+                    // ==================== AJOUT 4 : Passer les paramètres au controller ====================
+                    Object controller = loader.getController();
+                    if (controller != null) {
+                        // Pour l'édition d'événement
+                        if ("add_event".equals(route) && routeParams.containsKey("param0")) {
+                            try {
+                                controller.getClass().getMethod("setEventToModify", int.class)
+                                        .invoke(controller, (int) routeParams.get("param0"));
+                            } catch (Exception e) {}
+                        }
+                        // Pour les détails d'événement
+                        if ("event_detail".equals(route) && routeParams.containsKey("param0")) {
+                            try {
+                                controller.getClass().getMethod("setEventId", int.class)
+                                        .invoke(controller, (int) routeParams.get("param0"));
+                            } catch (Exception e) {
+                                System.err.println("Erreur setEventId: " + e.getMessage());
+                            }
+                        }
+                        // Pour les ressources
+                        if ("event_resource".equals(route)) {
+                            if (routeParams.containsKey("param0")) {
+                                try {
+                                    controller.getClass().getMethod("setEventId", int.class)
+                                            .invoke(controller, (int) routeParams.get("param0"));
+                                } catch (Exception e) {}
+                            }
+                            if (routeParams.containsKey("param1")) {
+                                try {
+                                    controller.getClass().getMethod("setEventTitle", String.class)
+                                            .invoke(controller, (String) routeParams.get("param1"));
+                                } catch (Exception e) {}
+                            }
+                        }
+                        // ==================== AJOUT POUR LES INSCRIPTIONS ====================
+                        // Pour les détails d'inscription
+                        if ("registration_detail".equals(route) && routeParams.containsKey("param0")) {
+                            try {
+                                Object param = routeParams.get("param0");
+                                if (param instanceof Integer) {
+                                    controller.getClass().getMethod("setRegistrationId", int.class)
+                                            .invoke(controller, (int) param);
+                                } else if (param instanceof EventRegistration) {
+                                    controller.getClass().getMethod("setRegistration", EventRegistration.class)
+                                            .invoke(controller, param);
+                                }
+                            } catch (Exception e) {
+                                System.err.println("Erreur setRegistration: " + e.getMessage());
+                            }
+                        }
+// Pour la modification d'inscription
+                        if ("edit_registration".equals(route) && routeParams.containsKey("param0")) {
+                            try {
+                                Object param = routeParams.get("param0");
+                                if (param instanceof Integer) {
+                                    controller.getClass().getMethod("setRegistrationId", int.class)
+                                            .invoke(controller, (int) param);
+                                } else if (param instanceof EventRegistration) {
+                                    controller.getClass().getMethod("setRegistration", EventRegistration.class)
+                                            .invoke(controller, param);
+                                }
+                            } catch (Exception e) {
+                                System.err.println("Erreur setRegistration: " + e.getMessage());
+                            }
+                        }
+                    }
+                }
+                viewCache.put(route, view);
+            }
+
+            container.getChildren().setAll(view);
+            currentRoute = route;
+            if (onRouteChange != null) onRouteChange.accept(route);
+
+        } catch (IOException e) {
+            System.err.println("[Router] Erreur '" + route + "' : " + e.getMessage());
+            container.getChildren().setAll(makePlaceholder(route));
+        }
+    }
+
+    private static Node makePlaceholder(String route) {
+        Label title = new Label("Vue en cours de développement");
+        title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #9999BB;");
+        Label sub = new Label("Route : " + route + "  —  FXML à intégrer par votre collègue");
+        sub.setStyle("-fx-font-size: 13px; -fx-text-fill: #BBBBCC;");
+        VBox box = new VBox(12, title, sub);
+        box.setAlignment(Pos.CENTER);
+        box.setStyle("-fx-background-color: #F8F9FA;");
+        return box;
+    }
+
+    public static void reload(String route)                  { viewCache.remove(route); currentRoute = ""; go(route); }
+    public static String getCurrentRoute()                   { return currentRoute; }
+    public static void setOnRouteChange(Consumer<String> l) { onRouteChange = l; }
+    public static void clearCache()                         { viewCache.clear(); currentRoute = ""; routeParams.clear(); }
+}

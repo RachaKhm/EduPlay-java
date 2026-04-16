@@ -1,6 +1,6 @@
 package dev.eduplay.controllers.event;
 
-import dev.eduplay.controllers.event.MainController;
+import dev.eduplay.core.Router;
 import dev.eduplay.entities.SchoolEvent;
 import dev.eduplay.services.SchoolEventService;
 import javafx.fxml.FXML;
@@ -35,37 +35,68 @@ public class EventDetailController {
     @FXML private VBox locationBox;
 
     private SchoolEventService service;
-    private MainController mainController;
     private SchoolEvent currentEvent;
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     @FXML
     public void initialize() {
+        System.out.println("=== EventDetailController initialisé ===");
         service = new SchoolEventService();
         setupActions();
     }
 
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
+    // ✅ Méthode appelée par Router
+    public void setEventId(int eventId) {
+        System.out.println("=== setEventId appelé avec ID: " + eventId);
+        try {
+            SchoolEvent event = service.recupererParId(eventId);
+            if (event != null) {
+                System.out.println("✅ Événement trouvé: " + event.getTitle());
+                setEvent(event);
+            } else {
+                System.out.println("❌ Événement non trouvé pour l'ID: " + eventId);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur SQL: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public void setEvent(SchoolEvent event) {
         this.currentEvent = event;
-        System.out.println("=== Chargement de l'événement ===");
+        System.out.println("=== Affichage des détails ===");
         System.out.println("Titre: " + event.getTitle());
-        System.out.println("ImagePath: " + event.getImagePath());
+        System.out.println("Lieu: " + event.getLocation());
+        System.out.println("Description: " + event.getDescription());
         displayEventDetails();
     }
 
     private void setupActions() {
-        backBtn.setOnAction(e -> goBack());
-        editBtn.setOnAction(e -> goToEdit());
-        deleteBtn.setOnAction(e -> deleteEvent());
-        resourcesBtn.setOnAction(e -> goToResources());
+        backBtn.setOnAction(e -> {
+            System.out.println("Bouton Retour cliqué");
+            goBack();
+        });
+        editBtn.setOnAction(e -> {
+            System.out.println("Bouton Modifier cliqué");
+            goToEdit();
+        });
+        deleteBtn.setOnAction(e -> {
+            System.out.println("Bouton Supprimer cliqué");
+            deleteEvent();
+        });
+        resourcesBtn.setOnAction(e -> {
+            System.out.println("Bouton Ressources cliqué");
+            goToResources();
+        });
     }
 
     private void displayEventDetails() {
-        if (currentEvent == null) return;
+        if (currentEvent == null) {
+            System.out.println("❌ currentEvent est null");
+            return;
+        }
+
+        System.out.println("=== Affichage des détails de l'événement ===");
 
         // Titre
         eventTitleLabel.setText("📌 " + currentEvent.getTitle());
@@ -77,12 +108,20 @@ public class EventDetailController {
         // Dates
         if (currentEvent.getStartDate() != null) {
             startDateValue.setText(currentEvent.getStartDate().format(dateFormatter));
+        } else {
+            startDateValue.setText("Non spécifiée");
         }
+
         if (currentEvent.getEndDate() != null) {
             endDateValue.setText(currentEvent.getEndDate().format(dateFormatter));
+        } else {
+            endDateValue.setText("Non spécifiée");
         }
+
         if (currentEvent.getCreatedAt() != null) {
             createdAtValue.setText(currentEvent.getCreatedAt().format(dateFormatter));
+        } else {
+            createdAtValue.setText("Non spécifiée");
         }
 
         // Description
@@ -95,6 +134,9 @@ public class EventDetailController {
             longitudeValue.setText(currentEvent.getLongitude());
             locationBox.setVisible(true);
             locationBox.setManaged(true);
+        } else {
+            locationBox.setVisible(false);
+            locationBox.setManaged(false);
         }
 
         // Image
@@ -102,39 +144,45 @@ public class EventDetailController {
     }
 
     private void loadImage() {
-        String imageName = currentEvent.getImagePath();
-        System.out.println("Nom de l'image: " + imageName);
+        String imagePath = currentEvent.getImagePath();
+        System.out.println("=== CHARGEMENT IMAGE ===");
+        System.out.println("ImagePath brut: " + imagePath);
 
-        if (imageName != null && !imageName.isEmpty()) {
-            // Chemin fixe vers le dossier des images
-            File imageFile = new File("uploads/events/" + imageName);
-            System.out.println("Chemin complet: " + imageFile.getAbsolutePath());
+        if (imagePath == null || imagePath.isEmpty()) {
+            System.out.println("❌ Aucun chemin d'image");
+            showNoImage();
+            return;
+        }
 
-            if (imageFile.exists()) {
+        // Essayer différents chemins possibles
+        String[] pathsToTry = {
+                imagePath,  // Chemin direct de la BD
+                "uploads/events/" + imagePath,  // Dossier uploads
+                "src/main/resources/uploads/events/" + imagePath,  // Dans resources
+                System.getProperty("user.dir") + "/uploads/events/" + imagePath,  // Depuis racine projet
+                "C:/Users/MSI/IdeaProjects/EduPlay-Java/uploads/events/" + imagePath  // Chemin absolu
+        };
+
+        for (String path : pathsToTry) {
+            File file = new File(path);
+            System.out.println("Test: " + file.getAbsolutePath() + " - Existe: " + file.exists());
+
+            if (file.exists()) {
                 try {
-                    Image image = new Image(imageFile.toURI().toString());
+                    Image image = new Image(file.toURI().toString());
                     eventImageView.setImage(image);
                     eventImageView.setVisible(true);
                     noImageLabel.setVisible(false);
-                    System.out.println("✅ Image chargée!");
+                    System.out.println("✅ IMAGE CHARGÉE depuis: " + path);
+                    return;
                 } catch (Exception e) {
-                    System.err.println("Erreur: " + e.getMessage());
-                    showNoImage();
+                    System.err.println("Erreur chargement: " + e.getMessage());
                 }
-            } else {
-                System.out.println("❌ Fichier non trouvé");
-                showNoImage();
             }
-        } else {
-            showNoImage();
         }
-    }
 
-    public void updateImage(String newImagePath) {
-        if (newImagePath != null && !newImagePath.isEmpty()) {
-            currentEvent.setImagePath(newImagePath);
-            loadImage();
-        }
+        System.out.println("❌ IMAGE NON TROUVÉE après tous les essais");
+        showNoImage();
     }
 
     private void showNoImage() {
@@ -145,14 +193,14 @@ public class EventDetailController {
     }
 
     private void goBack() {
-        if (mainController != null) {
-            mainController.goToEventList();
-        }
+        System.out.println("goBack() - Retour à la liste");
+        Router.go("event_list");
     }
 
     private void goToEdit() {
-        if (mainController != null && currentEvent != null) {
-            mainController.goToEditEvent(currentEvent.getId());
+        System.out.println("goToEdit() - ID: " + currentEvent.getId());
+        if (currentEvent != null) {
+            Router.go("add_event", currentEvent.getId());
         }
     }
 
@@ -164,7 +212,7 @@ public class EventDetailController {
 
         if (confirm.showAndWait().get() == ButtonType.OK) {
             try {
-                service.supprimer(currentEvent);
+                service.supprimerAvecRessources(currentEvent);
                 showAlert("Succès", "Événement supprimé avec succès");
                 goBack();
             } catch (SQLException e) {
@@ -175,8 +223,9 @@ public class EventDetailController {
     }
 
     private void goToResources() {
-        if (mainController != null && currentEvent != null) {
-            mainController.goToEventResources(currentEvent.getId(), currentEvent.getTitle());
+        System.out.println("goToResources() - ID: " + currentEvent.getId() + ", Titre: " + currentEvent.getTitle());
+        if (currentEvent != null) {
+            Router.go("event_resource", currentEvent.getId(), currentEvent.getTitle());
         }
     }
 

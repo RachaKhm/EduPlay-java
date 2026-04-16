@@ -1,14 +1,13 @@
 package dev.eduplay.services;
 
 import dev.eduplay.entities.User;
-import dev.eduplay.interfaces.IUser;
 import dev.eduplay.tools.MyDataBase;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserService implements IUser<User> {
+public class UserService implements IGeneralService<User> {
 
     private Connection cnx;
 
@@ -75,7 +74,12 @@ public class UserService implements IUser<User> {
     }
 
     @Override
-    public List<User> getAll() {
+    public int chercher(User user) throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public List<User> recuperer() {
         List<User> users = new ArrayList<>();
         String query = "SELECT * FROM user ORDER BY created_at DESC";
 
@@ -139,6 +143,7 @@ public class UserService implements IUser<User> {
         user.setFirstName(rs.getString("first_name"));
         user.setLastName(rs.getString("last_name"));
         user.setEmail(rs.getString("email"));
+        user.setPassword(rs.getString("password"));
         user.setType(rs.getString("type"));
         user.setTelephone(rs.getString("telephone"));
         user.setAdresse(rs.getString("adresse"));

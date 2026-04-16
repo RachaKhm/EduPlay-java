@@ -1,6 +1,6 @@
 package dev.eduplay.controllers.event;
 
-import dev.eduplay.controllers.event.MainController;
+import dev.eduplay.core.Router;
 import dev.eduplay.entities.EventResource;
 import dev.eduplay.services.EventResourceService;
 import javafx.collections.FXCollections;
@@ -10,7 +10,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class EventResourceController {
 
-    // FXML COMPOSANTS - LES NOMS DOIVENT CORRESPONDRE EXACTEMENT AUX fx:id DANS LE FXML
+    // FXML COMPOSANTS
     @FXML private Button backBtn;
     @FXML private Button addResourceBtn;
     @FXML private Label eventTitleLabel;
@@ -36,7 +35,6 @@ public class EventResourceController {
     @FXML private Label pageInfo;
 
     private EventResourceService service;
-    private MainController mainController;
     private int eventId;
     private String eventTitle;
     private ObservableList<EventResource> allResources;
@@ -63,15 +61,10 @@ public class EventResourceController {
         typeFilterCombo.setValue("Tous");
     }
 
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
-    }
-
     public void setEventId(int eventId, String eventTitle) {
         this.eventId = eventId;
         this.eventTitle = eventTitle;
         eventTitleLabel.setText("📚 " + eventTitle);
-        eventSubtitleLabel.setText("Gérer les ressources pour cet événement");
         loadResources();
     }
 
@@ -203,16 +196,14 @@ public class EventResourceController {
         }
     }
 
+    // ✅ CORRIGÉ : Utilise Router au lieu de mainController
     private void voirRessource(EventResource resource) {
-        if (mainController != null) {
-            mainController.goToResourceDetail(eventId, eventTitle, resource);
-        }
+        Router.go("resource_detail", eventId, eventTitle, resource);
     }
 
+    // ✅ CORRIGÉ : Utilise Router au lieu de mainController
     private void modifierRessource(EventResource resource) {
-        if (mainController != null) {
-            mainController.goToEditResource(eventId, eventTitle, resource);
-        }
+        Router.go("add_resource", eventId, eventTitle, resource);
     }
 
     private void supprimerRessource(EventResource resource) {
@@ -232,16 +223,14 @@ public class EventResourceController {
         }
     }
 
+    // ✅ CORRIGÉ : Utilise Router au lieu de mainController
     private void goBack() {
-        if (mainController != null) {
-            mainController.goToEventDetail(eventId);
-        }
+        Router.go("event_detail", eventId);
     }
 
+    // ✅ CORRIGÉ : Utilise Router au lieu de mainController
     private void goToAddResource() {
-        if (mainController != null) {
-            mainController.goToAddResource(eventId, eventTitle);
-        }
+        Router.go("add_resource", eventId, eventTitle);
     }
 
     private void showAlert(String title, String message) {
@@ -251,4 +240,6 @@ public class EventResourceController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+
 }

@@ -1,6 +1,6 @@
 package dev.eduplay.controllers.event;
 
-import dev.eduplay.controllers.event.MainController;
+import dev.eduplay.core.Router;
 import dev.eduplay.entities.SchoolEvent;
 import dev.eduplay.services.SchoolEventService;
 import javafx.collections.FXCollections;
@@ -42,7 +42,6 @@ public class EventListController {
     private int itemsPerPage = 10;
     private int totalPages = 1;
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-    private MainController mainController;
     private String currentSearchText = "";
     private String currentSortBy = "startDate";
     private boolean currentAscending = false;
@@ -64,7 +63,6 @@ public class EventListController {
         orderToggle.setSelected(false);
 
         cleanExpiredEvents();
-
         loadEvents();
 
         searchField.textProperty().addListener((obs, old, newVal) -> {
@@ -87,11 +85,6 @@ public class EventListController {
             currentPage = 1;
             applyFiltersAndSort();
         });
-    }
-
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
-        System.out.println("MainController reçu par EventListController");
     }
 
     private void setupTableColumns() {
@@ -142,28 +135,17 @@ public class EventListController {
 
                     voirBtn.setOnAction(e -> {
                         System.out.println("Voir événement ID: " + event.getId());
-                        if (mainController != null) {
-                            mainController.goToEventDetail(event.getId());
-                        } else {
-                            System.err.println("ERREUR: mainController est null");
-                        }
+                        Router.go("event_detail", event.getId());
                     });
 
                     ressourcesBtn.setOnAction(e -> {
-                        System.out.println("=== Ressources événement ID: " + event.getId() + " ===");
-                        System.out.println("Titre: " + event.getTitle());
-                        if (mainController != null) {
-                            mainController.goToEventResources(event.getId(), event.getTitle());
-                        } else {
-                            System.err.println("ERREUR: mainController est null");
-                        }
+                        System.out.println("Ressources événement ID: " + event.getId());
+                        Router.go("event_resource", event.getId(), event.getTitle());
                     });
 
                     modifierBtn.setOnAction(e -> {
                         System.out.println("Modifier événement ID: " + event.getId());
-                        if (mainController != null) {
-                            mainController.goToEditEvent(event.getId());
-                        }
+                        Router.go("add_event", event.getId());
                     });
 
                     supprimerBtn.setOnAction(e -> supprimerEvent(event));
@@ -174,26 +156,41 @@ public class EventListController {
         });
     }
 
-    @FXML private Button refreshBtn;
     private void setupActions() {
-        addBtn.setOnAction(e -> goToAddEvent());
+        addBtn.setOnAction(e -> {
+            System.out.println("Nouvel événement");
+            Router.go("add_event");
+        });
         prevBtn.setOnAction(e -> pagePrecedente());
         nextBtn.setOnAction(e -> pageSuivante());
-        refreshBtn.setOnAction(e -> refreshManually());
     }
 
-    @FXML
-    private void refreshManually() {
-        System.out.println("🔄 Rafraîchissement manuel de la liste des événements...");
-        cleanExpiredEvents();
-        loadEvents();
-        showAlert("Rafraîchissement", "✅ La liste des événements a été actualisée");
+    private void cleanExpiredEvents() {
+        try {
+            LocalDateTime now = LocalDateTime.now();
+            List<SchoolEvent> allEvents = service.recuperer();
+            List<SchoolEvent> expiredEvents = new ArrayList<>();
+
+            for (SchoolEvent event : allEvents) {
+                if (event.getEndDate() != null && event.getEndDate().isBefore(now)) {
+                    expiredEvents.add(event);
+                }
+            }
+
+            if (!expiredEvents.isEmpty()) {
+                for (SchoolEvent event : expiredEvents) {
+                    service.supprimerAvecRessources(event);
+                    System.out.println("🗑️ Événement expiré supprimé: " + event.getTitle());
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors du nettoyage: " + e.getMessage());
+        }
     }
 
     private void loadEvents() {
         try {
             cleanExpiredEvents();
-
             List<SchoolEvent> events = service.recuperer();
             originalEvents.setAll(events);
             applyFiltersAndSort();
@@ -286,12 +283,6 @@ public class EventListController {
         }
     }
 
-    private void goToAddEvent() {
-        if (mainController != null) {
-            mainController.goToAddEvent();
-        }
-    }
-
     private void supprimerEvent(SchoolEvent event) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmation");
@@ -300,10 +291,9 @@ public class EventListController {
 
         if (confirm.showAndWait().get() == ButtonType.OK) {
             try {
-                // Utiliser la nouvelle méthode qui supprime aussi les ressources
                 service.supprimerAvecRessources(event);
                 loadEvents();
-                showAlert("Succès", "✅ Événement et ses ressources supprimés avec succès");
+                showAlert("Succès", "✅ Événement supprimé avec succès");
             } catch (SQLException e) {
                 showAlert("Erreur", "Impossible de supprimer l'événement: " + e.getMessage());
                 e.printStackTrace();
@@ -325,38 +315,4 @@ public class EventListController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
-
-    private void cleanExpiredEvents() {
-        try {
-            LocalDateTime now = LocalDateTime.now();
-            List<SchoolEvent> allEvents = service.recuperer();
-            List<SchoolEvent> expiredEvents = new ArrayList<>();
-
-            for (SchoolEvent event : allEvents) {
-                if (event.getEndDate() != null && event.getEndDate().isBefore(now)) {
-                    expiredEvents.add(event);
-                }
-            }
-
-            if (!expiredEvents.isEmpty()) {
-                for (SchoolEvent event : expiredEvents) {
-                    // Utiliser la nouvelle méthode qui supprime aussi les ressources
-                    service.supprimerAvecRessources(event);
-                    System.out.println("🗑️ Événement expiré supprimé: " + event.getTitle());
-                }
-                showAlert("Nettoyage automatique",
-                        expiredEvents.size() + " événement(s) supprimé(s) (dates dépassées)");
-            }
-        } catch (SQLException e) {
-            System.err.println("Erreur lors du nettoyage des événements: " + e.getMessage());
-        }
-    }
-
-    public void refreshAndClean() {
-        System.out.println("🔄 Rafraîchissement et nettoyage des événements...");
-        cleanExpiredEvents();
-        loadEvents();
-    }
-
 }

@@ -1,5 +1,7 @@
 package dev.eduplay.controllers.event;
 
+import dev.eduplay.controllers.MainController;
+import dev.eduplay.core.Router;
 import dev.eduplay.entities.SchoolEvent;
 import dev.eduplay.services.SchoolEventService;
 import javafx.fxml.FXML;
@@ -68,15 +70,14 @@ public class AddEventController {
         this.mainController = mainController;
     }
 
+    // Ajoute cette méthode pour que Router puisse passer l'ID
     public void setEventToModify(int eventId) {
-        System.out.println("setEventToModify appelé avec ID: " + eventId);
         this.eventIdToModify = eventId;
         submitBtn.setText("Modifier");
 
         try {
             SchoolEvent event = service.recupererParId(eventId);
             if (event != null) {
-                System.out.println("Événement trouvé: " + event.getTitle());
                 titleField.setText(event.getTitle());
                 descriptionArea.setText(event.getDescription());
                 locationField.setText(event.getLocation());
@@ -92,14 +93,19 @@ public class AddEventController {
                     endHourCombo.setValue(event.getEndDate().getHour());
                     endMinuteCombo.setValue(event.getEndDate().getMinute());
                 }
-            } else {
-                System.out.println("Événement non trouvé pour l'ID: " + eventId);
-                showError("Événement non trouvé");
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            showError("Erreur lors du chargement de l'événement");
         }
+    }
+
+    // Modifie la méthode fermerFormulaire pour retourner à la liste
+    private void fermerFormulaire() {
+        Router.go("event_list");
+    }
+
+    private void goBack() {
+        Router.go("event_list");
     }
 
     private void initHourMinuteCombos() {
@@ -374,12 +380,7 @@ public class AddEventController {
                 try {
                     Thread.sleep(1500);
                     javafx.application.Platform.runLater(() -> {
-                        if (mainController != null) {
-                            System.out.println("Retour à la liste des événements");
-                            mainController.goToEventList();
-                        } else {
-                            System.out.println("mainController est null, impossible de retourner à la liste");
-                        }
+                        Router.go("event_list");
                     });
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
@@ -402,11 +403,6 @@ public class AddEventController {
         submitBtn.setText(eventIdToModify != null ? "Modifier" : "Enregistrer");
     }
 
-    private void fermerFormulaire() {
-        if (mainController != null) {
-            mainController.goToEventList();
-        }
-    }
 
     private void showError(String message) {
         messageLabel.setText("❌ " + message);

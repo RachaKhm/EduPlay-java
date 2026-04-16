@@ -1,5 +1,6 @@
 package dev.eduplay.controllers.event;
 
+import dev.eduplay.core.Router;
 import dev.eduplay.entities.EventRegistration;
 import dev.eduplay.entities.SchoolEvent;
 import dev.eduplay.services.EventRegistrationService;
@@ -39,7 +40,6 @@ public class RegistrationListController {
 
     private EventRegistrationService service;
     private SchoolEventService eventService;
-    private MainController mainController;
     private ObservableList<EventRegistration> allRegistrations;
     private ObservableList<EventRegistration> filteredRegistrations;
     private ObservableList<EventRegistration> currentPageRegistrations;
@@ -69,11 +69,6 @@ public class RegistrationListController {
         cleanExpiredRegistrations();
         loadEvents();
         loadRegistrations();
-    }
-
-    public void setMainController(MainController mainController) {
-        this.mainController = mainController;
-        System.out.println("MainController reçu par RegistrationListController");
     }
 
 
@@ -327,15 +322,11 @@ public class RegistrationListController {
     }
 
     private void voirInscription(EventRegistration registration) {
-        if (mainController != null) {
-            mainController.goToRegistrationDetail(registration);
-        }
+        Router.go("registration_detail", registration);  // Passe l'objet, pas l'ID
     }
 
     private void modifierInscription(EventRegistration registration) {
-        if (mainController != null) {
-            mainController.goToEditRegistration(registration);
-        }
+        Router.go("edit_registration", registration.getId());
     }
 
     private void showAlert(String title, String message) {
