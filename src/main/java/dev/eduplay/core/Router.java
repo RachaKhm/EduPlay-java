@@ -34,28 +34,32 @@ public class Router {
     }
 
     private static void registerRoutes() {
-        // Admin
+        // ==================== ADMIN (Back Office) ====================
         routes.put("admin_dashboard", "/views/admin/DashboardView.fxml");
         routes.put("users",           "/views/admin/UserListView.fxml");
         routes.put("teachers",        "/views/admin/UserListView.fxml");
         routes.put("parents",         "/views/admin/UserListView.fxml");
 
-        // Enseignant
+        // ==================== ENSEIGNANT ====================
         routes.put("teacher_dashboard", "/views/teacher/TeacherDashboardView.fxml");
         routes.put("teacher_courses",   "/views/teacher/CoursesView.fxml");
         routes.put("teacher_students",  "/views/teacher/StudentsView.fxml");
 
-        // Parent
-        routes.put("parent_dashboard", "/views/parent/ParentDashboardView.fxml");
-        routes.put("parent_children",  "/views/parent/ChildrenView.fxml");
-        routes.put("parent_events",    "/views/parent/EventsView.fxml");
+        // ==================== PARENT (Front Office) ====================
+        routes.put("parent_dashboard",       "/views/parent/ParentDashboardView.fxml");
+        routes.put("parent_children",        "/views/parent/ChildrenView.fxml");
+        routes.put("parent_events",          "/views/parent/EventsView.fxml");
+        routes.put("parent_event_list",      "/views/parent/ParentEventList.fxml");
+        routes.put("parent_registrations",   "/views/parent/ParentRegistrationsList.fxml");
+        routes.put("parent_event_detail",    "/views/parent/ParentEventDetail.fxml");
+        routes.put("parent_registration_form", "/views/parent/ParentRegistrationForm.fxml");
 
-        // Enfant
+        // ==================== ENFANT ====================
         routes.put("child_dashboard",  "/views/child/ChildDashboardView.fxml");
         routes.put("child_courses",    "/views/child/MyCoursesView.fxml");
         routes.put("child_games",      "/views/child/GamesView.fxml");
 
-        // Routes pour Events
+        // ==================== BACK OFFICE - ÉVÉNEMENTS ====================
         routes.put("event_list",        "/views/event/event_list.fxml");
         routes.put("add_event",         "/views/event/add_event.fxml");
         routes.put("edit_event",        "/views/event/edit_event.fxml");
@@ -68,7 +72,7 @@ public class Router {
         routes.put("registration_detail", "/views/registration/registration_detail.fxml");
         routes.put("edit_registration", "/views/registration/edit_registration.fxml");
 
-        // Commun
+        // ==================== COMMUN ====================
         routes.put("profile", "/views/shared/ProfileView.fxml");
     }
 
@@ -114,11 +118,10 @@ public class Router {
 
                     Object controller = loader.getController();
                     if (controller != null) {
-                        // Pour l'ajout d'événement (pas de paramètre)
+                        // ==================== BACK OFFICE - ÉVÉNEMENTS ====================
                         if ("add_event".equals(route)) {
-                            // Rien à faire, c'est un ajout
+                            // Rien à faire
                         }
-                        // Pour la modification d'événement
                         if ("edit_event".equals(route) && routeParams.containsKey("param0")) {
                             try {
                                 Object param = routeParams.get("param0");
@@ -130,7 +133,6 @@ public class Router {
                                 System.err.println("Erreur setEvent: " + e.getMessage());
                             }
                         }
-                        // Pour les détails d'événement
                         if ("event_detail".equals(route) && routeParams.containsKey("param0")) {
                             try {
                                 controller.getClass().getMethod("setEventId", int.class)
@@ -139,7 +141,6 @@ public class Router {
                                 System.err.println("Erreur setEventId: " + e.getMessage());
                             }
                         }
-                        // Pour event_resource
                         if ("event_resource".equals(route)) {
                             if (routeParams.containsKey("param0")) {
                                 try {
@@ -150,42 +151,32 @@ public class Router {
                                 }
                             }
                         }
-                        // Pour add_resource (AJOUT)
                         if ("add_resource".equals(route)) {
                             if (routeParams.containsKey("param0")) {
                                 try {
                                     controller.getClass().getMethod("setEventId", int.class)
                                             .invoke(controller, (int) routeParams.get("param0"));
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setEventId add_resource: " + e.getMessage());
-                                }
+                                } catch (Exception e) {}
                             }
                             if (routeParams.containsKey("param1")) {
                                 try {
                                     controller.getClass().getMethod("setEventTitle", String.class)
                                             .invoke(controller, (String) routeParams.get("param1"));
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setEventTitle add_resource: " + e.getMessage());
-                                }
+                                } catch (Exception e) {}
                             }
                         }
-                        // Pour edit_resource (MODIFICATION)
                         if ("edit_resource".equals(route)) {
                             if (routeParams.containsKey("param0")) {
                                 try {
                                     controller.getClass().getMethod("setEventId", int.class)
                                             .invoke(controller, (int) routeParams.get("param0"));
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setEventId edit_resource: " + e.getMessage());
-                                }
+                                } catch (Exception e) {}
                             }
                             if (routeParams.containsKey("param1")) {
                                 try {
                                     controller.getClass().getMethod("setEventTitle", String.class)
                                             .invoke(controller, (String) routeParams.get("param1"));
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setEventTitle edit_resource: " + e.getMessage());
-                                }
+                                } catch (Exception e) {}
                             }
                             if (routeParams.containsKey("param2")) {
                                 try {
@@ -194,28 +185,21 @@ public class Router {
                                         controller.getClass().getMethod("setResource", EventResource.class)
                                                 .invoke(controller, param);
                                     }
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setResource edit_resource: " + e.getMessage());
-                                }
+                                } catch (Exception e) {}
                             }
                         }
-                        // Pour resource_detail
                         if ("resource_detail".equals(route)) {
                             if (routeParams.containsKey("param0")) {
                                 try {
                                     controller.getClass().getMethod("setEventId", int.class)
                                             .invoke(controller, (int) routeParams.get("param0"));
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setEventId resource_detail: " + e.getMessage());
-                                }
+                                } catch (Exception e) {}
                             }
                             if (routeParams.containsKey("param1")) {
                                 try {
                                     controller.getClass().getMethod("setEventTitle", String.class)
                                             .invoke(controller, (String) routeParams.get("param1"));
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setEventTitle resource_detail: " + e.getMessage());
-                                }
+                                } catch (Exception e) {}
                             }
                             if (routeParams.containsKey("param2")) {
                                 try {
@@ -224,12 +208,10 @@ public class Router {
                                         controller.getClass().getMethod("setResource", EventResource.class)
                                                 .invoke(controller, param);
                                     }
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setResource resource_detail: " + e.getMessage());
-                                }
+                                } catch (Exception e) {}
                             }
                         }
-                        // Pour les détails d'inscription
+                        // ==================== INSCRIPTIONS ====================
                         if ("registration_detail".equals(route) && routeParams.containsKey("param0")) {
                             try {
                                 Object param = routeParams.get("param0");
@@ -240,11 +222,8 @@ public class Router {
                                     controller.getClass().getMethod("setRegistration", EventRegistration.class)
                                             .invoke(controller, param);
                                 }
-                            } catch (Exception e) {
-                                System.err.println("Erreur setRegistration: " + e.getMessage());
-                            }
+                            } catch (Exception e) {}
                         }
-                        // Pour la modification d'inscription
                         if ("edit_registration".equals(route) && routeParams.containsKey("param0")) {
                             try {
                                 Object param = routeParams.get("param0");
@@ -255,8 +234,23 @@ public class Router {
                                     controller.getClass().getMethod("setRegistration", EventRegistration.class)
                                             .invoke(controller, param);
                                 }
+                            } catch (Exception e) {}
+                        }
+                        // ==================== PARENT (Front Office) ====================
+                        if ("parent_event_detail".equals(route) && routeParams.containsKey("param0")) {
+                            try {
+                                controller.getClass().getMethod("setEventId", int.class)
+                                        .invoke(controller, (int) routeParams.get("param0"));
                             } catch (Exception e) {
-                                System.err.println("Erreur setRegistration edit: " + e.getMessage());
+                                System.err.println("Erreur setEventId parent_event_detail: " + e.getMessage());
+                            }
+                        }
+                        if ("parent_registration_form".equals(route) && routeParams.containsKey("param0")) {
+                            try {
+                                controller.getClass().getMethod("setEventId", int.class)
+                                        .invoke(controller, (int) routeParams.get("param0"));
+                            } catch (Exception e) {
+                                System.err.println("Erreur setEventId parent_registration_form: " + e.getMessage());
                             }
                         }
                     }

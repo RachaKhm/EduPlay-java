@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventRegistrationService implements IGeneralService<EventRegistration>{
+
     Connection cn;
+
     public EventRegistrationService() {
         cn = MyDataBase.getInstance().getCnx();
     }
@@ -37,10 +39,7 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         ps.setBoolean(15, registration.getReminderSent());
         ps.setTimestamp(16, registration.getReminderSentAt() != null ? Timestamp.valueOf(registration.getReminderSentAt()) : null);
 
-
         ps.executeUpdate();
-
-
     }
 
     @Override
@@ -49,7 +48,6 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         PreparedStatement pst = cn.prepareStatement(sql);
         pst.setInt(1, registration.getId());
         pst.executeUpdate();
-
     }
 
     @Override
@@ -68,7 +66,7 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
 
     @Override
     public void modifier(EventRegistration registration) throws SQLException {
-        if (chercher(registration) ==registration.getId()) {
+        if (chercher(registration) == registration.getId()) {
             String sql = "UPDATE event_registration SET status = ?, child_full_name = ?, parent_phone = ?, child_class_level = ?, medical_notes = ?, emergency_contact_name = ?, emergency_contact_phone = ?, notes = ?, ticket_qr_code = ?, qr_code_path = ?, scanned_at = ?, reminder_sent = ?, reminder_sent_at = ? WHERE id = ?";
 
             PreparedStatement pst = cn.prepareStatement(sql);
@@ -89,11 +87,9 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
 
             pst.executeUpdate();
             System.out.println("registration modifiée avec succès !");
-        }
-        else {
+        } else {
             System.out.println("cette registration n'existe pas");
         }
-
     }
 
     public void modifierBack(EventRegistration registration) throws SQLException {
@@ -119,64 +115,77 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         List<EventRegistration> registrations = new ArrayList<>();
 
         while (rs.next()) {
-            EventRegistration registration = new EventRegistration();
-            registration.setId(rs.getInt("id"));
-            registration.setStatus(rs.getString("status"));
-            registration.setRegisteredAt(rs.getTimestamp("registered_at").toLocalDateTime());
-            registration.setChildFullName(rs.getString("child_full_name"));
-            registration.setParentPhone(rs.getString("parent_phone"));
-            registration.setChildClassLevel(rs.getString("child_class_level"));
-            registration.setMedicalNotes(rs.getString("medical_notes"));
-            registration.setEmergencyContactName(rs.getString("emergency_contact_name"));
-            registration.setEmergencyContactPhone(rs.getString("emergency_contact_phone"));
-            registration.setNotes(rs.getString("notes"));
-            registration.setTicketQrCode(rs.getString("ticket_qr_code"));
-            registration.setScannedAt(rs.getTimestamp("scanned_at") != null ? rs.getTimestamp("scanned_at").toLocalDateTime() : null);
-            registration.setQrCodePath(rs.getString("qr_code_path"));
-
-            SchoolEvent event = new SchoolEvent();
-            event.setId(rs.getInt("event_id"));
-            event.setTitle(rs.getString("event_title"));
-            event.setStartDate(rs.getTimestamp("start_date") != null ? rs.getTimestamp("start_date").toLocalDateTime() : null);
-            event.setEndDate(rs.getTimestamp("end_date") != null ? rs.getTimestamp("end_date").toLocalDateTime() : null);  // ← Très important !
-            event.setLocation(rs.getString("location"));
-            registration.setEvent(event);
-
-            registrations.add(registration);
+            registrations.add(extractRegistration(rs));
         }
         return registrations;
     }
 
-    /**
-     * Récupère une inscription par son ID
-     * @param id L'ID de l'inscription
-     * @return L'inscription correspondante ou null
-     */
+    // ✅ NOUVELLE MÉTHODE : Récupérer les inscriptions par parent_id
+    public List<EventRegistration> recupererParParentId(int parentId) throws SQLException {
+        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location " +
+                "FROM event_registration er " +
+                "LEFT JOIN school_event se ON er.event_id = se.id " +
+                "WHERE er.parent_id = ? " +
+                "ORDER BY er.registered_at DESC";
+
+        PreparedStatement pst = cn.prepareStatement(sql);
+        pst.setInt(1, parentId);
+        ResultSet rs = pst.executeQuery();
+        List<EventRegistration> registrations = new ArrayList<>();
+
+        while (rs.next()) {
+            registrations.add(extractRegistration(rs));
+        }
+        return registrations;
+    }
+
     public EventRegistration recupererParId(int id) throws SQLException {
-        String sql = "SELECT er.*, se.title as event_title FROM event_registration er " +
+        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location " +
+                "FROM event_registration er " +
                 "LEFT JOIN school_event se ON er.event_id = se.id " +
                 "WHERE er.id = ?";
+
         PreparedStatement pst = cn.prepareStatement(sql);
         pst.setInt(1, id);
         ResultSet rs = pst.executeQuery();
 
         if (rs.next()) {
-            EventRegistration registration = new EventRegistration();
-            registration.setId(rs.getInt("id"));
-            registration.setStatus(rs.getString("status"));
-            registration.setRegisteredAt(rs.getTimestamp("registered_at").toLocalDateTime());
-            registration.setChildFullName(rs.getString("child_full_name"));
-            registration.setParentPhone(rs.getString("parent_phone"));
-            registration.setNotes(rs.getString("notes"));
-
-            SchoolEvent event = new SchoolEvent();
-            event.setId(rs.getInt("event_id"));
-            event.setTitle(rs.getString("event_title"));
-            registration.setEvent(event);
-
-            return registration;
+            return extractRegistration(rs);
         }
         return null;
     }
 
+    // ✅ MÉTHODE UTILITAIRE POUR EXTRAIRE UNE INSCRIPTION
+    private EventRegistration extractRegistration(ResultSet rs) throws SQLException {
+        EventRegistration registration = new EventRegistration();
+        registration.setId(rs.getInt("id"));
+        registration.setStatus(rs.getString("status"));
+        registration.setRegisteredAt(rs.getTimestamp("registered_at").toLocalDateTime());
+        registration.setChildFullName(rs.getString("child_full_name"));
+        registration.setParentPhone(rs.getString("parent_phone"));
+        registration.setChildClassLevel(rs.getString("child_class_level"));
+        registration.setMedicalNotes(rs.getString("medical_notes"));
+        registration.setEmergencyContactName(rs.getString("emergency_contact_name"));
+        registration.setEmergencyContactPhone(rs.getString("emergency_contact_phone"));
+        registration.setNotes(rs.getString("notes"));
+        registration.setTicketQrCode(rs.getString("ticket_qr_code"));
+        registration.setScannedAt(rs.getTimestamp("scanned_at") != null ? rs.getTimestamp("scanned_at").toLocalDateTime() : null);
+        registration.setQrCodePath(rs.getString("qr_code_path"));
+        registration.setReminderSent(rs.getBoolean("reminder_sent"));
+        registration.setReminderSentAt(rs.getTimestamp("reminder_sent_at") != null ? rs.getTimestamp("reminder_sent_at").toLocalDateTime() : null);
+
+        SchoolEvent event = new SchoolEvent();
+        event.setId(rs.getInt("event_id"));
+        event.setTitle(rs.getString("event_title"));
+        if (rs.getTimestamp("start_date") != null) {
+            event.setStartDate(rs.getTimestamp("start_date").toLocalDateTime());
+        }
+        if (rs.getTimestamp("end_date") != null) {
+            event.setEndDate(rs.getTimestamp("end_date").toLocalDateTime());
+        }
+        event.setLocation(rs.getString("location"));
+        registration.setEvent(event);
+
+        return registration;
+    }
 }
