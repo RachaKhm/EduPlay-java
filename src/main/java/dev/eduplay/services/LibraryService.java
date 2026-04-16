@@ -91,4 +91,20 @@ public class LibraryService implements ICrud<Library> {
         }
         return list;
     }
+
+    public boolean existsByName(String name) {
+        boolean exists = false;
+        String sql = "SELECT COUNT(*) FROM library WHERE LOWER(name) = LOWER(?)";
+        try {
+            PreparedStatement ps = cnx.prepareStatement(sql);
+            ps.setString(1, name);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                exists = rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return exists;
+    }
 }

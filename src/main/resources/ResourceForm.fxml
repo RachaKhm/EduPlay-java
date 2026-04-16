@@ -34,6 +34,7 @@
                         <Label text="Requis" style="-fx-background-color: #FEF2F2; -fx-text-fill: #EF4444; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 2 6; -fx-background-radius: 4;"/>
                     </HBox>
                     <TextField fx:id="txtTitle" promptText="Ex: Le Petit Prince" style="-fx-padding: 12; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white;"/>
+                    <Label fx:id="lblErrorTitle" text="⚠️ Erreur" visible="false" managed="false" style="-fx-text-fill: #EF4444; -fx-font-size: 11px;"/>
                 </VBox>
                 
                 <!-- Auteur -->
@@ -44,6 +45,7 @@
                         <Label text="Requis" style="-fx-background-color: #FEF2F2; -fx-text-fill: #EF4444; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 2 6; -fx-background-radius: 4;"/>
                     </HBox>
                     <TextField fx:id="txtAuthor" promptText="Ex: Antoine de Saint-Exupéry" style="-fx-padding: 12; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white;"/>
+                    <Label fx:id="lblErrorAuthor" text="⚠️ Erreur" visible="false" managed="false" style="-fx-text-fill: #EF4444; -fx-font-size: 11px;"/>
                 </VBox>
             </VBox>
 
@@ -51,8 +53,11 @@
             <VBox spacing="8">
                 <HBox alignment="CENTER_LEFT">
                     <Label text="Résumé" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label text="Requis" style="-fx-background-color: #FEF2F2; -fx-text-fill: #EF4444; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 2 6; -fx-background-radius: 4;"/>
                 </HBox>
                 <TextArea fx:id="txtSummary" promptText="Résumez brièvement..." prefRowCount="4" wrapText="true" style="-fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12;"/>
+                <Label fx:id="lblErrorSummary" text="⚠️ Erreur" visible="false" managed="false" style="-fx-text-fill: #EF4444; -fx-font-size: 11px;"/>
             </VBox>
 
             <!-- Type, Langue, Âges, Library -->
@@ -61,24 +66,29 @@
                 <VBox spacing="8">
                     <Label text="Bibliothèque associée" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
                     <ComboBox fx:id="comboLibrary" promptText="Sélectionner une bibliothèque..." style="-fx-padding: 6; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white; -fx-pref-width: Infinity;"/>
+                    <Label fx:id="lblErrorLibrary" text="⚠️ Erreur" visible="false" managed="false" style="-fx-text-fill: #EF4444; -fx-font-size: 11px;"/>
                 </VBox>
                 
                 <HBox spacing="24">
                     <VBox spacing="8" HBox.hgrow="ALWAYS">
                         <Label text="Type" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
                         <ComboBox fx:id="comboType" promptText="Sélectionner..." style="-fx-padding: 6; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white; -fx-pref-width: 250;"/>
+                        <Label fx:id="lblErrorType" text="⚠️ Erreur" visible="false" managed="false" style="-fx-text-fill: #EF4444; -fx-font-size: 11px;"/>
                     </VBox>
                     <VBox spacing="8" HBox.hgrow="ALWAYS">
                         <Label text="Langue" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
                         <ComboBox fx:id="comboLang" promptText="Sélectionner..." style="-fx-padding: 6; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white; -fx-pref-width: 250;"/>
+                        <Label fx:id="lblErrorLang" text="⚠️ Erreur" visible="false" managed="false" style="-fx-text-fill: #EF4444; -fx-font-size: 11px;"/>
                     </VBox>
                     <VBox spacing="8" HBox.hgrow="ALWAYS">
                         <Label text="Âge min" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
                         <TextField fx:id="txtMinAge" promptText="3" style="-fx-padding: 12; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white;"/>
+                        <Label fx:id="lblErrorMinAge" text="⚠️ Erreur" visible="false" managed="false" style="-fx-text-fill: #EF4444; -fx-font-size: 11px;"/>
                     </VBox>
                     <VBox spacing="8" HBox.hgrow="ALWAYS">
                         <Label text="Âge max" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
                         <TextField fx:id="txtMaxAge" promptText="12" style="-fx-padding: 12; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white;"/>
+                        <Label fx:id="lblErrorMaxAge" text="⚠️ Erreur" visible="false" managed="false" style="-fx-text-fill: #EF4444; -fx-font-size: 11px;"/>
                     </VBox>
                 </HBox>
             </VBox>
@@ -89,11 +99,13 @@
                     <Label text="Image de couverture" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
                     <Button fx:id="btnImage" text="Parcourir l'image..." onAction="#handleChooseImage" style="-fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-text-fill: #475569; -fx-padding: 10 20; -fx-background-radius: 8; -fx-border-radius: 8; -fx-cursor: hand;"/>
                     <Label fx:id="lblImageName" text="Aucun fichier sélectionné" style="-fx-text-fill: #94A3B8; -fx-font-size: 12px;"/>
+                    <Label fx:id="lblErrorImage" text="⚠️ Erreur" visible="false" managed="false" style="-fx-text-fill: #EF4444; -fx-font-size: 11px;"/>
                 </VBox>
                 <VBox spacing="8" HBox.hgrow="ALWAYS">
                     <Label text="Document PDF" style="-fx-font-weight: bold; -fx-text-fill: #334155;"/>
                     <Button fx:id="btnPdf" text="Parcourir le PDF..." onAction="#handleChoosePdf" style="-fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-text-fill: #475569; -fx-padding: 10 20; -fx-background-radius: 8; -fx-border-radius: 8; -fx-cursor: hand;"/>
                     <Label fx:id="lblPdfName" text="Aucun fichier sélectionné" style="-fx-text-fill: #94A3B8; -fx-font-size: 12px;"/>
+                    <Label fx:id="lblErrorPdf" text="⚠️ Erreur" visible="false" managed="false" style="-fx-text-fill: #EF4444; -fx-font-size: 11px;"/>
                 </VBox>
             </HBox>
             

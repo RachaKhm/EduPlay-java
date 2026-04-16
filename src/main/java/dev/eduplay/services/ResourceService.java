@@ -82,6 +82,19 @@ public class ResourceService {
         return list;
     }
 
+    public boolean existsByTitle(String title) {
+        boolean exists = false;
+        try {
+            PreparedStatement ps = cnx.prepareStatement("SELECT COUNT(*) FROM resource WHERE title=?");
+            ps.setString(1, title);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                exists = rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) { System.out.println(e.getMessage()); }
+        return exists;
+    }
+
     private Resource mapRow(ResultSet rs) throws SQLException {
         return new Resource(
                 rs.getInt("id"), rs.getInt("library_id_id"),

@@ -43,6 +43,8 @@ public class LibraryFormController {
     @FXML private Label maxAgeError;
     @FXML private Label levelError;
     @FXML private Label themeError;
+    @FXML private Label imageError;
+    @FXML private Label descriptionError;
 
     // Flash
     @FXML private HBox  flashBox;
@@ -63,6 +65,7 @@ public class LibraryFormController {
 
         // Effacer erreurs en temps réel
         nameField.textProperty().addListener((o, ov, nv) -> hideError(nameError));
+        descriptionField.textProperty().addListener((o, ov, nv) -> hideError(descriptionError));
         minAgeField.textProperty().addListener((o, ov, nv) -> hideError(minAgeError));
         maxAgeField.textProperty().addListener((o, ov, nv) -> hideError(maxAgeError));
         levelCombo.valueProperty().addListener((o, ov, nv) -> hideError(levelError));
@@ -194,13 +197,26 @@ public class LibraryFormController {
         String name = nameField.getText().trim();
         if (name.isEmpty()) {
             showError(nameError, "Le nom est obligatoire."); valid = false;
-        } else if (name.length() < 3 || name.length() > 20) {
-            showError(nameError, "Entre 3 et 20 caractères."); valid = false;
+        } else {
+            if (name.length() < 3 || name.length() > 20) {
+                showError(nameError, "Entre 3 et 20 caractères."); valid = false;
+            } else if (!name.matches("^[a-zA-ZÀ-ÿ0-9\\s\\-_']+$")) {
+                showError(nameError, "Caractères spéciaux non autorisés."); valid = false;
+            } else if (libraryToEdit == null && service.existsByName(name)) {
+                showError(nameError, "Une bibliothèque avec ce nom existe déjà."); valid = false;
+            }
+        }
+
+        String desc = descriptionField.getText().trim();
+        if (desc.isEmpty()) {
+            showError(descriptionError, "La description est obligatoire."); valid = false;
+        } else if (desc.length() > 100) {
+            showError(descriptionError, "Maximum 100 caractères."); valid = false;
         }
 
         try {
             int min = Integer.parseInt(minAgeField.getText().trim());
-            if (min < 3) { showError(minAgeError, "Minimum 3 ans."); valid = false; }
+            if (min < 0) { showError(minAgeError, "L'âge ne peut pas être négatif."); valid = false; }
         } catch (NumberFormatException e) {
             showError(minAgeError, "Nombre invalide."); valid = false;
         }
@@ -225,8 +241,21 @@ public class LibraryFormController {
         String theme = themeField.getText().trim();
         if (theme.isEmpty()) {
             showError(themeError, "Le thème est obligatoire."); valid = false;
-        } else if (theme.length() < 2 || theme.length() > 20) {
-            showError(themeError, "Entre 2 et 20 caractères."); valid = false;
+        } else {
+            if (theme.length() < 2 || theme.length() > 20) {
+                showError(themeError, "Entre 2 et 20 caractères."); valid = false;
+            } else if (!theme.matches("^[a-zA-ZÀ-ÿ0-9\\s\\-_,]+$")) {
+                showError(themeError, "Caractères spéciaux non autorisés."); valid = false;
+            }
+        }
+
+        if (selectedImagePath != null && !selectedImagePath.isEmpty()) {
+            String ext = selectedImagePath.toLowerCase();
+            if (!ext.endsWith(".png") && !ext.endsWith(".jpg") && !ext.endsWith(".jpeg")) {
+                showError(imageError, "Format accepté : PNG, JPG, JPEG."); valid = false;
+            }
+        } else if (libraryToEdit == null) {
+            showError(imageError, "L'image de couverture est requise."); valid = false;
         }
 
         return valid;

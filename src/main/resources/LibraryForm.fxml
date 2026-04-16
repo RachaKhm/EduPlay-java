@@ -90,10 +90,10 @@
                     <HBox alignment="CENTER_LEFT" spacing="8">
                         <Label text="Description"
                                style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #374151;"/>
-                        <Label text="Optionnel"
-                               style="-fx-background-color: #f8fafc; -fx-text-fill: #94a3b8;
-                                      -fx-font-size: 11px; -fx-background-radius: 6; -fx-padding: 2 8;
-                                      -fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 6;"/>
+                        <Label text="Requis"
+                               style="-fx-background-color: #fef2f2; -fx-text-fill: #ef4444;
+                                      -fx-font-size: 11px; -fx-font-weight: bold;
+                                      -fx-background-radius: 6; -fx-padding: 2 8;"/>
                     </HBox>
                     <TextArea fx:id="descriptionField"
                               promptText="Décrivez brièvement cette bibliothèque..."
@@ -101,6 +101,10 @@
                               style="-fx-background-radius: 12; -fx-border-radius: 12;
                                      -fx-border-color: #e2e8f0; -fx-border-width: 2;
                                      -fx-padding: 10 14; -fx-font-size: 14px;"/>
+                    <Label fx:id="descriptionError"
+                           style="-fx-text-fill: #ef4444; -fx-font-size: 12px;
+                                  -fx-background-color: #fef2f2; -fx-background-radius: 8;
+                                  -fx-padding: 4 10;" visible="false" managed="false"/>
                     <Label text="Max 100 caractères"
                            style="-fx-font-size: 11px; -fx-text-fill: #94a3b8;"/>
                 </VBox>
@@ -213,6 +217,10 @@
                                        -fx-border-color: #bfdbfe; -fx-border-width: 1;
                                        -fx-border-radius: 12; -fx-cursor: hand;"/>
                     </HBox>
+                    <Label fx:id="imageError"
+                           style="-fx-text-fill: #ef4444; -fx-font-size: 12px;
+                                  -fx-background-color: #fef2f2; -fx-background-radius: 8;
+                                  -fx-padding: 4 10;" visible="false" managed="false"/>
 
                     <!-- PREVIEW IMAGE -->
                     <VBox fx:id="imagePreviewBox"
