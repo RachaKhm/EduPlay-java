@@ -205,18 +205,9 @@ public class LibraryIndexController {
     }
 
     private void handleSupprimer(Library lib) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmer la suppression");
-        confirm.setHeaderText(null);
-        confirm.setContentText("Voulez-vous vraiment supprimer la bibliotheque '" + lib.getName() + "' ?");
-
-        confirm.showAndWait().ifPresent(r -> {
-            if (r == ButtonType.OK) {
-                service.supprimer(lib.getId());
-                showFlash("Bibliotheque supprimee !");
-                loadLibraries();
-            }
-        });
+        service.supprimer(lib.getId());
+        showFlash("Bibliothèque supprimée !");
+        loadLibraries();
     }
 
     private void showFlash(String msg) {

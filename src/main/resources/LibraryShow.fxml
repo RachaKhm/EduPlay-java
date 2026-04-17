@@ -5,16 +5,18 @@
 <?import javafx.scene.image.*?>
 <?import javafx.geometry.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="dev.eduplay.controllers.LibraryShowController"
-      style="-fx-background-color: #f1f5f9;"
-      spacing="0">
+<ScrollPane fitToWidth="true" style="-fx-background-color: transparent;"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="dev.eduplay.controllers.LibraryShowController">
+    <VBox spacing="24" style="-fx-padding: 30; -fx-background-color: #F8FAFC;">
 
-    <!-- ══════════════════════════════════════════ -->
-    <!-- HEADER GRADIENT                            -->
-    <!-- ══════════════════════════════════════════ -->
-    <VBox style="-fx-background-color: linear-gradient(to right, #3b82f6, #6366f1);
-                 -fx-padding: 28 32 24 32;" spacing="12">
+        <!-- ══════════════════════════════════════════ -->
+        <!-- HEADER GRADIENT                            -->
+        <!-- ══════════════════════════════════════════ -->
+        <VBox style="-fx-background-color: linear-gradient(to right, #6366F1, #9333EA);
+                     -fx-border-radius: 16; -fx-background-radius: 16;
+                     -fx-padding: 30;
+                     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);" spacing="12">
 
         <!-- Ligne 1 : Titre + Boutons -->
         <HBox alignment="CENTER_LEFT" spacing="16">
@@ -64,11 +66,9 @@
     </VBox>
 
     <!-- ══════════════════════════════════════════ -->
-    <!-- CONTENU PRINCIPAL (scrollable)             -->
+    <!-- CONTENU PRINCIPAL                          -->
     <!-- ══════════════════════════════════════════ -->
-    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                style="-fx-background-color: transparent; -fx-background: #f1f5f9;">
-        <VBox style="-fx-padding: 24 32;" spacing="20">
+    <VBox spacing="20">
 
             <!-- IMAGE DE COUVERTURE -->
             <VBox fx:id="imageContainer" spacing="0"
@@ -88,10 +88,9 @@
 
                 <!-- ── COLONNE GAUCHE : Description ── -->
                 <VBox HBox.hgrow="ALWAYS" spacing="0"
-                      style="-fx-background-color: white; -fx-background-radius: 16;
-                             -fx-border-radius: 16; -fx-border-color: #e2e8f0; -fx-border-width: 1;
-                             -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,3);
-                             -fx-padding: 24;">
+                      style="-fx-background-color: white; -fx-border-radius: 16;
+                             -fx-background-radius: 16; -fx-padding: 30;
+                             -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);">
 
                     <!-- Titre section Description -->
                     <HBox spacing="14" alignment="CENTER_LEFT" style="-fx-padding: 0 0 16 0;">
@@ -124,10 +123,9 @@
                 <VBox spacing="16" prefWidth="320" minWidth="300">
 
                     <!-- Carte Informations -->
-                    <VBox style="-fx-background-color: white; -fx-background-radius: 16;
-                                 -fx-border-radius: 16; -fx-border-color: #e2e8f0; -fx-border-width: 1;
-                                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,3);
-                                 -fx-padding: 22;" spacing="16">
+                    <VBox style="-fx-background-color: white; -fx-border-radius: 16;
+                                 -fx-background-radius: 16; -fx-padding: 30;
+                                 -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);" spacing="16">
 
                         <!-- Titre Informations -->
                         <HBox spacing="14" alignment="CENTER_LEFT">
@@ -200,10 +198,9 @@
                     </VBox>
 
                     <!-- Carte Actions -->
-                    <VBox style="-fx-background-color: white; -fx-background-radius: 16;
-                                 -fx-border-radius: 16; -fx-border-color: #e2e8f0; -fx-border-width: 1;
-                                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,3);
-                                 -fx-padding: 22;" spacing="14">
+                    <VBox style="-fx-background-color: white; -fx-border-radius: 16;
+                                 -fx-background-radius: 16; -fx-padding: 30;
+                                 -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);" spacing="14">
 
                         <!-- Titre Actions -->
                         <HBox spacing="14" alignment="CENTER_LEFT">
@@ -241,5 +238,5 @@
                 </VBox>
             </HBox>
         </VBox>
-    </ScrollPane>
-</VBox>
+    </VBox>
+</ScrollPane>

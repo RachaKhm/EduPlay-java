@@ -63,6 +63,7 @@
               <Button fx:id="btnParents" text="👪   Parents" onAction="#showParents" styleClass="modern-nav-btn"/>
               <Button fx:id="btnLibrary" text="📚   Bibliothèque" onAction="#showLibrary" styleClass="modern-nav-btn"/>
               <Button fx:id="btnResource" text="📂   Ressources" onAction="#showResource" styleClass="modern-nav-btn"/>
+              <Button fx:id="btnStatistics" text="📊   Statistiques" onAction="#showStatistics" styleClass="modern-nav-btn"/>
 
               <!-- ENSEIGNANT SECTION -->
               <HBox fx:id="sectionTeacherBox" alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 24 0 8 0;">

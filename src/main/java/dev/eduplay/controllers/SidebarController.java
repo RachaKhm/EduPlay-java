@@ -52,6 +52,7 @@ public class SidebarController {
     @FXML private Button btnParents;
     @FXML private Button btnLibrary;
     @FXML private Button btnResource;
+    @FXML private Button btnStatistics;
 
     /* ── Boutons Enseignant ────────────────────────────────── */
 
@@ -83,7 +84,7 @@ public class SidebarController {
         // Collecte de tous les boutons nav
         allNavButtons = Arrays.asList(
                 btnDashboard,
-                btnUsers, btnTeachers, btnParents, btnLibrary, btnResource,
+                btnUsers, btnTeachers, btnParents, btnLibrary, btnResource, btnStatistics,
                 btnCourses, btnStudents,
                 btnChildren, btnEvents,
                 btnMyCoursesChild, btnGames, btnChildLibrary,
@@ -116,6 +117,7 @@ public class SidebarController {
     @FXML private void showParents()        { Router.go("parents"); }
     @FXML private void showLibrary()        { Router.go("library_index"); }
     @FXML private void showResource()       { Router.go("admin_resource_index"); }
+    @FXML private void showStatistics()     { Router.go("statistics_index"); }
     @FXML private void showCourses()        { Router.go("teacher_courses"); }
     @FXML private void showStudents()       { Router.go("teacher_students"); }
     @FXML private void showChildren()       { Router.go("parent_children"); }
@@ -168,8 +170,9 @@ public class SidebarController {
             case "parent_events"     -> btnEvents;
             case "child_courses"     -> btnMyCoursesChild;
             case "child_games"       -> btnGames;
-            case "library_index"     -> btnLibrary;
+            case "library_index"        -> btnLibrary;
             case "admin_resource_index" -> btnResource;
+            case "statistics_index"     -> btnStatistics;
             case "child_library"     -> btnChildLibrary;
             case "profile"           -> btnProfile;
             default                  -> btnDashboard;
@@ -195,6 +198,7 @@ public class SidebarController {
         setVisible(btnParents,   false);
         setVisible(btnLibrary,   false);
         setVisible(btnResource,  false);
+        setVisible(btnStatistics, false);
 
         // Sections enseignant
         setVisible(sectionTeacher, false);
@@ -225,8 +229,9 @@ public class SidebarController {
                 setVisible(btnUsers,    true);
                 setVisible(btnTeachers, true);
                 setVisible(btnParents,  true);
-                setVisible(btnLibrary,  true);
-                setVisible(btnResource, true);
+                setVisible(btnLibrary,    true);
+                setVisible(btnResource,   true);
+                setVisible(btnStatistics, true);
             }
             case "enseignant" -> {
                 setVisible(sectionTeacher, true);

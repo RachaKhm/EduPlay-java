@@ -43,6 +43,7 @@ public class Router {
         routes.put("admin_resource_form",  "/ResourceForm.fxml");
         routes.put("admin_resource_show",  "/ResourceShow.fxml");
         routes.put("book_requests_index",  "/BookRequestIndex.fxml");
+        routes.put("statistics_index",     "/StatisticsView.fxml");
 
         // Enseignant — FXML à créer par le collègue module Cours
         routes.put("teacher_dashboard", "/views/teacher/TeacherDashboardView.fxml");

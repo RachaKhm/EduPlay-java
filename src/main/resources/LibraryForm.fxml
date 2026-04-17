@@ -5,47 +5,43 @@
 <?import javafx.scene.image.*?>
 <?import javafx.geometry.*?>
 
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="dev.eduplay.controllers.LibraryFormController"
-      style="-fx-background-color: #f1f5f9;"
-      spacing="0">
+<ScrollPane fitToWidth="true" style="-fx-background-color: #F8FAFC;"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="dev.eduplay.controllers.LibraryFormController">
+    <VBox spacing="24" style="-fx-padding: 30; -fx-background-color: transparent;">
 
-    <!-- HEADER GRADIENT -->
-    <HBox style="-fx-background-color: linear-gradient(to right, #3b82f6, #6366f1);
-                 -fx-padding: 28 32 28 32;"
-          alignment="CENTER_LEFT" spacing="20">
-        <VBox spacing="6" HBox.hgrow="ALWAYS">
-            <Label fx:id="headerTitle"
-                   text="📚 Créer une nouvelle bibliothèque"
-                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-            <Label fx:id="headerSubtitle"
-                   text="Remplissez le formulaire ci-dessous"
-                   style="-fx-font-size: 13px; -fx-text-fill: #bfdbfe;"/>
-        </VBox>
-        <Button text="←  Voir toutes les bibliothèques"
-                onAction="#handleRetour"
-                style="-fx-background-color: rgba(255,255,255,0.2);
-                       -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px;
-                       -fx-background-radius: 12; -fx-padding: 10 18; -fx-cursor: hand;
-                       -fx-border-color: rgba(255,255,255,0.4); -fx-border-width: 1;
-                       -fx-border-radius: 12;"/>
-    </HBox>
+        <!-- HEADER GRADIENT -->
+        <HBox style="-fx-background-color: linear-gradient(to right, #6366F1, #9333EA);
+                     -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 30;
+                     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);"
+              alignment="CENTER_LEFT" spacing="20">
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label fx:id="headerTitle"
+                       text="📚 Créer une nouvelle bibliothèque"
+                       style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label fx:id="headerSubtitle"
+                       text="Remplissez le formulaire ci-dessous"
+                       style="-fx-font-size: 13px; -fx-text-fill: #bfdbfe;"/>
+            </VBox>
+            <Button text="←  Voir toutes les bibliothèques"
+                    onAction="#handleRetour"
+                    style="-fx-background-color: rgba(255,255,255,0.2);
+                           -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px;
+                           -fx-background-radius: 12; -fx-padding: 10 18; -fx-cursor: hand;
+                           -fx-border-color: rgba(255,255,255,0.4); -fx-border-width: 1;
+                           -fx-border-radius: 12;"/>
+        </HBox>
 
-    <!-- FLASH MESSAGE -->
-    <HBox fx:id="flashBox" alignment="CENTER_LEFT" spacing="10"
-          style="-fx-padding: 10 32;" managed="false" visible="false">
-        <Label fx:id="flashLabel" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
-    </HBox>
+        <!-- FLASH MESSAGE -->
+        <HBox fx:id="flashBox" alignment="CENTER_LEFT" spacing="10"
+              style="-fx-padding: 10 32; -fx-background-radius: 16; -fx-border-radius: 16;" managed="false" visible="false">
+            <Label fx:id="flashLabel" style="-fx-font-weight: bold; -fx-font-size: 13px;"/>
+        </HBox>
 
-    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                style="-fx-background-color: transparent; -fx-background: #f1f5f9;">
-        <VBox style="-fx-padding: 28 32;" spacing="20">
-
-            <!-- CARTE FORMULAIRE -->
-            <VBox style="-fx-background-color: white; -fx-background-radius: 16;
-                         -fx-border-radius: 16; -fx-border-color: #e2e8f0; -fx-border-width: 1;
-                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);
-                         -fx-padding: 28;" spacing="20">
+        <!-- CARTE FORMULAIRE -->
+        <VBox style="-fx-background-color: white; -fx-border-radius: 16;
+                     -fx-background-radius: 16; -fx-padding: 32; -fx-border-color: #F8FAFC; -fx-border-width: 2;
+                     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);" spacing="20">
 
                 <!-- En-tête section -->
                 <HBox spacing="14" alignment="CENTER_LEFT">
@@ -206,10 +202,7 @@
                                    promptText="Cliquez sur Parcourir pour choisir une image..."
                                    editable="false"
                                    HBox.hgrow="ALWAYS"
-                                   style="-fx-background-radius: 12; -fx-border-radius: 12;
-                                          -fx-border-color: #e2e8f0; -fx-border-width: 2;
-                                          -fx-padding: 11 14; -fx-font-size: 13px;
-                                          -fx-text-fill: #64748b;"/>
+                                   style="-fx-background-radius: 12; -fx-border-radius: 12; -fx-border-color: #e2e8f0; -fx-border-width: 2; -fx-padding: 11 14; -fx-font-size: 13px; -fx-text-fill: #64748b;"/>
                         <Button text="📁  Parcourir" onAction="#handleChooseImage"
                                 style="-fx-background-color: #eff6ff; -fx-text-fill: #2563eb;
                                        -fx-font-weight: bold; -fx-font-size: 13px;
@@ -223,8 +216,7 @@
                                   -fx-padding: 4 10;" visible="false" managed="false"/>
 
                     <!-- PREVIEW IMAGE -->
-                    <VBox fx:id="imagePreviewBox"
-                          managed="false" visible="false"
+                    <VBox fx:id="imagePreviewBox" managed="false" visible="false"
                           style="-fx-background-color: #f8fafc; -fx-background-radius: 12;
                                  -fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 12;
                                  -fx-padding: 12;" spacing="8" alignment="CENTER_LEFT">
@@ -249,11 +241,11 @@
                                    -fx-border-radius: 12; -fx-cursor: hand;"/>
                     <Button fx:id="submitBtn" text="💾  Enregistrer"
                             onAction="#handleSubmit"
-                            style="-fx-background-color: linear-gradient(to right,#3b82f6,#6366f1);
+                            style="-fx-background-color: linear-gradient(to right, #6366F1, #9333EA);
                                    -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;
-                                   -fx-background-radius: 12; -fx-padding: 12 28; -fx-cursor: hand;"/>
+                                   -fx-background-radius: 12; -fx-padding: 12 28; -fx-cursor: hand;
+                                   -fx-effect: dropshadow(three-pass-box, rgba(99,102,241,0.4), 10, 0, 0, 4);"/>
                 </HBox>
             </VBox>
         </VBox>
     </ScrollPane>
-</VBox>
