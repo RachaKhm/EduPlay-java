@@ -91,6 +91,7 @@ public class ParentEventListController {
     private void loadEvents() {
         try {
             List<SchoolEvent> events = service.recuperer();
+            System.out.println("Nombre d'événements chargés: " + events.size());
             allEvents.setAll(events);
             filterAndDisplay();
         } catch (SQLException e) {
@@ -100,7 +101,7 @@ public class ParentEventListController {
     }
 
     private void filterAndDisplay() {
-        String searchText = searchField.getText().toLowerCase();
+        String searchText = searchField.getText() == null ? "" : searchField.getText().toLowerCase();
         String sortBy = sortCombo.getValue();
         boolean ascending = orderToggle.isSelected();
 
@@ -109,6 +110,8 @@ public class ParentEventListController {
                         e.getTitle().toLowerCase().contains(searchText) ||
                         (e.getLocation() != null && e.getLocation().toLowerCase().contains(searchText)))
                 .collect(Collectors.toList());
+
+        System.out.println("Événements filtrés: " + filtered.size());
 
         Comparator<SchoolEvent> comparator = getComparator(sortBy);
         if (comparator != null) {
@@ -165,10 +168,7 @@ public class ParentEventListController {
         card.setStyle("-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);");
         card.setPadding(new Insets(0, 0, 12, 0));
         card.setCursor(javafx.scene.Cursor.HAND);
-        card.setOnMouseClicked(e -> {
-            System.out.println("Clic sur l'événement: " + event.getId());
-            Router.go("parent_event_detail", event.getId());
-        });
+        card.setOnMouseClicked(e -> Router.go("parent_event_detail", event.getId()));
 
         // Image
         ImageView imageView = new ImageView();
@@ -178,14 +178,30 @@ public class ParentEventListController {
 
         String imagePath = event.getImagePath();
         boolean imageLoaded = false;
+
         if (imagePath != null && !imagePath.isEmpty()) {
-            File imageFile = new File("uploads/events/" + imagePath);
-            if (imageFile.exists()) {
-                try {
-                    imageView.setImage(new Image(imageFile.toURI().toString()));
-                    imageLoaded = true;
-                } catch (Exception ex) {
-                    System.err.println("Erreur chargement image: " + ex.getMessage());
+            String fileName = imagePath;
+            if (imagePath.contains("/")) {
+                fileName = imagePath.substring(imagePath.lastIndexOf("/") + 1);
+            }
+            if (imagePath.contains("\\")) {
+                fileName = imagePath.substring(imagePath.lastIndexOf("\\") + 1);
+            }
+
+            String[] pathsToTry = {
+                    "uploads/events/" + fileName,
+                    System.getProperty("user.dir") + "/uploads/events/" + fileName,
+                    "C:/Users/MSI/IdeaProjects/EduPlay-Java/uploads/events/" + fileName
+            };
+
+            for (String path : pathsToTry) {
+                File file = new File(path);
+                if (file.exists()) {
+                    try {
+                        imageView.setImage(new Image(file.toURI().toString()));
+                        imageLoaded = true;
+                        break;
+                    } catch (Exception ex) {}
                 }
             }
         }
@@ -204,7 +220,6 @@ public class ParentEventListController {
         titleLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
         titleLabel.setWrapText(true);
 
-        // Description tronquée
         String descText = event.getDescription() != null ? event.getDescription() : "";
         if (descText.length() > 100) {
             descText = descText.substring(0, 100) + "...";
@@ -229,10 +244,7 @@ public class ParentEventListController {
 
         Button detailsBtn = new Button("Voir les détails →");
         detailsBtn.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 25; -fx-cursor: hand;");
-        detailsBtn.setOnAction(e -> {
-            System.out.println("Clic sur détails événement: " + event.getId());
-            Router.go("parent_event_detail", event.getId());
-        });
+        detailsBtn.setOnAction(e -> Router.go("parent_event_detail", event.getId()));
 
         content.getChildren().addAll(titleLabel, descLabel, infoRow, detailsBtn);
         card.getChildren().add(content);

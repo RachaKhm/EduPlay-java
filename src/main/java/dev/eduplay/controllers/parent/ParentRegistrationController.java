@@ -37,6 +37,37 @@ public class ParentRegistrationController {
         eventService = new SchoolEventService();
         backBtn.setOnAction(e -> Router.go("parent_event_detail", eventId));
         submitBtn.setOnAction(e -> submitRegistration());
+
+        // ✅ Ajout du listener pour validation en temps réel
+        setupPhoneValidation();
+    }
+
+    // ✅ Validation du téléphone en temps réel
+    private void setupPhoneValidation() {
+        parentPhoneField.textProperty().addListener((obs, old, newVal) -> {
+            if (newVal != null && !newVal.isEmpty() && !isValidPhone(newVal)) {
+                parentPhoneField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 8;");
+            } else {
+                parentPhoneField.setStyle("-fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 8;");
+            }
+        });
+
+        childNameField.textProperty().addListener((obs, old, newVal) -> {
+            if (newVal != null && newVal.trim().isEmpty()) {
+                childNameField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 8;");
+            } else {
+                childNameField.setStyle("-fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 8;");
+            }
+        });
+    }
+
+    // ✅ Vérification du numéro de téléphone : 8 chiffres, commence par 2,4,5,9
+    private boolean isValidPhone(String phone) {
+        if (phone == null) return false;
+        String trimmed = phone.trim();
+        if (!trimmed.matches("\\d{8}")) return false;
+        char firstChar = trimmed.charAt(0);
+        return firstChar == '2' || firstChar == '4' || firstChar == '5' || firstChar == '9';
     }
 
     public void setEventId(int eventId) {
@@ -55,12 +86,29 @@ public class ParentRegistrationController {
         String childName = childNameField.getText().trim();
         String parentPhone = parentPhoneField.getText().trim();
 
+        // ✅ Validation du nom
         if (childName.isEmpty()) {
             showError("Veuillez saisir le nom de l'enfant");
+            childNameField.requestFocus();
             return;
         }
+
+        if (childName.length() < 3) {
+            showError("Le nom doit contenir au moins 3 caractères");
+            childNameField.requestFocus();
+            return;
+        }
+
+        // ✅ Validation du téléphone
         if (parentPhone.isEmpty()) {
             showError("Veuillez saisir le téléphone parent");
+            parentPhoneField.requestFocus();
+            return;
+        }
+
+        if (!isValidPhone(parentPhone)) {
+            showError("Le téléphone doit contenir 8 chiffres et commencer par 2, 4, 5 ou 9");
+            parentPhoneField.requestFocus();
             return;
         }
 
@@ -90,11 +138,10 @@ public class ParentRegistrationController {
             registration.setEmergencyContactPhone(emergencyPhoneField.getText().trim().isEmpty() ? null : emergencyPhoneField.getText().trim());
             registration.setNotes(notesArea.getText().trim().isEmpty() ? null : notesArea.getText().trim());
 
-            // ✅ INITIALISER LES VALEURS PAR DÉFAUT (évite les null)
             registration.setTicketQrCode(null);
             registration.setQrCodePath(null);
             registration.setScannedAt(null);
-            registration.setReminderSent(false);  // ← Important !
+            registration.setReminderSent(false);
             registration.setReminderSentAt(null);
 
             registrationService.ajouter(registration);
@@ -122,6 +169,15 @@ public class ParentRegistrationController {
         messageLabel.setText("❌ " + message);
         messageLabel.setStyle("-fx-text-fill: #e74c3c;");
         messageLabel.setVisible(true);
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(3000);
+                javafx.application.Platform.runLater(() -> messageLabel.setVisible(false));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private void showSuccess(String message) {

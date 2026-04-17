@@ -48,6 +48,7 @@ public class EventDetailController {
     public void setEventId(int eventId) {
         System.out.println("=== setEventId appelé avec ID: " + eventId);
         try {
+            // ✅ Force le rechargement des données
             SchoolEvent event = service.recupererParId(eventId);
             if (event != null) {
                 setEvent(event);
@@ -152,7 +153,6 @@ public class EventDetailController {
         Router.go("event_list");
     }
 
-    // ✅ CORRIGÉ : Utilise edit_event au lieu de add_event
     private void goToEdit() {
         if (currentEvent != null) {
             Router.go("edit_event", currentEvent);

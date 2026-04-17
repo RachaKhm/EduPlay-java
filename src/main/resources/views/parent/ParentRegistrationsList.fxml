@@ -20,7 +20,10 @@
                 <Label text="Suivez vos inscriptions aux événements"
                        style="-fx-text-fill: #9999BB; -fx-font-size: 14px; -fx-padding: 5 0 0 0;"/>
             </VBox>
-            <Button fx:id="backToEventsBtn" text="← Voir les événements" style="-fx-background-color: transparent; -fx-text-fill: #8b5cf6; -fx-font-weight: bold; -fx-cursor: hand;"/>
+            <HBox spacing="10">
+                <Button fx:id="refreshBtn" text="🔄 Rafraîchir" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 25; -fx-cursor: hand;"/>
+                <Button fx:id="backToEventsBtn" text="← Voir les événements" style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 25; -fx-cursor: hand;"/>
+            </HBox>
         </HBox>
 
         <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" style="-fx-background-color: transparent;">

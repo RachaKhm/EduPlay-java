@@ -12,11 +12,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ParentRegistrationsListController {
 
+    @FXML private Button refreshBtn;
     @FXML private Button backToEventsBtn;
     @FXML private VBox registrationsContainer;
     @FXML private Label emptyLabel;
@@ -28,7 +31,48 @@ public class ParentRegistrationsListController {
     public void initialize() {
         service = new EventRegistrationService();
         backToEventsBtn.setOnAction(e -> Router.go("parent_event_list"));
+        refreshBtn.setOnAction(e -> refreshList());
         loadRegistrations();
+    }
+
+    // ✅ Rafraîchir manuellement
+    private void refreshList() {
+        System.out.println("🔄 Rafraîchissement manuel des inscriptions...");
+        cleanExpiredRegistrations();
+        loadRegistrations();
+        showAlert("Rafraîchissement", "✅ La liste a été actualisée");
+    }
+
+    // ✅ Nettoyage automatique des inscriptions expirées
+    private void cleanExpiredRegistrations() {
+        try {
+            User currentUser = AppContext.getCurrentUser();
+            if (currentUser == null) return;
+
+            LocalDateTime now = LocalDateTime.now();
+            List<EventRegistration> allRegs = service.recupererParParentId(currentUser.getId());
+            List<EventRegistration> expiredRegs = new ArrayList<>();
+
+            for (EventRegistration reg : allRegs) {
+                if (reg.getEvent() != null && reg.getEvent().getEndDate() != null) {
+                    if (reg.getEvent().getEndDate().isBefore(now)) {
+                        expiredRegs.add(reg);
+                    }
+                }
+            }
+
+            if (!expiredRegs.isEmpty()) {
+                for (EventRegistration reg : expiredRegs) {
+                    service.supprimer(reg);
+                    System.out.println("🗑️ Inscription supprimée pour événement expiré: " +
+                            reg.getEvent().getTitle() + " - " + reg.getChildFullName());
+                }
+                showAlert("Nettoyage automatique",
+                        expiredRegs.size() + " inscription(s) supprimée(s) (événements terminés)");
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors du nettoyage: " + e.getMessage());
+        }
     }
 
     private void loadRegistrations() {
@@ -37,6 +81,9 @@ public class ParentRegistrationsListController {
         try {
             User currentUser = AppContext.getCurrentUser();
             if (currentUser == null) return;
+
+            // ✅ Nettoyer avant de charger
+            cleanExpiredRegistrations();
 
             List<EventRegistration> registrations = service.recupererParParentId(currentUser.getId());
 
@@ -69,16 +116,22 @@ public class ParentRegistrationsListController {
         Label childName = new Label("👤 Enfant : " + r.getChildFullName());
         childName.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748b;");
 
-        Label dates = new Label("📅 " + (r.getEvent() != null && r.getEvent().getStartDate() != null ?
-                r.getEvent().getStartDate().format(dateFormatter) : "N/A"));
+        String dateStr = r.getEvent() != null && r.getEvent().getStartDate() != null ?
+                r.getEvent().getStartDate().format(dateFormatter) : "N/A";
+        Label dates = new Label("📅 " + dateStr);
         dates.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748b;");
 
         Label statusLabel = new Label(r.getStatus());
         statusLabel.setStyle(getStatusStyle(r.getStatus()));
 
+        // ✅ Vérifier si l'événement peut encore être annulé (date non passée)
+        boolean canCancel = r.getEvent() != null && r.getEvent().getEndDate() != null &&
+                r.getEvent().getEndDate().isAfter(LocalDateTime.now());
+
         Button cancelBtn = new Button("Annuler");
         cancelBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 12; -fx-background-radius: 20; -fx-cursor: hand;");
         cancelBtn.setOnAction(e -> cancelRegistration(r));
+        cancelBtn.setDisable(!canCancel || !"PENDING".equals(r.getStatus()));
 
         HBox bottomRow = new HBox(16);
         bottomRow.getChildren().addAll(statusLabel, cancelBtn);
@@ -113,10 +166,6 @@ public class ParentRegistrationsListController {
                 e.printStackTrace();
             }
         }
-    }
-
-    public void refreshList() {
-        loadRegistrations();
     }
 
     private void showAlert(String title, String message) {

@@ -13,6 +13,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
 import java.io.File;
+import java.awt.Desktop;
+import java.net.URI;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -42,8 +44,17 @@ public class ParentEventDetailController {
         eventService = new SchoolEventService();
         resourceService = new EventResourceService();
 
-        backBtn.setOnAction(e -> Router.go("parent_event_list"));
-        registerBtn.setOnAction(e -> Router.go("parent_registration_form", currentEvent.getId()));
+        backBtn.setOnAction(e -> {
+            System.out.println("Retour à la liste des événements");
+            Router.go("parent_event_list");
+        });
+
+        registerBtn.setOnAction(e -> {
+            if (currentEvent != null) {
+                System.out.println("Redirection vers formulaire d'inscription");
+                Router.go("parent_registration_form", currentEvent.getId());
+            }
+        });
     }
 
     public void setEventId(int eventId) {
@@ -74,18 +85,84 @@ public class ParentEventDetailController {
             endDateLabel.setText("🏁 Fin: " + currentEvent.getEndDate().format(dateFormatter));
         }
 
-        // Charger l'image
+        loadImage();
+    }
+
+    private void loadImage() {
         String imagePath = currentEvent.getImagePath();
-        if (imagePath != null && !imagePath.isEmpty()) {
-            File imageFile = new File("uploads/events/" + imagePath);
-            if (imageFile.exists()) {
+        System.out.println("=== CHARGEMENT IMAGE ===");
+        System.out.println("ImagePath brut: " + imagePath);
+
+        // Si pas d'image, afficher l'image par défaut
+        if (imagePath == null || imagePath.isEmpty()) {
+            setDefaultImage();
+            return;
+        }
+
+        // Extraire le nom du fichier
+        String fileName = imagePath;
+        if (imagePath.contains("/")) {
+            fileName = imagePath.substring(imagePath.lastIndexOf("/") + 1);
+        }
+        if (imagePath.contains("\\")) {
+            fileName = imagePath.substring(imagePath.lastIndexOf("\\") + 1);
+        }
+        System.out.println("Nom du fichier: " + fileName);
+
+        // Liste des chemins à tester
+        String[] pathsToTry = {
+                "uploads/events/" + fileName,
+                System.getProperty("user.dir") + "/uploads/events/" + fileName,
+                "C:/Users/MSI/IdeaProjects/EduPlay-Java/uploads/events/" + fileName,
+                imagePath,
+                fileName
+        };
+
+        boolean imageFound = false;
+        for (String path : pathsToTry) {
+            File file = new File(path);
+            System.out.println("Test: " + file.getAbsolutePath() + " - Existe: " + file.exists());
+
+            if (file.exists()) {
                 try {
-                    eventImageView.setImage(new Image(imageFile.toURI().toString()));
+                    Image image = new Image(file.toURI().toString());
+                    eventImageView.setImage(image);
+                    eventImageView.setFitHeight(280);
+                    eventImageView.setFitWidth(Double.MAX_VALUE);
+                    eventImageView.setPreserveRatio(false);
+                    eventImageView.setVisible(true);
+                    System.out.println("✅ IMAGE CHARGÉE depuis: " + path);
+                    imageFound = true;
+                    return;
                 } catch (Exception e) {
-                    System.err.println("Erreur chargement image: " + e.getMessage());
+                    System.err.println("Erreur chargement: " + e.getMessage());
                 }
             }
         }
+
+        if (!imageFound) {
+            System.out.println("❌ IMAGE NON TROUVÉE pour: " + fileName);
+            setDefaultImage();
+        }
+    }
+
+    private void setDefaultImage() {
+        try {
+            // Essayer de charger une image par défaut depuis les ressources
+            Image defaultImage = new Image(getClass().getResourceAsStream("/images/default-event.jpg"));
+            if (defaultImage != null && !defaultImage.isError()) {
+                eventImageView.setImage(defaultImage);
+            } else {
+                eventImageView.setImage(null);
+                eventImageView.setStyle("-fx-background-color: linear-gradient(to right, #8b5cf6, #6d28d9);");
+            }
+        } catch (Exception e) {
+            eventImageView.setImage(null);
+            eventImageView.setStyle("-fx-background-color: linear-gradient(to right, #8b5cf6, #6d28d9);");
+        }
+        eventImageView.setFitHeight(280);
+        eventImageView.setFitWidth(Double.MAX_VALUE);
+        eventImageView.setPreserveRatio(false);
     }
 
     private void loadResources() {
@@ -93,7 +170,6 @@ public class ParentEventDetailController {
             List<EventResource> resources = resourceService.recupererParEventId(currentEvent.getId());
             System.out.println("Nombre de ressources chargées: " + resources.size());
 
-            // Filtrer par type
             List<EventResource> mainResources = resources.stream()
                     .filter(r -> r.getType().equals("DOCUMENT") || r.getType().equals("LIEN") || r.getType().equals("VIDEO"))
                     .toList();
@@ -138,20 +214,45 @@ public class ParentEventDetailController {
                 card.getChildren().add(context);
             }
 
-            Button openBtn = new Button("Ouvrir");
+            Button openBtn = new Button("📂 Ouvrir");
             openBtn.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 12; -fx-background-radius: 20; -fx-cursor: hand;");
-            openBtn.setOnAction(e -> {
-                if (r.getUrl() != null && !r.getUrl().isEmpty()) {
-                    try {
-                        java.awt.Desktop.getDesktop().browse(new java.net.URI(r.getUrl()));
-                    } catch (Exception ex) {
-                        System.err.println("Erreur ouverture URL: " + ex.getMessage());
-                    }
-                }
-            });
+            openBtn.setOnAction(e -> openResource(r));
 
             card.getChildren().addAll(title, openBtn);
             resourcesContainer.getChildren().add(card);
+        }
+    }
+
+    private void openResource(EventResource resource) {
+        System.out.println("Ouverture de la ressource: " + resource.getTitle());
+
+        if (resource.getUrl() != null && !resource.getUrl().isEmpty()) {
+            String url = resource.getUrl();
+            try {
+                if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                    url = "https://" + url;
+                }
+                Desktop.getDesktop().browse(new URI(url));
+                System.out.println("✅ URL ouverte: " + url);
+            } catch (Exception ex) {
+                showAlert("Erreur", "Impossible d'ouvrir l'URL: " + ex.getMessage());
+            }
+        }
+        else if (resource.getFilePath() != null && !resource.getFilePath().isEmpty()) {
+            String filePath = resource.getFilePath();
+            try {
+                File file = new File(filePath);
+                if (file.exists()) {
+                    Desktop.getDesktop().open(file);
+                    System.out.println("✅ Fichier ouvert: " + filePath);
+                } else {
+                    showAlert("Erreur", "Fichier non trouvé: " + filePath);
+                }
+            } catch (Exception ex) {
+                showAlert("Erreur", "Impossible d'ouvrir le fichier: " + ex.getMessage());
+            }
+        } else {
+            showAlert("Information", "Aucun fichier ou URL disponible pour cette ressource");
         }
     }
 
@@ -193,5 +294,13 @@ public class ParentEventDetailController {
                 planningContainer.getChildren().add(timeLabel);
             }
         }
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

@@ -106,6 +106,21 @@ public class Router {
         if (route.equals(currentRoute)) return;
 
         try {
+            // ✅ Déterminer si la route est dynamique (dépend d'un ID)
+            boolean isDynamicRoute = route.equals("event_detail") ||
+                    route.equals("edit_event") ||
+                    route.equals("event_resource") ||
+                    route.equals("resource_detail") ||
+                    route.equals("registration_detail") ||
+                    route.equals("edit_registration") ||
+                    route.equals("parent_event_detail") ||
+                    route.equals("parent_registration_form");
+
+            // ✅ Vider le cache pour les routes dynamiques
+            if (isDynamicRoute) {
+                viewCache.remove(route);
+            }
+
             Node view = viewCache.get(route);
 
             if (view == null) {
@@ -255,7 +270,11 @@ public class Router {
                         }
                     }
                 }
-                viewCache.put(route, view);
+
+                // ✅ Ne mettre en cache que les routes statiques
+                if (!isDynamicRoute) {
+                    viewCache.put(route, view);
+                }
             }
 
             container.getChildren().setAll(view);
