@@ -32,11 +32,12 @@
             <Label fx:id="resultCountLabel" text="0 résultat(s)" style="-fx-text-fill: #6b7280; -fx-font-size: 13px;"/>
         </HBox>
 
-        <!-- Zone scrollable pour les cartes -->
+        <!-- GridView pour les cartes -->
         <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
             <content>
                 <VBox spacing="20">
-                    <VBox fx:id="eventsContainer" spacing="16"/>
+                    <!-- Grille dynamique avec FlowPane (3 colonnes) -->
+                    <FlowPane fx:id="eventsGrid" hgap="20" vgap="20" alignment="TOP_CENTER"/>
                     <HBox fx:id="paginationBox" spacing="10" alignment="CENTER" visible="false" managed="false">
                         <Button fx:id="prevBtn" text="◀ Précédent" style="-fx-background-color: #f1f5f9; -fx-padding: 8 16; -fx-background-radius: 25; -fx-cursor: hand;"/>
                         <Label fx:id="pageInfo" text="Page 1 sur 1" style="-fx-text-fill: #6b7280;"/>

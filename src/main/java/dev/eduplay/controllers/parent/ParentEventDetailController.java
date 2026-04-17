@@ -109,20 +109,31 @@ public class ParentEventDetailController {
         }
         System.out.println("Nom du fichier: " + fileName);
 
-        // Liste des chemins à tester
+        // Récupérer le répertoire de travail
+        String userDir = System.getProperty("user.dir");
+        System.out.println("Répertoire de travail: " + userDir);
+
+        // Liste des chemins à tester (plus complète)
         String[] pathsToTry = {
+                // Chemin relatif
                 "uploads/events/" + fileName,
-                System.getProperty("user.dir") + "/uploads/events/" + fileName,
+                "src/main/resources/uploads/events/" + fileName,
+                "target/classes/uploads/events/" + fileName,
+
+                // Chemin absolu
+                userDir + "/uploads/events/" + fileName,
+                userDir + "/src/main/resources/uploads/events/" + fileName,
                 "C:/Users/MSI/IdeaProjects/EduPlay-Java/uploads/events/" + fileName,
-                imagePath,
-                fileName
+                "C:/Users/MSI/IdeaProjects/EduPlay-Java/src/main/resources/uploads/events/" + fileName,
+
+                // Nom seul
+                fileName,
+                "./" + fileName
         };
 
         boolean imageFound = false;
         for (String path : pathsToTry) {
             File file = new File(path);
-            System.out.println("Test: " + file.getAbsolutePath() + " - Existe: " + file.exists());
-
             if (file.exists()) {
                 try {
                     Image image = new Image(file.toURI().toString());
@@ -147,19 +158,8 @@ public class ParentEventDetailController {
     }
 
     private void setDefaultImage() {
-        try {
-            // Essayer de charger une image par défaut depuis les ressources
-            Image defaultImage = new Image(getClass().getResourceAsStream("/images/default-event.jpg"));
-            if (defaultImage != null && !defaultImage.isError()) {
-                eventImageView.setImage(defaultImage);
-            } else {
-                eventImageView.setImage(null);
-                eventImageView.setStyle("-fx-background-color: linear-gradient(to right, #8b5cf6, #6d28d9);");
-            }
-        } catch (Exception e) {
-            eventImageView.setImage(null);
-            eventImageView.setStyle("-fx-background-color: linear-gradient(to right, #8b5cf6, #6d28d9);");
-        }
+        eventImageView.setImage(null);
+        eventImageView.setStyle("-fx-background-color: linear-gradient(to right, #8b5cf6, #6d28d9);");
         eventImageView.setFitHeight(280);
         eventImageView.setFitWidth(Double.MAX_VALUE);
         eventImageView.setPreserveRatio(false);

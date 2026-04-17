@@ -3,7 +3,6 @@ package dev.eduplay.controllers.parent;
 import dev.eduplay.core.Router;
 import dev.eduplay.entities.SchoolEvent;
 import dev.eduplay.services.SchoolEventService;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,9 +10,9 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -29,7 +28,7 @@ public class ParentEventListController {
     @FXML private ToggleButton orderToggle;
     @FXML private Button resetBtn;
     @FXML private Label resultCountLabel;
-    @FXML private VBox eventsContainer;
+    @FXML private FlowPane eventsGrid;
     @FXML private HBox paginationBox;
     @FXML private Button prevBtn;
     @FXML private Button nextBtn;
@@ -39,7 +38,7 @@ public class ParentEventListController {
     private ObservableList<SchoolEvent> allEvents;
     private ObservableList<SchoolEvent> currentPageEvents;
     private int currentPage = 1;
-    private int itemsPerPage = 6;
+    private int itemsPerPage = 6; // 3x2 = 6 cartes par page
     private int totalPages = 1;
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
@@ -130,7 +129,7 @@ public class ParentEventListController {
             currentPageEvents.addAll(filtered.subList(start, end));
         }
 
-        displayEvents();
+        displayEventsGrid();
         updatePaginationControls(filtered.size());
     }
 
@@ -148,23 +147,29 @@ public class ParentEventListController {
         }
     }
 
-    private void displayEvents() {
-        eventsContainer.getChildren().clear();
+    private void displayEventsGrid() {
+        eventsGrid.getChildren().clear();
 
         if (currentPageEvents.isEmpty()) {
             Label emptyLabel = new Label("Aucun événement trouvé");
             emptyLabel.setStyle("-fx-text-fill: #94a3b8; -fx-font-size: 14px; -fx-padding: 40;");
-            eventsContainer.getChildren().add(emptyLabel);
+            eventsGrid.getChildren().add(emptyLabel);
             return;
         }
 
+        // Définir la largeur de chaque carte (3 par ligne)
+        double cardWidth = 300;
+        eventsGrid.setPrefWrapLength(cardWidth * 3 + 40);
+
         for (SchoolEvent event : currentPageEvents) {
-            eventsContainer.getChildren().add(createEventCard(event));
+            eventsGrid.getChildren().add(createEventCard(event));
         }
     }
 
     private VBox createEventCard(SchoolEvent event) {
         VBox card = new VBox(10);
+        card.setPrefWidth(300);
+        card.setMaxWidth(300);
         card.setStyle("-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);");
         card.setPadding(new Insets(0, 0, 12, 0));
         card.setCursor(javafx.scene.Cursor.HAND);
@@ -173,7 +178,7 @@ public class ParentEventListController {
         // Image
         ImageView imageView = new ImageView();
         imageView.setFitHeight(160);
-        imageView.setFitWidth(Double.MAX_VALUE);
+        imageView.setFitWidth(300);
         imageView.setPreserveRatio(false);
 
         String imagePath = event.getImagePath();
@@ -221,8 +226,8 @@ public class ParentEventListController {
         titleLabel.setWrapText(true);
 
         String descText = event.getDescription() != null ? event.getDescription() : "";
-        if (descText.length() > 100) {
-            descText = descText.substring(0, 100) + "...";
+        if (descText.length() > 80) {
+            descText = descText.substring(0, 80) + "...";
         }
         Label descLabel = new Label(descText);
         descLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748b;");
@@ -235,8 +240,8 @@ public class ParentEventListController {
         dateLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #8b5cf6; -fx-font-weight: bold;");
 
         String locationStr = event.getLocation() != null ? event.getLocation() : "";
-        if (locationStr.length() > 20) {
-            locationStr = locationStr.substring(0, 20) + "...";
+        if (locationStr.length() > 15) {
+            locationStr = locationStr.substring(0, 15) + "...";
         }
         Label locationLabel = new Label("📍 " + locationStr);
         locationLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #8b5cf6; -fx-font-weight: bold;");
