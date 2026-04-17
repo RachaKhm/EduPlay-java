@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Line?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.LevelController"
+            prefWidth="580"
+            style="-fx-background-color: #F8F9FA;">
+
+    <!-- HEADER -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="12"
+              style="-fx-background-color: #1A1A2E; -fx-padding: 18 24;">
+            <VBox spacing="3">
+                <Label fx:id="formTitle" text="Nouveau niveau"
+                       style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label text="Gestion des niveaux — EduPlay"
+                       style="-fx-font-size: 11px; -fx-text-fill: #555577;"/>
+            </VBox>
+            <HBox HBox.hgrow="ALWAYS"/>
+            <Button text="✕" onAction="#closeForm"
+                    style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
+                           -fx-font-size: 16px; -fx-cursor: hand; -fx-border-width: 0;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true"
+                    style="-fx-background-color: transparent; -fx-background: transparent;">
+            <VBox spacing="0" style="-fx-padding: 24 32 24 32; -fx-background-color: #F8F9FA;">
+
+                <!-- Indicateur étape -->
+                <HBox spacing="0" style="-fx-padding: 0 0 24 0;">
+                    <VBox alignment="CENTER" prefWidth="80" spacing="6">
+                        <StackPane>
+                            <Circle fx:id="step1Circle" radius="14"
+                                    fill="#E94560"/>
+                            <Label text="1"
+                                   style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        </StackPane>
+                        <Label text="Informations"
+                               style="-fx-font-size: 10px; -fx-text-fill: #E94560; -fx-font-weight: bold;"/>
+                    </VBox>
+                    <Line fx:id="stepLine1" startX="0" endX="60" startY="0" endY="0"
+                          style="-fx-stroke: #DDDDE8;" translateY="14"/>
+                    <VBox alignment="CENTER" prefWidth="80" spacing="6">
+                        <StackPane>
+                            <Circle radius="14" fill="#DDDDE8"/>
+                            <Label text="2"
+                                   style="-fx-text-fill: #9999BB; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        </StackPane>
+                        <Label text="Pédagogie"
+                               style="-fx-font-size: 10px; -fx-text-fill: #9999BB;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Section 1 : Informations générales -->
+                <Label text="Informations générales"
+                       style="-fx-font-size: 11px; -fx-font-weight: bold;
+                              -fx-text-fill: #9999BB; -fx-padding: 0 0 12 0;"/>
+
+                <VBox spacing="6">
+                    <Label text="Nom du niveau *"
+                           style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                    <TextField fx:id="nameField" promptText="ex: CP1, CE2, 6ème, 1ère année..."
+                               style="-fx-background-color: white; -fx-border-color: #DDDDE8;
+                                      -fx-border-width: 1; -fx-background-radius: 6;
+                                      -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                </VBox>
+
+                <VBox spacing="6" style="-fx-padding: 14 0 0 0;">
+                    <Label text="Description"
+                           style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                    <TextArea fx:id="descriptionField" promptText="Description du niveau"
+                              prefRowCount="3" wrapText="true"
+                              style="-fx-background-color: white; -fx-border-color: #DDDDE8;
+                                     -fx-border-width: 1; -fx-background-radius: 6;
+                                     -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                </VBox>
+
+                <Separator style="-fx-padding: 20 0 0 0;"/>
+
+                <!-- Section 2 : Paramètres pédagogiques -->
+                <Label text="Paramètres pédagogiques"
+                       style="-fx-font-size: 11px; -fx-font-weight: bold;
+                              -fx-text-fill: #9999BB; -fx-padding: 18 0 12 0;"/>
+
+                <HBox spacing="16">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Difficulté *"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <ComboBox fx:id="difficultyCombo" maxWidth="Infinity"
+                                  promptText="Sélectionner la difficulté"
+                                  style="-fx-font-size: 13px;"/>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="16" style="-fx-padding: 14 0 0 0;">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Âge minimum *"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <Spinner fx:id="minAgeSpinner" editable="true"
+                                 style="-fx-font-size: 13px;"/>
+                    </VBox>
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Âge maximum *"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <Spinner fx:id="maxAgeSpinner" editable="true"
+                                 style="-fx-font-size: 13px;"/>
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="6" style="-fx-padding: 14 0 0 0;">
+                    <Label text="Objectif pédagogique *"
+                           style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                    <TextArea fx:id="pedagogGoalField"
+                              promptText="Ex: Maîtriser les opérations de base, Comprendre la conjugaison..."
+                              prefRowCount="2" wrapText="true"
+                              style="-fx-background-color: white; -fx-border-color: #DDDDE8;
+                                     -fx-border-width: 1; -fx-background-radius: 6;
+                                     -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                </VBox>
+
+                <!-- Feedback -->
+                <Label fx:id="feedbackLabel" text="" wrapText="true"
+                       style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
+
+                <!-- Boutons -->
+                <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 24 0 0 0;">
+                    <Button text="Annuler" onAction="#closeForm"
+                            style="-fx-background-color: white; -fx-border-color: #DDDDE8;
+                                   -fx-border-width: 1; -fx-border-radius: 6;
+                                   -fx-background-radius: 6; -fx-text-fill: #555577;
+                                   -fx-font-size: 13px; -fx-padding: 9 20; -fx-cursor: hand;"/>
+                    <Button text="Créer le niveau" onAction="#saveLevel"
+                            style="-fx-background-color: #E94560; -fx-text-fill: white;
+                                   -fx-font-size: 13px; -fx-font-weight: bold;
+                                   -fx-padding: 9 24; -fx-background-radius: 6; -fx-cursor: hand;"/>
+                </HBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>
