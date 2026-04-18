@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane fitToWidth="true"
+            style="-fx-background-color: #F8F9FA; -fx-background: #F8F9FA;"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.ParentSignupController">
+
+    <VBox alignment="CENTER" style="-fx-padding: 40 0;">
+
+        <VBox maxWidth="520" spacing="0"
+              style="-fx-background-color: white; -fx-padding: 36 40;
+                     -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 4);">
+
+            <!-- Titre -->
+            <Label text="Créer un compte parent"
+                   style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1A1A2E;"/>
+            <Label text="Remplissez les informations ci-dessous pour créer votre compte."
+                   style="-fx-font-size: 13px; -fx-text-fill: #9999BB; -fx-padding: 6 0 24 0;"/>
+
+            <!-- Nom & Prénom -->
+            <HBox spacing="16">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Nom *" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #555577;"/>
+                    <TextField fx:id="lastNameField" promptText="Ex: Trabelsi"
+                               style="-fx-background-color: #F8F9FA; -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                      -fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                    <Label fx:id="lastNameError" text="" style="-fx-text-fill: #E94560; -fx-font-size: 11px;" wrapText="true"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Prénom *" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #555577;"/>
+                    <TextField fx:id="firstNameField" promptText="Ex: Fatma"
+                               style="-fx-background-color: #F8F9FA; -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                      -fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                    <Label fx:id="firstNameError" text="" style="-fx-text-fill: #E94560; -fx-font-size: 11px;" wrapText="true"/>
+                </VBox>
+            </HBox>
+
+            <!-- Email -->
+            <VBox spacing="4" style="-fx-padding: 10 0 0 0;">
+                <Label text="Email *" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #555577;"/>
+                <TextField fx:id="emailField" promptText="parent@email.com"
+                           style="-fx-background-color: #F8F9FA; -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                  -fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                <Label fx:id="emailError" text="" style="-fx-text-fill: #E94560; -fx-font-size: 11px;" wrapText="true"/>
+            </VBox>
+
+            <!-- Téléphone -->
+            <VBox spacing="4" style="-fx-padding: 10 0 0 0;">
+                <Label text="Téléphone" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #555577;"/>
+                <TextField fx:id="phoneField" promptText="+216 XX XXX XXX"
+                           style="-fx-background-color: #F8F9FA; -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                  -fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                <Label fx:id="phoneError" text="" style="-fx-text-fill: #E94560; -fx-font-size: 11px;" wrapText="true"/>
+            </VBox>
+
+            <!-- Adresse -->
+            <VBox spacing="4" style="-fx-padding: 10 0 0 0;">
+                <Label text="Adresse" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #555577;"/>
+                <TextField fx:id="addressField" promptText="Adresse complète"
+                           style="-fx-background-color: #F8F9FA; -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                  -fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+            </VBox>
+
+            <Separator style="-fx-padding: 16 0 0 0;"/>
+
+            <!-- Mot de passe -->
+            <VBox spacing="4" style="-fx-padding: 14 0 0 0;">
+                <Label text="Mot de passe *" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #555577;"/>
+                <Label text="Requis — minimum 6 caractères" style="-fx-font-size: 11px; -fx-text-fill: #9999BB;"/>
+                <PasswordField fx:id="passwordField" promptText="Mot de passe"
+                               style="-fx-background-color: #F8F9FA; -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                      -fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                <Label fx:id="passwordError" text="" style="-fx-text-fill: #E94560; -fx-font-size: 11px;" wrapText="true"/>
+            </VBox>
+
+            <!-- Confirmer mot de passe -->
+            <VBox spacing="4" style="-fx-padding: 10 0 0 0;">
+                <Label text="Confirmer le mot de passe *" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #555577;"/>
+                <PasswordField fx:id="confirmPasswordField" promptText="Confirmer mot de passe"
+                               style="-fx-background-color: #F8F9FA; -fx-border-color: #DDDDE8; -fx-border-width: 1;
+                                      -fx-background-radius: 6; -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                <Label fx:id="confirmPasswordError" text="" style="-fx-text-fill: #E94560; -fx-font-size: 11px;" wrapText="true"/>
+            </VBox>
+
+            <!-- Message succès global -->
+            <Label fx:id="successLabel" text="" wrapText="true"
+                   style="-fx-font-size: 13px; -fx-text-fill: #2E9E6E; -fx-padding: 14 0 0 0;"/>
+
+            <!-- Bouton -->
+            <Button text="Créer mon compte" onAction="#handleSignup"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: #E94560; -fx-text-fill: white; -fx-font-size: 14px;
+                           -fx-font-weight: bold; -fx-padding: 12; -fx-background-radius: 8;
+                           -fx-cursor: hand; -fx-border-width: 0; -fx-margin: 20 0 0 0;"/>
+
+            <!-- Lien connexion -->
+            <VBox spacing="4" alignment="CENTER" style="-fx-padding: 16 0 0 0;">
+                <Label text="Vous avez déjà un compte ?"
+                       style="-fx-font-size: 12px; -fx-text-fill: #9999BB;"/>
+                <Hyperlink text="Se connecter" onAction="#goToLogin"
+                           style="-fx-font-size: 13px; -fx-text-fill: #E94560; -fx-font-weight: bold;"/>
+            </VBox>
+
+        </VBox>
+    </VBox>
+</ScrollPane>

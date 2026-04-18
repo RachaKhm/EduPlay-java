@@ -93,6 +93,18 @@
                                -fx-border-width: 0;
                                -fx-margin: 24 0 0 0;"/>
 
+                <!-- Inscription parent -->
+                <VBox spacing="6" alignment="CENTER"
+                      style="-fx-padding: 20 0 0 0;">
+                    <Label text="Vous n'avez pas de compte ?"
+                           style="-fx-font-size: 12px; -fx-text-fill: #9999BB;"/>
+                    <Hyperlink fx:id="signupLink"
+                               text="Créer un compte parent"
+                               onAction="#goToSignup"
+                               style="-fx-font-size: 13px; -fx-text-fill: #E94560;
+                                      -fx-font-weight: bold; -fx-border-width: 0;"/>
+                </VBox>
+
                 <!-- Version -->
                 <Label text="EduPlay v1.0 — ESPRIT 2026"
                        style="-fx-font-size: 11px; -fx-text-fill: #BBBBCC;

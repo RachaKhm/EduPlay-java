@@ -26,8 +26,11 @@ public class MainController {
     /* ── FXML bindings ─────────────────────────────────────── */
 
     @FXML private StackPane contentArea;
-    @FXML private Label     topbarTitle;
-    @FXML private Label     topbarUser;
+    // (Ancien topbarTitle enlevé car déplacé dans le design du content ou inutile)
+    @FXML private Label     pillInitials;
+    @FXML private Label     pillName;
+    @FXML private Label     pillRole;
+    @FXML private void showProfile()        { Router.go("profile"); }
 
     /* ── Titres de la topbar par route ─────────────────────── */
 
@@ -52,10 +55,24 @@ public class MainController {
 
     @FXML
     public void initialize() {
-        // Afficher le nom de l'utilisateur connecté dans la topbar
-        if (topbarUser != null) {
-            topbarUser.setText(AppContext.getFullName()
-                    + "  ·  " + capitalize(AppContext.getRole()));
+        // Mettre à jour le profil (Pill)
+        if (pillName != null) {
+            pillName.setText(capitalize(AppContext.getFullName()));
+        }
+        if (pillRole != null) {
+            pillRole.setText(capitalize(AppContext.getRole()));
+        }
+        if (pillInitials != null) {
+            String fullName = AppContext.getFullName();
+            String init = "";
+            if (fullName != null && !fullName.isBlank()) {
+                String[] parts = fullName.split(" ");
+                if (parts.length > 0 && !parts[0].isEmpty()) init += parts[0].charAt(0);
+                if (parts.length > 1 && !parts[1].isEmpty()) init += parts[1].charAt(0);
+            } else {
+                init = "U";
+            }
+            pillInitials.setText(init.toUpperCase());
         }
 
         // Enregistrer le contentArea dans le Router
@@ -63,13 +80,20 @@ public class MainController {
 
         // Synchroniser le titre de la topbar à chaque changement de route
         Router.setOnRouteChange(route -> {
-            if (topbarTitle != null) {
-                topbarTitle.setText(ROUTE_TITLES.getOrDefault(route, "EduPlay"));
-            }
+            // Optionnel: on pourrait émettre un évènement si certaines pages ont besoin de ce titre,
+            // mais l'UI moderne (de l'image) n'affiche plus le titre global en haut, 
+            // c'est affiché directement dans le content "Inscriptions par évènement"
         });
 
         // Naviguer vers la page d'accueil du rôle connecté
         Router.go(AppContext.getDefaultRoute());
+    }
+
+    @FXML
+    public void openProfileDropdown() {
+        // En vrai: ouvrir une popup pour Settings/Profile/Logout
+        // Pour l'instant on navigue direct au profil
+        Router.go("profile");
     }
 
     /* ── Utilitaires ───────────────────────────────────────── */

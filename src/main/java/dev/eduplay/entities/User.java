@@ -22,6 +22,7 @@ public class User {
     private String lastLoginCountry;
     private String lastLoginCity;
     private LocalDateTime lastLoginAt;
+    private int parentId; // maps to parent_id in Doctrine
 
     // Constructeur vide
     public User() {
@@ -181,6 +182,14 @@ public class User {
 
     public void setLastLoginAt(LocalDateTime lastLoginAt) {
         this.lastLoginAt = lastLoginAt;
+    }
+
+    public int getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
     }
 
     // Méthode utilitaire
