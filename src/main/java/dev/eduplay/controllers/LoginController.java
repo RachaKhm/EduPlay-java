@@ -55,7 +55,7 @@ public class LoginController {
 
         try {
             Parent root = new FXMLLoader(
-                    getClass().getResource("/views/MainView.fxml")).load();
+                    getClass().getResource("/views/shared/MainView.fxml")).load();
             Stage stage = (Stage) emailField.getScene().getWindow();
             stage.setScene(new Scene(root, 1100, 700));
             stage.setTitle("EduPlay — " + capitalize(AppContext.getRole()));

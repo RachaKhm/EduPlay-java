@@ -4,6 +4,7 @@ import dev.eduplay.core.AppContext;
 import dev.eduplay.core.Router;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 
 import java.util.Map;
@@ -30,7 +31,8 @@ public class MainController {
     @FXML private Label     pillInitials;
     @FXML private Label     pillName;
     @FXML private Label     pillRole;
-    @FXML private void showProfile()        { Router.go("profile"); }
+    @FXML private HBox btnProfile;
+
 
     /* ── Titres de la topbar par route ─────────────────────── */
 
@@ -89,17 +91,12 @@ public class MainController {
         Router.go(AppContext.getDefaultRoute());
     }
 
-    @FXML
-    public void openProfileDropdown() {
-        // En vrai: ouvrir une popup pour Settings/Profile/Logout
-        // Pour l'instant on navigue direct au profil
-        Router.go("profile");
-    }
-
     /* ── Utilitaires ───────────────────────────────────────── */
 
     private String capitalize(String s) {
         if (s == null || s.isBlank()) return "";
         return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
+
+    @FXML private void showProfile() { Router.go("profile"); }
 }

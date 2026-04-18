@@ -13,7 +13,7 @@
 
     <!-- ═══ SIDEBAR ═══ -->
     <left>
-        <fx:include fx:id="sidebar" source="/views/auth/Sidebar.fxml"/>
+        <fx:include fx:id="sidebar" source="/views/shared/Sidebar.fxml"/>
     </left>
 
     <!-- ═══ ZONE PRINCIPALE ═══ -->
@@ -37,12 +37,11 @@
                     </StackPane>
 
                     <!-- Profile Button -->
-                    <HBox alignment="CENTER" spacing="12" style="-fx-background-color: linear-gradient(to right, #667EEA, #764BA2); -fx-padding: 4 16 4 4; -fx-background-radius: 24; -fx-cursor: hand;">
+                    <HBox fx:id="btnProfile" onMouseClicked="#showProfile" alignment="CENTER" spacing="12" style="-fx-background-color: linear-gradient(to right, #667EEA, #764BA2); -fx-padding: 4 16 4 4; -fx-background-radius: 24; -fx-cursor: hand;">
                         <StackPane style="-fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 20; -fx-min-width: 36; -fx-min-height: 36; -fx-max-width: 36; -fx-max-height: 36;">
-                            <Label id="btnProfile" onMouseClicked="#showProfile" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;"/>
                         </StackPane>
                         <VBox alignment="CENTER_LEFT">
-                            <Label id="btnProfile" onMouseClicked="#showProfile" text="Mon Profil" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px;"/>
+                            <Label text="Mon Profil" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px;"/>
                             <Label text="Actif" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 11px;"/>
                         </VBox>
                     </HBox>

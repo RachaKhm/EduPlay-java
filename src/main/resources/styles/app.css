@@ -143,3 +143,27 @@
     -fx-font-size: 11px;
     -fx-font-weight: bold;
 }
+.modern-nav-btn {
+    -fx-background-color: transparent;
+    -fx-padding: 6 16 6 6;
+    -fx-background-radius: 24;
+    -fx-cursor: hand;
+}
+
+.modern-nav-btn:hover {
+    -fx-background-color: rgba(102,126,234,0.1);
+}
+
+.modern-nav-btn-active {
+    -fx-background-color: linear-gradient(to right, #667EEA, #764BA2);
+}
+
+.modern-nav-btn-active .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.nav-text {
+    -fx-text-fill: #374151;
+    -fx-font-size: 13px;
+}
