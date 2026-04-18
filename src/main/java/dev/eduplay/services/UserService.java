@@ -17,8 +17,8 @@ public class UserService implements IGeneralService<User> {
 
     @Override
     public void ajouter(User user) {
-        String query = "INSERT INTO user (first_name, last_name, email, type, telephone, adresse, active, created_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+        String query = "INSERT INTO user (first_name, last_name, email, type, telephone, adresse, active, created_at, password, username, birth_date, specialite, niveau, roles, parent_id) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setString(1, user.getFirstName());
@@ -28,6 +28,17 @@ public class UserService implements IGeneralService<User> {
             ps.setString(5, user.getTelephone());
             ps.setString(6, user.getAdresse());
             ps.setBoolean(7, user.isActive());
+            ps.setString(8, user.getPassword() != null ? user.getPassword() : "");
+            ps.setString(9, user.getUsername());
+            ps.setDate(10, user.getBirthDate() != null ? java.sql.Date.valueOf(user.getBirthDate()) : null);
+            ps.setString(11, user.getSpecialite());
+            ps.setString(12, user.getNiveau());
+            ps.setString(13, "[\"ROLE_" + (user.getType() != null ? user.getType().toUpperCase() : "USER") + "\"]");
+            if (user.getParentId() > 0) {
+                ps.setInt(14, user.getParentId());
+            } else {
+                ps.setNull(14, java.sql.Types.INTEGER);
+            }
 
             ps.executeUpdate();
             System.out.println(" User added successfully: " + user.getFullName());
@@ -40,7 +51,7 @@ public class UserService implements IGeneralService<User> {
     @Override
     public void modifier(User user) {
         String query = "UPDATE user SET first_name = ?, last_name = ?, email = ?, " +
-                "telephone = ?, adresse = ?, active = ? WHERE id = ?";
+                "telephone = ?, adresse = ?, active = ?, password = ?, username = ?, birth_date = ?, specialite = ?, niveau = ? WHERE id = ?";
 
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setString(1, user.getFirstName());
@@ -49,7 +60,12 @@ public class UserService implements IGeneralService<User> {
             ps.setString(4, user.getTelephone());
             ps.setString(5, user.getAdresse());
             ps.setBoolean(6, user.isActive());
-            ps.setInt(7, user.getId());
+            ps.setString(7, user.getPassword());
+            ps.setString(8, user.getUsername());
+            ps.setDate(9, user.getBirthDate() != null ? java.sql.Date.valueOf(user.getBirthDate()) : null);
+            ps.setString(10, user.getSpecialite());
+            ps.setString(11, user.getNiveau());
+            ps.setInt(12, user.getId());
 
             ps.executeUpdate();
             System.out.println(" User updated successfully: " + user.getFullName());
@@ -148,6 +164,15 @@ public class UserService implements IGeneralService<User> {
         user.setTelephone(rs.getString("telephone"));
         user.setAdresse(rs.getString("adresse"));
         user.setActive(rs.getBoolean("active"));
+        user.setUsername(rs.getString("username"));
+        user.setSpecialite(rs.getString("specialite"));
+        user.setNiveau(rs.getString("niveau"));
+        user.setParentId(rs.getInt("parent_id"));
+        
+        java.sql.Date birthDate = rs.getDate("birth_date");
+        if (birthDate != null) {
+            user.setBirthDate(birthDate.toLocalDate());
+        }
 
         // Gérer les dates nullables
         Timestamp createdAt = rs.getTimestamp("created_at");

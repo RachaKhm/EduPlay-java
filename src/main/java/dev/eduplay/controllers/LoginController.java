@@ -75,4 +75,19 @@ public class LoginController {
     private String capitalize(String s) {
         return (s == null || s.isBlank()) ? "" : s.substring(0,1).toUpperCase() + s.substring(1);
     }
+
+    @FXML
+    public void goToSignup() {
+        try {
+            Parent root = new FXMLLoader(
+                    getClass().getResource("/views/auth/ParentSignup.fxml")).load();
+            Stage stage = (Stage) emailField.getScene().getWindow();
+            stage.setScene(new Scene(root, 800, 600));
+            stage.setTitle("EduPlay — Inscription Parent");
+            stage.centerOnScreen();
+        } catch (IOException e) {
+            showError("Erreur navigation : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 }

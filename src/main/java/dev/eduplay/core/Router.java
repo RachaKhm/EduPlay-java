@@ -32,6 +32,7 @@ public class Router {
         // Admin
         routes.put("admin_dashboard", "/views/admin/DashboardView.fxml");
         routes.put("users",           "/views/admin/UserListView.fxml");
+        routes.put("admin_user_form", "/views/child/UserFormView.fxml");
         routes.put("teachers",        "/views/admin/UserListView.fxml");
         routes.put("parents",         "/views/admin/UserListView.fxml");
 
@@ -41,9 +42,10 @@ public class Router {
         routes.put("teacher_students",  "/views/teacher/StudentsView.fxml");
 
         // Parent — FXML à créer par le collègue module Événements
-        routes.put("parent_dashboard", "/views/parent/ParentDashboardView.fxml");
-        routes.put("parent_children",  "/views/parent/ChildrenView.fxml");
-        routes.put("parent_events",    "/views/parent/EventsView.fxml");
+        routes.put("parent_dashboard",  "/views/parent/ParentDashboardView.fxml");
+        routes.put("parent_children",   "/views/parent/ChildrenView.fxml");
+        routes.put("parent_add_child",  "/views/parent/AddChildView.fxml");
+        routes.put("parent_events",     "/views/parent/EventsView.fxml");
 
         // Enfant — FXML à créer par le collègue module Jeux/Cours
         routes.put("child_dashboard",  "/views/child/ChildDashboardView.fxml");
