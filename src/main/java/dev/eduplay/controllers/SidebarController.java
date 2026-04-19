@@ -54,6 +54,9 @@ public class SidebarController {
     @FXML private Button btnResource;
     @FXML private Button btnStatistics;
 
+    @FXML private Button btnEventList;
+    @FXML private Button btnRegistrationList;
+
     /* ── Boutons Enseignant ────────────────────────────────── */
 
     @FXML private Label  sectionTeacher;
@@ -175,12 +178,17 @@ public class SidebarController {
             case "statistics_index"     -> btnStatistics;
             case "child_library"     -> btnChildLibrary;
             case "profile"           -> btnProfile;
+            case "event_list"        -> btnEventList;
+            case "registration_list" -> btnRegistrationList;
             default                  -> btnDashboard;
         };
 
         // Appliquer la classe active
         if (active != null && active.isVisible()) {
-            active.setStyle(activeStyle);
+            active.getStyleClass().remove("nav-btn");
+            if (!active.getStyleClass().contains("nav-btn-active")) {
+                active.getStyleClass().add("nav-btn-active");
+            }
         }
     }
 

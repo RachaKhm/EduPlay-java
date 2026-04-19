@@ -1,6 +1,7 @@
 package dev.eduplay.services;
 
 import dev.eduplay.entities.EventRegistration;
+import dev.eduplay.entities.SchoolEvent;
 import dev.eduplay.tools.MyDataBase;
 
 import java.sql.*;
@@ -95,31 +96,87 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
 
     }
 
+    public void modifierBack(EventRegistration registration) throws SQLException {
+        String sql = "UPDATE event_registration SET status = ?, notes = ? WHERE id = ?";
+        PreparedStatement ps = cn.prepareStatement(sql);
+        ps.setString(1, registration.getStatus());
+        ps.setString(2, registration.getNotes());
+        ps.setInt(3, registration.getId());
+
+        int rowsAffected = ps.executeUpdate();
+        System.out.println("Lignes mises à jour: " + rowsAffected);
+    }
+
     @Override
     public List<EventRegistration> recuperer() throws SQLException {
-        String sql = "select * from event_registration";
+        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location " +
+                "FROM event_registration er " +
+                "LEFT JOIN school_event se ON er.event_id = se.id " +
+                "ORDER BY er.registered_at DESC";
+
         Statement st = cn.createStatement();
         ResultSet rs = st.executeQuery(sql);
         List<EventRegistration> registrations = new ArrayList<>();
-        while(rs.next()){
-            EventRegistration er = new EventRegistration(
-                    rs.getInt("id"),
-                    rs.getString("status"),
-                    rs.getTimestamp("registered_at").toLocalDateTime(),
-                    rs.getString("child_full_name"),
-                    rs.getString("parent_phone"),
-                    rs.getString("child_class_level"),
-                    rs.getString("medical_notes"),
-                    rs.getString("emergency_contact_name"),
-                    rs.getString("emergency_contact_phone"),
-                    rs.getString("notes"),
-                    rs.getString("ticket_qr_code"),
-                    rs.getString("qr_code_path"),
-                    rs.getTimestamp("scanned_at") != null ? rs.getTimestamp("scanned_at").toLocalDateTime() : null,
-                    rs.getBoolean("reminder_sent"),
-                    rs.getTimestamp("reminder_sent_at") != null ? rs.getTimestamp("reminder_sent_at").toLocalDateTime() : null);
-            registrations.add(er);
-        }
 
-        return registrations;    }
+        while (rs.next()) {
+            EventRegistration registration = new EventRegistration();
+            registration.setId(rs.getInt("id"));
+            registration.setStatus(rs.getString("status"));
+            registration.setRegisteredAt(rs.getTimestamp("registered_at").toLocalDateTime());
+            registration.setChildFullName(rs.getString("child_full_name"));
+            registration.setParentPhone(rs.getString("parent_phone"));
+            registration.setChildClassLevel(rs.getString("child_class_level"));
+            registration.setMedicalNotes(rs.getString("medical_notes"));
+            registration.setEmergencyContactName(rs.getString("emergency_contact_name"));
+            registration.setEmergencyContactPhone(rs.getString("emergency_contact_phone"));
+            registration.setNotes(rs.getString("notes"));
+            registration.setTicketQrCode(rs.getString("ticket_qr_code"));
+            registration.setScannedAt(rs.getTimestamp("scanned_at") != null ? rs.getTimestamp("scanned_at").toLocalDateTime() : null);
+            registration.setQrCodePath(rs.getString("qr_code_path"));
+
+            SchoolEvent event = new SchoolEvent();
+            event.setId(rs.getInt("event_id"));
+            event.setTitle(rs.getString("event_title"));
+            event.setStartDate(rs.getTimestamp("start_date") != null ? rs.getTimestamp("start_date").toLocalDateTime() : null);
+            event.setEndDate(rs.getTimestamp("end_date") != null ? rs.getTimestamp("end_date").toLocalDateTime() : null);  // ← Très important !
+            event.setLocation(rs.getString("location"));
+            registration.setEvent(event);
+
+            registrations.add(registration);
+        }
+        return registrations;
+    }
+
+    /**
+     * Récupère une inscription par son ID
+     * @param id L'ID de l'inscription
+     * @return L'inscription correspondante ou null
+     */
+    public EventRegistration recupererParId(int id) throws SQLException {
+        String sql = "SELECT er.*, se.title as event_title FROM event_registration er " +
+                "LEFT JOIN school_event se ON er.event_id = se.id " +
+                "WHERE er.id = ?";
+        PreparedStatement pst = cn.prepareStatement(sql);
+        pst.setInt(1, id);
+        ResultSet rs = pst.executeQuery();
+
+        if (rs.next()) {
+            EventRegistration registration = new EventRegistration();
+            registration.setId(rs.getInt("id"));
+            registration.setStatus(rs.getString("status"));
+            registration.setRegisteredAt(rs.getTimestamp("registered_at").toLocalDateTime());
+            registration.setChildFullName(rs.getString("child_full_name"));
+            registration.setParentPhone(rs.getString("parent_phone"));
+            registration.setNotes(rs.getString("notes"));
+
+            SchoolEvent event = new SchoolEvent();
+            event.setId(rs.getInt("event_id"));
+            event.setTitle(rs.getString("event_title"));
+            registration.setEvent(event);
+
+            return registration;
+        }
+        return null;
+    }
+
 }
