@@ -2,6 +2,9 @@ package dev.eduplay.controllers;
 
 import dev.eduplay.core.AppContext;
 import dev.eduplay.core.Router;
+import dev.eduplay.core.SessionManager;
+import dev.eduplay.entities.User;
+import dev.eduplay.services.UserService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -49,6 +52,7 @@ public class SidebarController {
     @FXML private HBox btnGames;
     @FXML private HBox btnChildLibrary;
 
+    private final UserService userService = new UserService();
     private List<HBox> allNavButtons;
 
     @FXML
@@ -93,18 +97,27 @@ public class SidebarController {
     @FXML private void showMyCoursesChild() { Router.go("child_courses"); }
     @FXML private void showGames() { Router.go("child_games"); }
 
+//    @FXML
+//    private void handleLogout() {
+//        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+//                "Se déconnecter ?", ButtonType.YES, ButtonType.NO);
+//
+//        confirm.showAndWait().ifPresent(btn -> {
+//            if (btn == ButtonType.YES) {
+//                AppContext.clear();
+//                Router.clearCache();
+//                navigateToLogin();
+//            }
+//        });
+//    }
     @FXML
     private void handleLogout() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                "Se déconnecter ?", ButtonType.YES, ButtonType.NO);
-
-        confirm.showAndWait().ifPresent(btn -> {
-            if (btn == ButtonType.YES) {
-                AppContext.clear();
-                Router.clearCache();
-                navigateToLogin();
-            }
-        });
+        User user = SessionManager.getInstance().getCurrentUser();
+        if (user != null) {
+            userService.invalidateSession(user.getId());
+        }
+        SessionManager.getInstance().logout();
+        Router.go("login");
     }
 
     /* ACTIVE BUTTON */

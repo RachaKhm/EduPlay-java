@@ -1,8 +1,13 @@
 package dev.eduplay.services;
 
 import dev.eduplay.entities.User;
+import dev.eduplay.interfaces.IGeneralService;
 import dev.eduplay.tools.MyDataBase;
+import dev.eduplay.utils.PasswordUtils;
+import org.mindrot.jbcrypt.BCrypt;
 
+import java.util.UUID;
+import java.time.LocalDateTime;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,19 +44,18 @@ public class UserService implements IGeneralService<User> {
             } else {
                 ps.setNull(14, java.sql.Types.INTEGER);
             }
-
             ps.executeUpdate();
-            System.out.println(" User added successfully: " + user.getFullName());
-
+            System.out.println("User added successfully: " + user.getFullName());
         } catch (SQLException e) {
-            System.err.println(" Error adding user: " + e.getMessage());
+            System.err.println("Error adding user: " + e.getMessage());
         }
     }
 
     @Override
     public void modifier(User user) {
         String query = "UPDATE user SET first_name = ?, last_name = ?, email = ?, " +
-                "telephone = ?, adresse = ?, active = ?, password = ?, username = ?, birth_date = ?, specialite = ?, niveau = ? WHERE id = ?";
+                "telephone = ?, adresse = ?, active = ?, password = ?, username = ?, " +
+                "birth_date = ?, specialite = ?, niveau = ? WHERE id = ?";
 
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setString(1, user.getFirstName());
@@ -66,26 +70,22 @@ public class UserService implements IGeneralService<User> {
             ps.setString(10, user.getSpecialite());
             ps.setString(11, user.getNiveau());
             ps.setInt(12, user.getId());
-
             ps.executeUpdate();
-            System.out.println(" User updated successfully: " + user.getFullName());
-
+            System.out.println("User updated successfully: " + user.getFullName());
         } catch (SQLException e) {
-            System.err.println(" Error updating user: " + e.getMessage());
+            System.err.println("Error updating user: " + e.getMessage());
         }
     }
 
     @Override
     public void supprimer(User user) {
         String query = "DELETE FROM user WHERE id = ?";
-
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, user.getId());
             ps.executeUpdate();
-            System.out.println(" User deleted successfully: " + user.getFullName());
-
+            System.out.println("User deleted successfully: " + user.getFullName());
         } catch (SQLException e) {
-            System.err.println(" Error deleting user: " + e.getMessage());
+            System.err.println("Error deleting user: " + e.getMessage());
         }
     }
 
@@ -101,57 +101,235 @@ public class UserService implements IGeneralService<User> {
 
         try (Statement st = cnx.createStatement();
              ResultSet rs = st.executeQuery(query)) {
-
             while (rs.next()) {
                 users.add(extractUserFromResultSet(rs));
             }
-
-            System.out.println(" Retrieved " + users.size() + " users");
-
+            System.out.println("Retrieved " + users.size() + " users");
         } catch (SQLException e) {
-            System.err.println(" Error retrieving users: " + e.getMessage());
+            System.err.println("Error retrieving users: " + e.getMessage());
         }
-
         return users;
     }
 
-    // Méthodes supplémentaires utiles
     public User getById(int id) {
         String query = "SELECT * FROM user WHERE id = ?";
-
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return extractUserFromResultSet(rs);
-            }
-
+            if (rs.next()) return extractUserFromResultSet(rs);
         } catch (SQLException e) {
-            System.err.println(" Error retrieving user by ID: " + e.getMessage());
+            System.err.println("Error retrieving user by ID: " + e.getMessage());
         }
-
         return null;
     }
 
     public List<User> getByType(String type) {
         List<User> users = new ArrayList<>();
         String query = "SELECT * FROM user WHERE type = ? ORDER BY created_at DESC";
-
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setString(1, type);
             ResultSet rs = ps.executeQuery();
-
             while (rs.next()) {
                 users.add(extractUserFromResultSet(rs));
             }
-
         } catch (SQLException e) {
-            System.err.println(" Error retrieving users by type: " + e.getMessage());
+            System.err.println("Error retrieving users by type: " + e.getMessage());
         }
-
         return users;
     }
+
+    public User findByLogin(String login) {
+        String query = "SELECT * FROM user WHERE email = ? OR username = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(query)) {
+            ps.setString(1, login.trim());
+            ps.setString(2, login.trim());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return extractUserFromResultSet(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public User authenticate(String identifier, String password) {
+        User user = findByLogin(identifier);
+        if (user == null) return null;
+        if (!PasswordUtils.checkPassword(password, user.getPassword())) return null;
+        return user;
+    }
+
+    // ─── RESET MOT DE PASSE ───────────────────────────────────────────────────
+
+    public boolean generateResetToken(String email) {
+        String sql = "SELECT id FROM user WHERE email = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) return false;
+
+            String token = UUID.randomUUID().toString();
+            LocalDateTime expiry = LocalDateTime.now().plusMinutes(30);
+
+            String update = "UPDATE user SET reset_token = ?, reset_token_expiry = ? WHERE email = ?";
+            try (PreparedStatement ups = cnx.prepareStatement(update)) {
+                ups.setString(1, token);
+                ups.setObject(2, expiry);
+                ups.setString(3, email);
+                ups.executeUpdate();
+            }
+            EmailService.sendPasswordResetEmail(email, token);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean resetPassword(String token, String newPassword) {
+        String sql = "SELECT id, reset_token_expiry FROM user WHERE reset_token = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, token);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) return false;
+
+            LocalDateTime expiry = rs.getObject("reset_token_expiry", LocalDateTime.class);
+            if (expiry == null || LocalDateTime.now().isAfter(expiry)) return false;
+
+            String hashed = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+            String update = "UPDATE user SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = ?";
+            try (PreparedStatement ups = cnx.prepareStatement(update)) {
+                ups.setString(1, hashed);
+                ups.setString(2, token);
+                ups.executeUpdate();
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    // ─── BRUTE FORCE PROTECTION ───────────────────────────────────────────────
+
+    public boolean isAccountLocked(String identifier) {
+        String sql = "SELECT locked_until FROM user WHERE email = ? OR username = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, identifier);
+            ps.setString(2, identifier);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                LocalDateTime lockedUntil = rs.getObject("locked_until", LocalDateTime.class);
+                if (lockedUntil != null && LocalDateTime.now().isBefore(lockedUntil)) return true;
+            }
+        } catch (Exception e) { e.printStackTrace(); }
+        return false;
+    }
+
+    public void recordFailedAttempt(String identifier) {
+        String sql = """
+            UPDATE user SET login_attempts = login_attempts + 1,
+            locked_until = CASE WHEN login_attempts + 1 >= 5
+                THEN DATE_ADD(NOW(), INTERVAL 15 MINUTE) ELSE locked_until END
+            WHERE email = ? OR username = ?
+        """;
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, identifier);
+            ps.setString(2, identifier);
+            ps.executeUpdate();
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    public void resetFailedAttempts(int userId) {
+        String sql = "UPDATE user SET login_attempts = 0, locked_until = NULL WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    // ─── SESSION TOKEN ────────────────────────────────────────────────────────
+
+    public String createSession(int userId) {
+        String token = UUID.randomUUID().toString();
+        LocalDateTime expiry = LocalDateTime.now().plusHours(8);
+        String sql = "UPDATE user SET session_token = ?, session_expiry = ? WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, token);
+            ps.setObject(2, expiry);
+            ps.setInt(3, userId);
+            ps.executeUpdate();
+        } catch (Exception e) { e.printStackTrace(); }
+        return token;
+    }
+
+    public void invalidateSession(int userId) {
+        String sql = "UPDATE user SET session_token = NULL, session_expiry = NULL WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        } catch (Exception e) { e.printStackTrace(); }
+    }
+
+    // ─── 2FA OTP ──────────────────────────────────────────────────────────────
+
+    public boolean sendOtp(User user) {
+        String otp = String.valueOf((int)(Math.random() * 900000) + 100000);
+        LocalDateTime expiry = LocalDateTime.now().plusMinutes(5);
+        String sql = "UPDATE user SET otp_code = ?, otp_expiry = ? WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, otp);
+            ps.setObject(2, expiry);
+            ps.setInt(3, user.getId());
+            ps.executeUpdate();
+            EmailService.sendOtpEmail(user.getEmail(), otp);
+            return true;
+        } catch (Exception e) { e.printStackTrace(); return false; }
+    }
+
+    public boolean verifyOtp(int userId, String inputOtp) {
+        String sql = "SELECT otp_code, otp_expiry FROM user WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) return false;
+
+            String storedOtp = rs.getString("otp_code");
+            LocalDateTime expiry = rs.getObject("otp_expiry", LocalDateTime.class);
+
+            if (storedOtp == null || !storedOtp.equals(inputOtp)) return false;
+            if (expiry == null || LocalDateTime.now().isAfter(expiry)) return false;
+
+            String clear = "UPDATE user SET otp_code = NULL, otp_expiry = NULL WHERE id = ?";
+            try (PreparedStatement ps2 = cnx.prepareStatement(clear)) {
+                ps2.setInt(1, userId);
+                ps2.executeUpdate();
+            }
+            return true;
+        } catch (Exception e) { e.printStackTrace(); return false; }
+    }
+
+    // ─── PHOTO DE PROFIL (CLOUDINARY) ─────────────────────────────────────────
+
+    public boolean updateProfilePicture(int userId, String imageUrl) {
+        String sql = "UPDATE user SET profile_picture = ? WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, imageUrl);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+            return true;
+        } catch (Exception e) { e.printStackTrace(); return false; }
+    }
+
+    public String getProfilePicture(int userId) {
+        String sql = "SELECT profile_picture FROM user WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getString("profile_picture");
+        } catch (Exception e) { e.printStackTrace(); }
+        return null;
+    }
+
+    // ─── EXTRACTION RESULT SET ────────────────────────────────────────────────
 
     private User extractUserFromResultSet(ResultSet rs) throws SQLException {
         User user = new User();
@@ -168,38 +346,18 @@ public class UserService implements IGeneralService<User> {
         user.setSpecialite(rs.getString("specialite"));
         user.setNiveau(rs.getString("niveau"));
         user.setParentId(rs.getInt("parent_id"));
-        
-        java.sql.Date birthDate = rs.getDate("birth_date");
-        if (birthDate != null) {
-            user.setBirthDate(birthDate.toLocalDate());
-        }
 
-        // Gérer les dates nullables
+        // Lire profile_picture si la colonne existe
+        try {
+            user.setProfilePicture(rs.getString("profile_picture"));
+        } catch (SQLException ignored) {}
+
+        java.sql.Date birthDate = rs.getDate("birth_date");
+        if (birthDate != null) user.setBirthDate(birthDate.toLocalDate());
+
         Timestamp createdAt = rs.getTimestamp("created_at");
-        if (createdAt != null) {
-            user.setCreatedAt(createdAt.toLocalDateTime());
-        }
+        if (createdAt != null) user.setCreatedAt(createdAt.toLocalDateTime());
 
         return user;
-    }
-
-    public User findByLogin(String login) {
-        String query = "SELECT * FROM user WHERE email = ? OR username = ?";
-
-        try (PreparedStatement ps = cnx.prepareStatement(query)) {
-            ps.setString(1, login.trim());
-            ps.setString(2, login.trim());
-
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                return extractUserFromResultSet(rs);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 }

@@ -1,6 +1,7 @@
 package dev.eduplay.services;
 
 import dev.eduplay.entities.SchoolEvent;
+import dev.eduplay.interfaces.IGeneralService;
 import dev.eduplay.tools.MyDataBase;
 
 import java.sql.*;

@@ -70,6 +70,8 @@ public class Router {
 
         // Commun
         routes.put("profile", "/views/shared/ProfileView.fxml");
+        routes.put("forgot-password", "/views/forgot-password.fxml");
+        routes.put("reset-password",  "/views/reset-password.fxml");
     }
 
     public static void go(String route, Object... params) {

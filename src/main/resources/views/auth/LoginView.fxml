@@ -105,12 +105,23 @@
                                       -fx-font-weight: bold; -fx-border-width: 0;"/>
                 </VBox>
 
+                <Hyperlink text="Mot de passe oublié ?" onAction="#goToForgotPassword"/>
+
                 <!-- Version -->
                 <Label text="EduPlay v1.0 — ESPRIT 2026"
                        style="-fx-font-size: 11px; -fx-text-fill: #BBBBCC;
                               -fx-padding: 32 0 0 0; -fx-alignment: CENTER;"
                        maxWidth="Infinity"/>
             </VBox>
+        </VBox>
+
+        <!-- Bloc OTP — caché jusqu'à validation du mot de passe -->
+        <VBox fx:id="otpBox" spacing="10" alignment="CENTER">
+            <Label text="Un code a été envoyé à votre email." style="-fx-text-fill: #555;"/>
+            <TextField fx:id="otpField" promptText="Code à 6 chiffres"
+                       maxWidth="320" styleClass="input-field"/>
+            <Button text="Vérifier le code" onAction="#handleVerifyOtp"
+                    maxWidth="320" styleClass="btn-primary"/>
         </VBox>
 
     </HBox>
