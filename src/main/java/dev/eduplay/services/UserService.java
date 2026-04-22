@@ -360,4 +360,25 @@ public class UserService implements IGeneralService<User> {
 
         return user;
     }
+    // Sauvegarder l'embedding facial lors de l'inscription de l'enfant
+    public boolean saveFacialEmbedding(int userId, String embeddingJson) {
+        String sql = "UPDATE user SET facial_embedding = ? WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, embeddingJson);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+            return true;
+        } catch (Exception e) { e.printStackTrace(); return false; }
+    }
+
+    // Récupérer l'embedding stocké pour un enfant
+    public String getFacialEmbedding(String username) {
+        String sql = "SELECT facial_embedding FROM user WHERE username = ? AND type = 'enfant'";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getString("facial_embedding");
+        } catch (Exception e) { e.printStackTrace(); }
+        return null;
+    }
 }

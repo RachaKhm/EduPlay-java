@@ -13,7 +13,20 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.Set;
+
 public class LoginController {
+
+    // ── Comptes de test : bypass OTP automatique ──────────────────────────
+    private static final Set<String> TEST_ACCOUNTS = Set.of(
+            "admin@gmail.com",
+            "parent@gmail.com",
+            "teacher@gmail.com",
+            "child",
+            "admin",
+            "parent",
+            "teacher"
+    );
 
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
@@ -60,19 +73,19 @@ public class LoginController {
         pendingUser = user;
         userService.resetFailedAttempts(user.getId());
 
-        // 🚨 Bypass OTP pour admin de test
-        if ("admin@gmail.com".equalsIgnoreCase(user.getEmail())) {
+        // 4. Bypass OTP pour les comptes de test
+        if (isTestAccount(identifier)) {
             finalizeLogin(user);
             return;
         }
-        // Essayer d'envoyer OTP
+
+        // 5. Envoi OTP pour les vrais comptes
         new Thread(() -> {
             boolean sent = userService.sendOtp(user);
             javafx.application.Platform.runLater(() -> {
                 if (sent) {
                     showOtpStep();
                 } else {
-                    // Email non configuré → login direct sans OTP
                     finalizeLogin(user);
                 }
             });
@@ -96,12 +109,10 @@ public class LoginController {
     }
 
     private void finalizeLogin(User user) {
-        // Créer la session
         String token = userService.createSession(user.getId());
         SessionManager.getInstance().login(user, token);
         AppContext.setCurrentUser(user);
 
-        // Déterminer le dashboard selon le rôle
         String route = switch (user.getType().toLowerCase()) {
             case "admin"      -> "admin_dashboard";
             case "enseignant" -> "teacher_dashboard";
@@ -110,7 +121,6 @@ public class LoginController {
             default           -> "admin_dashboard";
         };
 
-        // Charger MainView.fxml (qui initialise le Router)
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/views/MainView.fxml")
@@ -120,7 +130,6 @@ public class LoginController {
             Stage stage = (Stage) emailField.getScene().getWindow();
             Scene scene = new Scene(root);
 
-            // CSS optionnel
             try {
                 var css = getClass().getResource("/styles/main.css");
                 if (css != null) scene.getStylesheets().add(css.toExternalForm());
@@ -130,13 +139,22 @@ public class LoginController {
             stage.setMaximized(true);
             stage.show();
 
-            // Naviguer vers le bon dashboard (Router est maintenant initialisé)
             Router.go(route);
 
         } catch (Exception e) {
             showError("Erreur lors du chargement : " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private boolean isTestAccount(String identifier) {
+        if (TEST_ACCOUNTS.contains(identifier.toLowerCase())) return true;
+        if (pendingUser != null) {
+            String email    = pendingUser.getEmail()    != null ? pendingUser.getEmail().toLowerCase()    : "";
+            String username = pendingUser.getUsername() != null ? pendingUser.getUsername().toLowerCase() : "";
+            return TEST_ACCOUNTS.contains(email) || TEST_ACCOUNTS.contains(username);
+        }
+        return false;
     }
 
     private void showOtpStep() {
@@ -172,9 +190,7 @@ public class LoginController {
             Parent root = loader.load();
             Stage stage = (Stage) emailField.getScene().getWindow();
             stage.setScene(new Scene(root, 860, 540));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     @FXML
@@ -186,8 +202,6 @@ public class LoginController {
             Parent root = loader.load();
             Stage stage = (Stage) emailField.getScene().getWindow();
             stage.setScene(new Scene(root, 860, 540));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
     }
 }

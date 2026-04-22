@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="dev.eduplay.controllers.FaceLoginController"
+      alignment="CENTER" spacing="16"
+      style="-fx-padding: 40; -fx-background-color: #f5f7fa;">
+
+    <Text text="Connexion par visage" style="-fx-font-size: 22; -fx-font-weight: bold;"/>
+    <Text text="Regardez la caméra et entrez votre identifiant."
+          style="-fx-fill: #666;"/>
+
+    <!-- Preview webcam -->
+    <ImageView fx:id="cameraView"
+               fitWidth="320" fitHeight="240"
+               preserveRatio="true"
+               style="-fx-background-color: #000; -fx-border-radius: 12;"/>
+
+    <Button text="Prendre une photo" onAction="#handleCapture"
+            maxWidth="320" styleClass="btn-secondary"/>
+
+    <TextField fx:id="usernameField" promptText="Votre identifiant"
+               maxWidth="320" styleClass="input-field"/>
+
+    <Label fx:id="statusLabel"/>
+
+    <Button text="Vérifier mon identité" onAction="#handleVerify"
+            maxWidth="320" styleClass="btn-primary"/>
+
+    <Hyperlink text="Se connecter avec mot de passe" onAction="#goToLogin"/>
+</VBox>
