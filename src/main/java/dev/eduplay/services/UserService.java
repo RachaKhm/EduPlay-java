@@ -11,6 +11,9 @@ import java.time.LocalDateTime;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 public class UserService implements IGeneralService<User> {
 
@@ -159,6 +162,16 @@ public class UserService implements IGeneralService<User> {
 
     // ─── RESET MOT DE PASSE ───────────────────────────────────────────────────
 
+    private String hashToken(String token) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(token.getBytes());
+            return Base64.getEncoder().encodeToString(hash);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Erreur de hachage du token", e);
+        }
+    }
+
     public boolean generateResetToken(String email) {
         String sql = "SELECT id FROM user WHERE email = ?";
         try (PreparedStatement ps = cnx.prepareStatement(sql)) {
@@ -166,17 +179,18 @@ public class UserService implements IGeneralService<User> {
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return false;
 
-            String token = UUID.randomUUID().toString();
+            String rawToken = UUID.randomUUID().toString();
+            String hashedToken = hashToken(rawToken);
             LocalDateTime expiry = LocalDateTime.now().plusMinutes(30);
 
             String update = "UPDATE user SET reset_token = ?, reset_token_expiry = ? WHERE email = ?";
             try (PreparedStatement ups = cnx.prepareStatement(update)) {
-                ups.setString(1, token);
+                ups.setString(1, hashedToken);
                 ups.setObject(2, expiry);
                 ups.setString(3, email);
                 ups.executeUpdate();
             }
-            EmailService.sendPasswordResetEmail(email, token);
+            EmailService.sendPasswordResetEmail(email, rawToken);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -184,29 +198,61 @@ public class UserService implements IGeneralService<User> {
         }
     }
 
-    public boolean resetPassword(String token, String newPassword) {
+    public boolean validateResetToken(String rawToken) {
+        if (rawToken == null || rawToken.isBlank()) return false;
+        String hashedToken = hashToken(rawToken);
+
         String sql = "SELECT id, reset_token_expiry FROM user WHERE reset_token = ?";
         try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-            ps.setString(1, token);
+            ps.setString(1, hashedToken);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) return false;
 
-            LocalDateTime expiry = rs.getObject("reset_token_expiry", LocalDateTime.class);
-            if (expiry == null || LocalDateTime.now().isAfter(expiry)) return false;
-
-            String hashed = BCrypt.hashpw(newPassword, BCrypt.gensalt());
-            String update = "UPDATE user SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = ?";
-            try (PreparedStatement ups = cnx.prepareStatement(update)) {
-                ups.setString(1, hashed);
-                ups.setString(2, token);
-                ups.executeUpdate();
-            }
-            return true;
-        } catch (Exception e) {
+            Timestamp expiryTs = rs.getTimestamp("reset_token_expiry");
+            if (expiryTs == null) return false;
+            return LocalDateTime.now().isBefore(expiryTs.toLocalDateTime());
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
+
+    public boolean resetPassword(String rawToken, String newPassword) {
+        if (rawToken == null || rawToken.isBlank()) return false;
+        String hashedToken = hashToken(rawToken);
+
+        String sql = "SELECT id, reset_token_expiry FROM user WHERE reset_token = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, hashedToken);
+            ResultSet rs = ps.executeQuery();
+
+            if (!rs.next()) {
+                System.err.println("[UserService] Token de réinitialisation introuvable.");
+                return false;
+            }
+
+            Timestamp expiryTs = rs.getTimestamp("reset_token_expiry");
+            if (expiryTs == null || LocalDateTime.now().isAfter(expiryTs.toLocalDateTime())) {
+                System.err.println("[UserService] Token expiré ou invalide.");
+                return false;
+            }
+
+            String hashedPwd = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+            
+            // Invalidation stricte : on vide les colonnes de reset
+            String update = "UPDATE user SET password = ?, reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = ?";
+            try (PreparedStatement ups = cnx.prepareStatement(update)) {
+                ups.setString(1, hashedPwd);
+                ups.setString(2, hashedToken);
+                int updatedRows = ups.executeUpdate();
+                return updatedRows > 0;
+            }
+        } catch (SQLException e) {
+            System.err.println("[UserService] Erreur SQL lors du reset: " + e.getMessage());
+        }
+        return false;
+    }
+
 
     // ─── BRUTE FORCE PROTECTION ───────────────────────────────────────────────
 

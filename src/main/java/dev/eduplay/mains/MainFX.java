@@ -15,38 +15,45 @@ public class MainFX extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        // Charger la vue de connexion
+        // Initialisation minimale du Router (sans contentArea pour l'instant)
+        // pour permettre la navigation via remplacement de scène si besoin.
+        dev.eduplay.core.Router.init(null);
+
+        // Charger la vue de connexion par défaut
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/views/auth/LoginView.fxml"));
         Parent root = loader.load();
 
         Scene scene = new Scene(root, 860, 540);
 
-        // Charger le CSS global (app.css dans resources/styles/)
+        // Charger le CSS global
         try {
             scene.getStylesheets().add(
                     Objects.requireNonNull(
                             getClass().getResource("/styles/app.css")
                     ).toExternalForm());
-        } catch (NullPointerException e) {
-            System.out.println("app.css non trouvé — styles inline utilisés.");
+        } catch (Exception e) {
+            System.out.println("app.css non trouvé.");
         }
 
-        primaryStage.setTitle("EduPlay — Connexion");
+        primaryStage.setTitle("EduPlay");
         primaryStage.setScene(scene);
-        primaryStage.setMinWidth(760);
-        primaryStage.setMinHeight(480);
+        primaryStage.setMinWidth(860);
+        primaryStage.setMinHeight(540);
         primaryStage.centerOnScreen();
 
-        // Icône application (optionnel)
-        try {
-            primaryStage.getIcons().add(
-                    new Image(Objects.requireNonNull(
-                            getClass().getResourceAsStream("/styles/icon.png"))));
-        } catch (Exception ignored) {}
+        // Gestion des Deep Links passés en argument (ex: eduplay://reset-password?token=...)
+        Parameters params = getParameters();
+        if (!params.getRaw().isEmpty()) {
+            String arg = params.getRaw().get(0);
+            if (arg.startsWith("eduplay://")) {
+                dev.eduplay.core.Router.handleDeepLink(arg);
+            }
+        }
 
         primaryStage.show();
     }
+
 
     public static void main(String[] args) {
         launch(args);

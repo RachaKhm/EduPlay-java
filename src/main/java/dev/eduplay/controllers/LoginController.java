@@ -185,7 +185,7 @@ public class LoginController {
     private void goToSignup() {
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/views/auth/SignupView.fxml")
+                    getClass().getResource("/views/auth/ParentSignup.fxml")
             );
             Parent root = loader.load();
             Stage stage = (Stage) emailField.getScene().getWindow();
@@ -197,7 +197,7 @@ public class LoginController {
     private void goToForgotPassword() {
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/views/forgot-password.fxml")
+                    getClass().getResource("/views/auth/forgot-password.fxml")
             );
             Parent root = loader.load();
             Stage stage = (Stage) emailField.getScene().getWindow();

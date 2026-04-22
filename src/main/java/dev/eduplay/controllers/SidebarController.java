@@ -97,27 +97,18 @@ public class SidebarController {
     @FXML private void showMyCoursesChild() { Router.go("child_courses"); }
     @FXML private void showGames() { Router.go("child_games"); }
 
-//    @FXML
-//    private void handleLogout() {
-//        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-//                "Se déconnecter ?", ButtonType.YES, ButtonType.NO);
-//
-//        confirm.showAndWait().ifPresent(btn -> {
-//            if (btn == ButtonType.YES) {
-//                AppContext.clear();
-//                Router.clearCache();
-//                navigateToLogin();
-//            }
-//        });
-//    }
     @FXML
     private void handleLogout() {
-        User user = SessionManager.getInstance().getCurrentUser();
-        if (user != null) {
-            userService.invalidateSession(user.getId());
-        }
-        SessionManager.getInstance().logout();
-        Router.go("login");
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                "Se déconnecter ?", ButtonType.YES, ButtonType.NO);
+
+        confirm.showAndWait().ifPresent(btn -> {
+            if (btn == ButtonType.YES) {
+                AppContext.clear();
+                Router.clearCache();
+                navigateToLogin();
+            }
+        });
     }
 
     /* ACTIVE BUTTON */
