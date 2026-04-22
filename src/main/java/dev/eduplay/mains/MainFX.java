@@ -1,5 +1,6 @@
 package dev.eduplay.mains;
 
+import dev.eduplay.core.ResetTokenServer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,45 +16,42 @@ public class MainFX extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
-        // Initialisation minimale du Router (sans contentArea pour l'instant)
-        // pour permettre la navigation via remplacement de scène si besoin.
-        dev.eduplay.core.Router.init(null);
+        // Démarrer le serveur HTTP local pour intercepter les clics email
+        ResetTokenServer.start(primaryStage);
 
-        // Charger la vue de connexion par défaut
+        // Charger la vue de connexion
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/views/auth/LoginView.fxml"));
         Parent root = loader.load();
 
         Scene scene = new Scene(root, 860, 540);
 
-        // Charger le CSS global
         try {
             scene.getStylesheets().add(
                     Objects.requireNonNull(
                             getClass().getResource("/styles/app.css")
                     ).toExternalForm());
-        } catch (Exception e) {
-            System.out.println("app.css non trouvé.");
+        } catch (NullPointerException e) {
+            System.out.println("app.css non trouvé — styles inline utilisés.");
         }
 
-        primaryStage.setTitle("EduPlay");
+        primaryStage.setTitle("EduPlay — Connexion");
         primaryStage.setScene(scene);
-        primaryStage.setMinWidth(860);
-        primaryStage.setMinHeight(540);
+        primaryStage.setMinWidth(760);
+        primaryStage.setMinHeight(480);
         primaryStage.centerOnScreen();
 
-        // Gestion des Deep Links passés en argument (ex: eduplay://reset-password?token=...)
-        Parameters params = getParameters();
-        if (!params.getRaw().isEmpty()) {
-            String arg = params.getRaw().get(0);
-            if (arg.startsWith("eduplay://")) {
-                dev.eduplay.core.Router.handleDeepLink(arg);
-            }
-        }
+        try {
+            primaryStage.getIcons().add(
+                    new Image(Objects.requireNonNull(
+                            getClass().getResourceAsStream("/styles/icon.png"))));
+        } catch (Exception ignored) {}
+
+        // Arrêter le serveur proprement à la fermeture
+        primaryStage.setOnCloseRequest(e -> ResetTokenServer.stop());
 
         primaryStage.show();
     }
-
 
     public static void main(String[] args) {
         launch(args);

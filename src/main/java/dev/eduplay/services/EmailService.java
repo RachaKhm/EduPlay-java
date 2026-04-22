@@ -4,136 +4,168 @@ import jakarta.mail.*;
 import jakarta.mail.internet.*;
 import java.io.InputStream;
 import java.util.Properties;
-import java.util.UUID;
 
 public class EmailService {
 
     private static String fromEmail;
     private static String password;
     private static Properties smtpProps;
+    private static boolean configured = false;
 
     static {
-        try (InputStream is = EmailService.class
-                .getResourceAsStream("/email.properties")) {
-            Properties config = new Properties();
-            config.load(is);
+        try (InputStream is = EmailService.class.getResourceAsStream("/email.properties")) {
+            if (is != null) {
+                Properties config = new Properties();
+                config.load(is);
 
-            fromEmail = config.getProperty("mail.from");
-            password   = config.getProperty("mail.password");
+                fromEmail = config.getProperty("mail.from");
+                password  = config.getProperty("mail.password");
 
-            smtpProps = new Properties();
-            smtpProps.put("mail.smtp.host",           config.getProperty("mail.smtp.host"));
-            smtpProps.put("mail.smtp.port",           config.getProperty("mail.smtp.port"));
-            smtpProps.put("mail.smtp.auth",           config.getProperty("mail.smtp.auth"));
-            smtpProps.put("mail.smtp.starttls.enable",config.getProperty("mail.smtp.starttls.enable"));
+                smtpProps = new Properties();
+                smtpProps.put("mail.smtp.host",            config.getProperty("mail.smtp.host"));
+                smtpProps.put("mail.smtp.port",            config.getProperty("mail.smtp.port"));
+                smtpProps.put("mail.smtp.auth",            config.getProperty("mail.smtp.auth"));
+                smtpProps.put("mail.smtp.starttls.enable", config.getProperty("mail.smtp.starttls.enable"));
+
+                configured = fromEmail != null && !fromEmail.isBlank()
+                        && password  != null && !password.isBlank();
+            }
         } catch (Exception e) {
-            throw new RuntimeException("Impossible de charger email.properties", e);
+            System.err.println("[EmailService] email.properties manquant — emails désactivés.");
         }
     }
 
-    public static void sendPasswordResetEmail(String toEmail, String resetToken) throws MessagingException {
-        // Détection des métadonnées
-        String ip = "Non disponible"; // En prod, ceci viendrait d'un service de détection d'IP
-        String device = System.getProperty("os.name") + " (" + System.getProperty("os.arch") + ")";
-        String requestId = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        
-        sendPasswordResetEmail(toEmail, resetToken, ip, device, requestId);
-    }
+    // ─── Reset mot de passe ───────────────────────────────────────────────
 
-    public static void sendPasswordResetEmail(String toEmail, String resetToken, String ip, String device, String requestId) throws MessagingException {
-        Session session = Session.getInstance(smtpProps, new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(fromEmail, password);
-            }
-        });
+    /**
+     * Envoie un email avec :
+     * - Le token affiché en clair (copier-coller)
+     * - Un bouton qui ouvre http://localhost:8765/reset?token=... (capté par ResetTokenServer)
+     */
+    public static void sendPasswordResetEmail(String toEmail, String resetToken)
+            throws MessagingException {
+        if (!configured) throw new MessagingException("EmailService non configuré.");
 
-        String appLink = "eduplay://reset-password?token=" + resetToken;
-        String webLink = "https://eduplay.app/reset-password?token=" + resetToken;
-
+        Session session = buildSession();
         Message message = new MimeMessage(session);
         message.setFrom(new InternetAddress(fromEmail));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-        message.setSubject("Réinitialisation de votre mot de passe — EduPlay");
-
-        message.setContent(buildEmailHtml(appLink, webLink, ip, device, requestId), "text/html; charset=utf-8");
-
+        message.setSubject("EduPlay — Réinitialisation de votre mot de passe");
+        message.setContent(buildResetHtml(resetToken), "text/html; charset=utf-8");
         Transport.send(message);
+
+        System.out.println("[EmailService] Email reset envoyé à " + toEmail);
     }
 
-    private static String buildEmailHtml(String appLink, String webLink, String ip, String device, String requestId) {
+    private static String buildResetHtml(String token) {
+        // Le bouton pointe vers localhost:8765 — ResetTokenServer écoute ce port
+        // et intercepte le token pour ouvrir ResetPasswordView dans l'app
+        String localLink = "http://localhost:8765/reset?token=" + token;
+
         return """
-    <!DOCTYPE html>
-    <html>
-    <body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f9; margin: 0; padding: 0;">
-        <div style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
-            
-            <div style="background-color: #4A90E2; padding: 40px; text-align: center;">
-                <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 800;">EduPlay 🎓</h1>
-            </div>
+            <div style="font-family: Arial, sans-serif; max-width: 520px;
+                        margin: auto; padding: 32px; background: #F8F9FA;
+                        border-radius: 12px;">
 
-            <div style="padding: 40px; color: #334155; line-height: 1.6;">
-                <h2 style="color: #1e293b; margin-top: 0;">Bonjour,</h2>
-                <p>Vous avez demandé la réinitialisation du mot de passe de votre compte EduPlay.</p>
-                
-                <p>Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe :</p>
-
-                <div style="text-align: center; margin: 40px 0;">
-                    <a href="%s" 
-                       style="background-color: #4A90E2; color: #ffffff; padding: 16px 32px; border-radius: 12px; text-decoration: none; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 12px rgba(74,144,226,0.3);">
-                        Réinitialiser mon mot de passe
-                    </a>
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <h1 style="color: #E94560; margin: 0; font-size: 28px;">EduPlay</h1>
+                    <p style="color: #9999BB; margin: 4px 0 0;">Plateforme éducative</p>
                 </div>
 
-                <div style="background-color: #f8fafc; border-radius: 12px; padding: 20px; font-size: 13px; color: #64748b;">
-                    <p style="margin-top: 0; font-weight: bold; color: #475569;">Détails de la demande :</p>
-                    <ul style="margin: 0; padding-left: 20px; list-style-type: none;">
-                        <li><strong>ID de requête :</strong> #%s</li>
-                        <li><strong>IP :</strong> %s</li>
-                        <li><strong>Appareil :</strong> %s</li>
-                        <li><strong>Lien web :</strong> <a href="%s" style="color: #4A90E2;">%s</a></li>
-                    </ul>
+                <div style="background: white; border-radius: 8px; padding: 24px;
+                            border: 1px solid #EBEBEB;">
+                    <p style="color: #22223A; font-size: 15px; margin-top: 0;">
+                        Vous avez demandé la réinitialisation de votre mot de passe.
+                    </p>
+
+                    <!-- Bouton principal -->
+                    <div style="text-align: center; margin: 24px 0;">
+                        <a href="%s"
+                           style="display: inline-block;
+                                  background-color: #E94560;
+                                  color: white;
+                                  padding: 14px 32px;
+                                  text-decoration: none;
+                                  border-radius: 8px;
+                                  font-weight: bold;
+                                  font-size: 15px;
+                                  font-family: Arial, sans-serif;">
+                            Réinitialiser mon mot de passe
+                        </a>
+                    </div>
+
+                    <hr style="border: none; border-top: 1px solid #EBEBEB; margin: 20px 0;"/>
+
+                    <!-- Token en clair (fallback) -->
+                    <p style="color: #555577; font-size: 13px; margin: 0 0 8px;">
+                        Si le bouton ne fonctionne pas, copiez ce code dans l'application :
+                    </p>
+                    <div style="background: #F0F4FF; border: 1px solid #C0C8F0;
+                                border-radius: 6px; padding: 12px 16px;
+                                font-family: monospace; font-size: 13px;
+                                word-break: break-all; color: #1A1A2E;">
+                        %s
+                    </div>
                 </div>
 
-                <p style="margin-top: 30px; font-size: 14px; color: #94a3b8;">
-                    Ce lien expirera dans <strong>30 minutes</strong>. Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email en toute sécurité.
+                <p style="color: #BBBBCC; font-size: 11px; text-align: center; margin-top: 16px;">
+                    Ce code expire dans 30 minutes. Si vous n'avez pas fait cette demande, ignorez cet email.
                 </p>
             </div>
-
-            <div style="background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8;">
-                &copy; 2026 EduPlay. Tous droits réservés.
-            </div>
-        </div>
-    </body>
-    </html>
-    """.formatted(appLink, requestId, ip, device, webLink, webLink);
+        """.formatted(localLink, token);
     }
 
-    public static void sendOtpEmail(String toEmail, String otp) throws MessagingException {
-        Session session = Session.getInstance(smtpProps, new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(fromEmail, password);
-            }
-        });
+    // ─── OTP 2FA ──────────────────────────────────────────────────────────
 
+    public static void sendOtpEmail(String toEmail, String otp)
+            throws MessagingException {
+        if (!configured) throw new MessagingException("EmailService non configuré.");
+
+        Session session = buildSession();
         Message message = new MimeMessage(session);
         message.setFrom(new InternetAddress(fromEmail));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
         message.setSubject("EduPlay — Votre code de vérification");
-        message.setContent("""
-        <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto;">
-            <h2 style="color: #4A90D9;">EduPlay 🎓</h2>
-            <p>Votre code de vérification est :</p>
-            <div style="font-size: 36px; font-weight: bold; letter-spacing: 8px;
-                        color: #4A90D9; text-align: center; padding: 20px;
-                        background: #f0f4ff; border-radius: 8px;">
-                %s
-            </div>
-            <p style="color: #888; font-size: 12px;">
-                Ce code expire dans <strong>5 minutes</strong>.
-            </p>
-        </div>
-    """.formatted(otp), "text/html; charset=utf-8");
-
+        message.setContent(buildOtpHtml(otp), "text/html; charset=utf-8");
         Transport.send(message);
+    }
+
+    private static String buildOtpHtml(String otp) {
+        return """
+            <div style="font-family: Arial, sans-serif; max-width: 500px;
+                        margin: auto; padding: 32px; background: #F8F9FA; border-radius: 12px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h1 style="color: #4A90E2; margin: 0;">EduPlay</h1>
+                </div>
+                <div style="background: white; border-radius: 8px; padding: 24px;
+                            border: 1px solid #EBEBEB; text-align: center;">
+                    <p style="color: #22223A; font-size: 15px;">
+                        Votre code de vérification :
+                    </p>
+                    <div style="font-size: 40px; font-weight: bold; letter-spacing: 12px;
+                                color: #4A90E2; padding: 20px;
+                                background: #EEF4FF; border-radius: 8px; margin: 16px 0;">
+                        %s
+                    </div>
+                    <p style="color: #888; font-size: 12px; margin: 0;">
+                        Expire dans <strong>5 minutes</strong>. Ne le partagez jamais.
+                    </p>
+                </div>
+            </div>
+        """.formatted(otp);
+    }
+
+    // ─── Utilitaires ──────────────────────────────────────────────────────
+
+    private static Session buildSession() {
+        return Session.getInstance(smtpProps, new Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(fromEmail, password);
+            }
+        });
+    }
+
+    public static boolean isConfigured() {
+        return configured;
     }
 }

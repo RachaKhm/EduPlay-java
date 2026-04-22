@@ -1,121 +1,122 @@
 package dev.eduplay.controllers;
 
-import dev.eduplay.core.Router;
+import dev.eduplay.core.TokenHolder;
 import dev.eduplay.services.UserService;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
 public class ResetPasswordController {
 
+    @FXML private TextField tokenField;
     @FXML private PasswordField passwordField;
     @FXML private PasswordField confirmField;
     @FXML private Label messageLabel;
-    @FXML private Button resetBtn;
+    @FXML private Button resetButton;
+    @FXML private Label tokenHintLabel; // optionnel — affiche hint si token pré-rempli
 
-    private String token;
     private final UserService userService = new UserService();
-    private volatile boolean resetInProgress = false;
 
-    /**
-     * Injected by the Router. Validates token immediately.
-     */
-    public void setToken(String token) {
-        this.token = token;
-        
-        // Validation immédiate du token au chargement
-        resetBtn.setDisable(true);
-        passwordField.setDisable(true);
-        confirmField.setDisable(true);
-        messageLabel.setStyle("-fx-text-fill: #4A90E2;");
-        messageLabel.setText("Vérification du lien...");
-
-        new Thread(() -> {
-            boolean isValid = userService.validateResetToken(token);
-            javafx.application.Platform.runLater(() -> {
-                if (isValid) {
-                    resetBtn.setDisable(false);
-                    passwordField.setDisable(false);
-                    confirmField.setDisable(false);
-                    messageLabel.setText("");
-                } else {
-                    showError("Ce lien est invalide ou a expiré.");
-                }
-            });
-        }).start();
+    @FXML
+    public void initialize() {
+        // Vérifier si un token a été passé via TokenHolder (depuis l'email deep link)
+        String pendingToken = TokenHolder.getAndClear();
+        if (pendingToken != null && !pendingToken.isBlank()) {
+            tokenField.setText(pendingToken);
+            tokenField.setDisable(true); // token auto-rempli, pas modifiable
+            if (tokenHintLabel != null) {
+                tokenHintLabel.setText("Token reçu par email.");
+                tokenHintLabel.setStyle("-fx-text-fill: #2E9E6E; -fx-font-size: 11px;");
+            }
+        }
     }
 
     @FXML
     private void handleReset() {
-        if (resetInProgress) return; // Protection contre le spam click
-
+        String token    = tokenField.getText().trim();
         String password = passwordField.getText();
         String confirm  = confirmField.getText();
 
-        if (token == null || token.isEmpty()) {
-            showError("Lien manquant.");
+        // Validations
+        if (token.isEmpty()) {
+            showError("Veuillez entrer le code reçu par email.");
             return;
         }
-        if (password.isEmpty() || confirm.isEmpty()) {
-            showError("Veuillez remplir les deux champs.");
+        if (password.isEmpty()) {
+            showError("Veuillez entrer un nouveau mot de passe.");
+            return;
+        }
+        if (password.length() < 8) {
+            showError("Le mot de passe doit contenir au moins 8 caractères.");
             return;
         }
         if (!password.equals(confirm)) {
             showError("Les mots de passe ne correspondent pas.");
             return;
         }
-        if (password.length() < 8) {
-            showError("Minimum 8 caractères requis.");
-            return;
-        }
 
-        startLoading();
+        resetButton.setDisable(true);
+        showInfo("Vérification en cours...");
 
         new Thread(() -> {
             boolean success = userService.resetPassword(token, password);
             javafx.application.Platform.runLater(() -> {
                 if (success) {
-                    showSuccess("✓ Mot de passe modifié ! Redirection...");
+                    showSuccess("Mot de passe modifié avec succès ! Redirection...");
                     new Thread(() -> {
                         try { Thread.sleep(2000); } catch (InterruptedException ignored) {}
-                        javafx.application.Platform.runLater(() -> Router.go("login"));
+                        javafx.application.Platform.runLater(this::goToLogin);
                     }).start();
                 } else {
-                    stopLoading();
-                    showError("Échec de la réinitialisation. Le lien n'est plus valide.");
+                    showError("Code invalide ou expiré. Recommencez depuis 'Mot de passe oublié'.");
+                    resetButton.setDisable(false);
                 }
             });
         }).start();
     }
 
-    private void startLoading() {
-        resetInProgress = true;
-        resetBtn.setDisable(true);
-        passwordField.setDisable(true);
-        confirmField.setDisable(true);
-        messageLabel.setStyle("-fx-text-fill: #4A90E2;");
-        messageLabel.setText("Modification en cours...");
+    private void goToLogin() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/views/auth/LoginView.fxml")
+            );
+            Parent root = loader.load();
+            Stage stage = (Stage) tokenField.getScene().getWindow();
+            stage.setScene(new Scene(root, 860, 540));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private void stopLoading() {
-        resetInProgress = false;
-        resetBtn.setDisable(false);
-        passwordField.setDisable(false);
-        confirmField.setDisable(false);
+    @FXML
+    private void goToForgotPassword() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/views/forgot-password.fxml")
+            );
+            Parent root = loader.load();
+            Stage stage = (Stage) tokenField.getScene().getWindow();
+            stage.setScene(new Scene(root, 860, 540));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void showError(String msg) {
-        messageLabel.setStyle("-fx-text-fill: #E94560;");
+        messageLabel.setStyle("-fx-text-fill: #E94560; -fx-font-size: 12px;");
         messageLabel.setText(msg);
     }
 
     private void showSuccess(String msg) {
-        messageLabel.setStyle("-fx-text-fill: #2E9E6E;");
+        messageLabel.setStyle("-fx-text-fill: #2E9E6E; -fx-font-size: 12px;");
         messageLabel.setText(msg);
     }
 
-    @FXML
-    private void goToLogin() {
-        Router.go("login");
+    private void showInfo(String msg) {
+        messageLabel.setStyle("-fx-text-fill: #555577; -fx-font-size: 12px;");
+        messageLabel.setText(msg);
     }
 }
-
