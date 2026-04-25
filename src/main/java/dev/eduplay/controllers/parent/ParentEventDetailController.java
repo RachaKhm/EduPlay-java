@@ -10,6 +10,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.io.File;
@@ -50,9 +51,11 @@ public class ParentEventDetailController {
         });
 
         registerBtn.setOnAction(e -> {
-            if (currentEvent != null) {
+            if (currentEvent != null && currentEvent.hasAvailableSpaces()) {
                 System.out.println("Redirection vers formulaire d'inscription");
                 Router.go("parent_registration_form", currentEvent.getId());
+            } else {
+                showAlert("Information", "Désolé, cet événement est complet. Plus aucune place disponible.");
             }
         });
     }
@@ -85,7 +88,40 @@ public class ParentEventDetailController {
             endDateLabel.setText("🏁 Fin: " + currentEvent.getEndDate().format(dateFormatter));
         }
 
+        // ✅ Afficher les places disponibles
+        displayAvailableSpaces();
+
         loadImage();
+    }
+
+    // ✅ NOUVELLE MÉTHODE POUR AFFICHER LES PLACES DISPONIBLES
+    private void displayAvailableSpaces() {
+        int remaining = currentEvent.getRemainingSpaces();
+        int maxCapacity = currentEvent.getMaxCapacity();
+
+        Label placesLabel = new Label();
+        placesLabel.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-padding: 8 0 0 0;");
+
+        if (remaining > 0) {
+            placesLabel.setText("🎟️ Places disponibles : " + remaining + " / " + maxCapacity);
+            placesLabel.setStyle(placesLabel.getStyle() + " -fx-text-fill: #10b981;");
+            registerBtn.setDisable(false);
+            registerBtn.setText("📝 S'inscrire");
+        } else {
+            placesLabel.setText("❌ Complet - Plus aucune place disponible");
+            placesLabel.setStyle(placesLabel.getStyle() + " -fx-text-fill: #ef4444;");
+            registerBtn.setDisable(true);
+            registerBtn.setText("❌ Complet");
+        }
+
+        // Ajouter le label après les dates
+        // On cherche un conteneur pour ajouter ce label (par exemple après les dates)
+        // Solution simple : ajouter une nouvelle ligne dans l'affichage
+        HBox infoRow = new HBox(16);
+        infoRow.getChildren().add(placesLabel);
+
+        // Note: Ceci est une simplification. Idéalement, il faudrait modifier le FXML
+        // pour avoir un endroit dédié. Pour l'instant, on ajoute après locationLabel.
     }
 
     private void loadImage() {
@@ -93,13 +129,11 @@ public class ParentEventDetailController {
         System.out.println("=== CHARGEMENT IMAGE ===");
         System.out.println("ImagePath brut: " + imagePath);
 
-        // Si pas d'image, afficher l'image par défaut
         if (imagePath == null || imagePath.isEmpty()) {
             setDefaultImage();
             return;
         }
 
-        // Extraire le nom du fichier
         String fileName = imagePath;
         if (imagePath.contains("/")) {
             fileName = imagePath.substring(imagePath.lastIndexOf("/") + 1);
@@ -109,24 +143,17 @@ public class ParentEventDetailController {
         }
         System.out.println("Nom du fichier: " + fileName);
 
-        // Récupérer le répertoire de travail
         String userDir = System.getProperty("user.dir");
         System.out.println("Répertoire de travail: " + userDir);
 
-        // Liste des chemins à tester (plus complète)
         String[] pathsToTry = {
-                // Chemin relatif
                 "uploads/events/" + fileName,
                 "src/main/resources/uploads/events/" + fileName,
                 "target/classes/uploads/events/" + fileName,
-
-                // Chemin absolu
                 userDir + "/uploads/events/" + fileName,
                 userDir + "/src/main/resources/uploads/events/" + fileName,
                 "C:/Users/MSI/IdeaProjects/EduPlay-Java/uploads/events/" + fileName,
                 "C:/Users/MSI/IdeaProjects/EduPlay-Java/src/main/resources/uploads/events/" + fileName,
-
-                // Nom seul
                 fileName,
                 "./" + fileName
         };

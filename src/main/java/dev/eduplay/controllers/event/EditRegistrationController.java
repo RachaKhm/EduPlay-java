@@ -15,7 +15,6 @@ public class EditRegistrationController {
     @FXML private Label childNameLabel;
     @FXML private Label parentPhoneLabel;
     @FXML private Label eventTitleLabel;
-    @FXML private ComboBox<String> statusCombo;
     @FXML private TextArea notesArea;
     @FXML private Label messageLabel;
 
@@ -28,10 +27,6 @@ public class EditRegistrationController {
     public void initialize() {
         System.out.println("EditRegistrationController initialisé");
         service = new EventRegistrationService();
-
-        statusCombo.getItems().clear();
-        statusCombo.getItems().addAll("PENDING", "APPROVED", "REJECTED");
-
         setupActions();
     }
 
@@ -65,7 +60,7 @@ public class EditRegistrationController {
         System.out.println("=== Affichage des infos de l'inscription ===");
         System.out.println("ID: " + currentRegistration.getId());
         System.out.println("Enfant: " + currentRegistration.getChildFullName());
-        System.out.println("Statut: " + currentRegistration.getStatus());
+        System.out.println("Téléphone: " + currentRegistration.getParentPhone());
 
         childNameLabel.setText(currentRegistration.getChildFullName());
         parentPhoneLabel.setText(currentRegistration.getParentPhone() != null ? currentRegistration.getParentPhone() : "Non spécifié");
@@ -76,7 +71,6 @@ public class EditRegistrationController {
             this.eventTitle = currentRegistration.getEvent().getTitle();
         }
 
-        statusCombo.setValue(currentRegistration.getStatus());
         notesArea.setText(currentRegistration.getNotes() != null ? currentRegistration.getNotes() : "");
         subtitleLabel.setText("Modification pour : " + currentRegistration.getChildFullName());
     }
@@ -87,23 +81,14 @@ public class EditRegistrationController {
     }
 
     private void saveChanges() {
-        String newStatus = statusCombo.getValue();
         String newNotes = notesArea.getText().trim();
 
         System.out.println("=== Sauvegarde des modifications ===");
-        System.out.println("Nouveau statut: " + newStatus);
         System.out.println("Nouvelles notes: " + newNotes);
 
-        if (newStatus == null || newStatus.isEmpty()) {
-            showError("Veuillez sélectionner un statut");
-            return;
-        }
-
         try {
-            currentRegistration.setStatus(newStatus);
             currentRegistration.setNotes(newNotes.isEmpty() ? null : newNotes);
-
-            service.modifierBack(currentRegistration);
+            service.modifier(currentRegistration);
 
             System.out.println("✅ Modification réussie !");
             showSuccess("✅ Inscription modifiée avec succès !");

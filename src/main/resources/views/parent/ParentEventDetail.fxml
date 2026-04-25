@@ -36,6 +36,9 @@
                             <Label fx:id="locationLabel" style="-fx-font-size: 14px; -fx-text-fill: #8b5cf6; -fx-font-weight: bold;"/>
                         </HBox>
 
+                        <!-- ✅ AFFICHAGE DES PLACES DISPONIBLES AJOUTÉ ICI -->
+                        <Label fx:id="placesLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 4 0 0 0;"/>
+
                         <Separator/>
 
                         <Label text="📝 Description" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>

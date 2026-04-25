@@ -33,16 +33,15 @@ public class ParentRegistrationController {
 
     @FXML
     public void initialize() {
+        System.out.println("ParentRegistrationController initialisé");
         registrationService = new EventRegistrationService();
         eventService = new SchoolEventService();
         backBtn.setOnAction(e -> Router.go("parent_event_detail", eventId));
         submitBtn.setOnAction(e -> submitRegistration());
 
-        // ✅ Ajout du listener pour validation en temps réel
         setupPhoneValidation();
     }
 
-    // ✅ Validation du téléphone en temps réel
     private void setupPhoneValidation() {
         parentPhoneField.textProperty().addListener((obs, old, newVal) -> {
             if (newVal != null && !newVal.isEmpty() && !isValidPhone(newVal)) {
@@ -61,7 +60,6 @@ public class ParentRegistrationController {
         });
     }
 
-    // ✅ Vérification du numéro de téléphone : 8 chiffres, commence par 2,4,5,9
     private boolean isValidPhone(String phone) {
         if (phone == null) return false;
         String trimmed = phone.trim();
@@ -76,6 +74,14 @@ public class ParentRegistrationController {
             SchoolEvent event = eventService.recupererParId(eventId);
             if (event != null) {
                 eventTitleLabel.setText("Événement : " + event.getTitle());
+                // ✅ Vérifier la capacité avant de permettre l'inscription
+                int remaining = event.getRemainingSpaces();
+                if (remaining <= 0) {
+                    submitBtn.setDisable(true);
+                    showError("Désolé, cet événement est complet. Plus aucune place disponible.");
+                } else {
+                    submitBtn.setDisable(false);
+                }
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -86,7 +92,6 @@ public class ParentRegistrationController {
         String childName = childNameField.getText().trim();
         String parentPhone = parentPhoneField.getText().trim();
 
-        // ✅ Validation du nom
         if (childName.isEmpty()) {
             showError("Veuillez saisir le nom de l'enfant");
             childNameField.requestFocus();
@@ -99,7 +104,6 @@ public class ParentRegistrationController {
             return;
         }
 
-        // ✅ Validation du téléphone
         if (parentPhone.isEmpty()) {
             showError("Veuillez saisir le téléphone parent");
             parentPhoneField.requestFocus();
@@ -119,6 +123,12 @@ public class ParentRegistrationController {
                 return;
             }
 
+            // ✅ Vérifier la capacité avant l'insertion
+            if (!event.hasAvailableSpaces()) {
+                showError("Désolé, cet événement a atteint sa capacité maximale");
+                return;
+            }
+
             User currentUser = AppContext.getCurrentUser();
             if (currentUser == null) {
                 showError("Utilisateur non connecté");
@@ -128,7 +138,7 @@ public class ParentRegistrationController {
             EventRegistration registration = new EventRegistration();
             registration.setEvent(event);
             registration.setParent(currentUser);
-            registration.setStatus("PENDING");
+            // ❌ PLUS DE STATUS - L'inscription est directement validée
             registration.setRegisteredAt(LocalDateTime.now());
             registration.setChildFullName(childName);
             registration.setParentPhone(parentPhone);

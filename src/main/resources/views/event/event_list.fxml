@@ -6,7 +6,7 @@
 <?import java.lang.String?>
 <?import javafx.collections.FXCollections?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../../css/style.css"
+<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../../css/style.css"
             fx:controller="dev.eduplay.controllers.event.EventListController"
             style="-fx-background-color: #F8FAFC; -fx-background: #F8FAFC;"
             fitToWidth="true" fitToHeight="false">
@@ -29,13 +29,25 @@
                         <Button fx:id="addBtn" text="➕ Nouvel événement" styleClass="btn-secondary"/>
                     </HBox>
 
-                    <!-- Barre de recherche avec bouton Rafraîchir -->
+                    <!-- Barre de recherche avec boutons -->
                     <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-background-color: white; -fx-padding: 15 25; -fx-border-color: #e5e7eb; -fx-border-width: 0 1 1 1; -fx-background-radius: 0 0 16 16;">
                         <VBox HBox.hgrow="ALWAYS">
                             <Label text="Liste des événements" styleClass="field-label" style="-fx-font-size: 18px;"/>
                         </VBox>
-                        <TextField fx:id="searchField" promptText="🔍 Rechercher par titre ou lieu..." prefWidth="300" style="-fx-padding: 10 15; -fx-background-radius: 12; -fx-border-color: #e5e7eb; -fx-border-radius: 12;"/>
-                        <ComboBox fx:id="sortCombo" prefWidth="150" style="-fx-padding: 8; -fx-background-radius: 12; -fx-border-color: #e5e7eb; -fx-border-radius: 12;">
+
+                        <!-- ✅ FILTRE AJOUTÉ ICI -->
+                        <ComboBox fx:id="filterCombo" prefWidth="130" promptText="Filtrer" style="-fx-padding: 8; -fx-background-radius: 12; -fx-border-color: #e5e7eb; -fx-border-radius: 12;">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Tous"/>
+                                    <String fx:value="À venir"/>
+                                    <String fx:value="Passés"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+
+                        <TextField fx:id="searchField" promptText="🔍 Rechercher par titre ou lieu..." prefWidth="280" style="-fx-padding: 10 15; -fx-background-radius: 12; -fx-border-color: #e5e7eb; -fx-border-radius: 12;"/>
+                        <ComboBox fx:id="sortCombo" prefWidth="140" style="-fx-padding: 8; -fx-background-radius: 12; -fx-border-color: #e5e7eb; -fx-border-radius: 12;">
                             <items>
                                 <FXCollections fx:factory="observableArrayList">
                                     <String fx:value="startDate"/>
@@ -48,8 +60,11 @@
                         </ComboBox>
                         <ToggleButton fx:id="orderToggle" text="⬇️ Desc" style="-fx-background-radius: 12; -fx-padding: 8 15; -fx-cursor: hand;"/>
 
-                        <!-- ✅ BOUTON RAFRAÎCHIR AJOUTÉ ICI -->
+                        <!-- Bouton Rafraîchir -->
                         <Button fx:id="refreshBtn" text="🔄 Rafraîchir" styleClass="btn-primary" style="-fx-background-color: linear-gradient(to right, #10B981, #059669);"/>
+
+                        <!-- Bouton Exporter CSV -->
+                        <Button fx:id="exportBtn" text="📥 Exporter CSV" styleClass="btn-warning" style="-fx-background-color: linear-gradient(to right, #F59E0B, #D97706); -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 12; -fx-cursor: hand;"/>
                     </HBox>
                 </VBox>
 

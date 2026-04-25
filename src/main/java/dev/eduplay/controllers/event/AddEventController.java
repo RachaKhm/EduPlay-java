@@ -37,6 +37,7 @@ public class AddEventController {
     @FXML private Label messageLabel;
     @FXML private Label fileNameLabel;
     @FXML private StackPane imagePreviewPane;
+    @FXML private TextField capacityField;
 
     private SchoolEventService service;
     private File selectedImageFile;
@@ -59,6 +60,7 @@ public class AddEventController {
         startMinuteCombo.setValue(0);
         endHourCombo.setValue(17);
         endMinuteCombo.setValue(0);
+        capacityField.setText("50");
 
         isModification = false;
         submitBtn.setText("Créer l'événement");
@@ -77,6 +79,7 @@ public class AddEventController {
                 titleField.setText(event.getTitle());
                 descriptionArea.setText(event.getDescription());
                 locationField.setText(event.getLocation());
+                capacityField.setText(String.valueOf(event.getMaxCapacity()));
 
                 if (event.getStartDate() != null) {
                     startDatePicker.setValue(event.getStartDate().toLocalDate());
@@ -168,6 +171,12 @@ public class AddEventController {
                 locationField.setStyle("-fx-border-color: #e74c3c; -fx-border-width: 2; -fx-border-radius: 8;");
             } else {
                 locationField.setStyle("-fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-border-radius: 8;");
+            }
+        });
+
+        capacityField.textProperty().addListener((obs, old, newVal) -> {
+            if (newVal != null && !newVal.matches("\\d*")) {
+                capacityField.setText(old);
             }
         });
     }
@@ -291,6 +300,23 @@ public class AddEventController {
                 return;
             }
 
+            // ✅ Validation de la capacité
+            int maxCapacity = 50;
+            try {
+                maxCapacity = Integer.parseInt(capacityField.getText().trim());
+                if (maxCapacity < 1) {
+                    showError("La capacité doit être au moins 1");
+                    capacityField.requestFocus();
+                    resetButton();
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                showError("Veuillez saisir un nombre valide pour la capacité");
+                capacityField.requestFocus();
+                resetButton();
+                return;
+            }
+
             if (startDatePicker.getValue() == null) {
                 showError("La date de début est obligatoire");
                 resetButton();
@@ -335,6 +361,7 @@ public class AddEventController {
                     event.setEndDate(endDateTime);
                     event.setLocation(location.trim());
                     if (imagePath != null) event.setImagePath(imagePath);
+                    event.setMaxCapacity(maxCapacity);
                     service.modifier(event);
                     showSuccess("✅ Événement modifié avec succès !");
                 } else {
@@ -350,7 +377,10 @@ public class AddEventController {
                 event.setEndDate(endDateTime);
                 event.setLocation(location.trim());
                 event.setImagePath(imagePath);
+                event.setMaxCapacity(maxCapacity);
+                event.setCurrentRegistrations(0);
                 service.ajouter(event);
+                System.out.println("✅ Événement créé avec capacité: " + maxCapacity);
                 showSuccess("✅ Événement créé avec succès !");
             }
 

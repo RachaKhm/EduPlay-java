@@ -4,82 +4,69 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Font?>
-<?import javafx.collections.FXCollections?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="dev.eduplay.controllers.event.EditRegistrationController"
-            style="-fx-background-color: #f3f4f6; -fx-background: #f3f4f6;"
-            fitToWidth="true" fitToHeight="false">
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.eduplay.controllers.event.EditRegistrationController"
+      spacing="20" alignment="TOP_CENTER"
+      style="-fx-background-color: #f3f4f6;">
 
-    <content>
-        <VBox spacing="20" style="-fx-background-color: #f3f4f6;" alignment="TOP_CENTER">
+    <padding>
+        <Insets top="25" right="35" bottom="25" left="35"/>
+    </padding>
 
+    <children>
+        <VBox spacing="0" style="-fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
+            <HBox alignment="CENTER_LEFT" style="-fx-background-color: linear-gradient(to right, #f59e0b, #d97706); -fx-background-radius: 16 16 0 0; -fx-padding: 20 25;">
+                <VBox HBox.hgrow="ALWAYS">
+                    <Label text="✏️ Modifier l'inscription" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;">
+                        <font><Font name="System Bold" size="24"/></font>
+                    </Label>
+                    <Label fx:id="subtitleLabel" text="Modifier les notes ou informations" style="-fx-text-fill: #fde68a; -fx-font-size: 13px; -fx-padding: 5 0 0 0;"/>
+                </VBox>
+                <Button fx:id="cancelBtn" text="← Retour" style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 12; -fx-cursor: hand;"/>
+            </HBox>
+        </VBox>
+
+        <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);">
             <padding>
-                <Insets top="25" right="35" bottom="25" left="35"/>
+                <Insets top="25" right="25" bottom="25" left="25"/>
             </padding>
 
             <children>
-                <!-- En-tête -->
-                <VBox spacing="0" style="-fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
-                    <HBox alignment="CENTER_LEFT" style="-fx-background-color: linear-gradient(to right, #f59e0b, #d97706); -fx-background-radius: 16 16 0 0; -fx-padding: 20 25;">
-                        <VBox HBox.hgrow="ALWAYS">
-                            <Label text="✏️ Modifier l'inscription" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;">
-                                <font><Font name="System Bold" size="24"/></font>
-                            </Label>
-                            <Label fx:id="subtitleLabel" text="Modifier le statut ou les informations" style="-fx-text-fill: #fde68a; -fx-font-size: 13px; -fx-padding: 5 0 0 0;"/>
-                        </VBox>
-                        <Button fx:id="cancelBtn" text="← Retour" style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 12; -fx-cursor: hand;"/>
-                    </HBox>
+                <VBox spacing="5">
+                    <Label text="👶 Enfant" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
+                    <Label fx:id="childNameLabel" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
                 </VBox>
 
-                <!-- Carte formulaire -->
-                <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);">
-                    <padding>
-                        <Insets top="25" right="25" bottom="25" left="25"/>
-                    </padding>
+                <Separator/>
 
-                    <children>
-                        <VBox spacing="5">
-                            <Label text="👶 Enfant" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
-                            <Label fx:id="childNameLabel" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
-                        </VBox>
-
-                        <Separator/>
-
-                        <VBox spacing="5">
-                            <Label text="📞 Téléphone parent" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
-                            <Label fx:id="parentPhoneLabel" style="-fx-font-size: 14px; -fx-text-fill: #1e293b;"/>
-                        </VBox>
-
-                        <Separator/>
-
-                        <VBox spacing="5">
-                            <Label text="📅 Événement" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
-                            <Label fx:id="eventTitleLabel" style="-fx-font-size: 14px; -fx-text-fill: #1e293b;"/>
-                        </VBox>
-
-                        <Separator/>
-
-                        <VBox spacing="5">
-                            <Label text="🏷️ Statut *" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
-                            <ComboBox fx:id="statusCombo" prefWidth="200" style="-fx-padding: 10; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
-                        </VBox>
-
-                        <Separator/>
-
-                        <VBox spacing="5">
-                            <Label text="📝 Notes supplémentaires" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
-                            <TextArea fx:id="notesArea" promptText="Ajouter des notes..." prefHeight="100" wrapText="true" style="-fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-background-color: white; -fx-font-size: 14px;"/>
-                        </VBox>
-
-                        <Label fx:id="messageLabel" wrapText="true" style="-fx-font-size: 13px;"/>
-
-                        <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
-                            <Button fx:id="submitBtn" text="✅ Enregistrer les modifications" style="-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-padding: 12 30; -fx-background-radius: 25; -fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 14px;"/>
-                        </HBox>
-                    </children>
+                <VBox spacing="5">
+                    <Label text="📞 Téléphone parent" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
+                    <Label fx:id="parentPhoneLabel" style="-fx-font-size: 14px; -fx-text-fill: #1e293b;"/>
                 </VBox>
+
+                <Separator/>
+
+                <VBox spacing="5">
+                    <Label text="📅 Événement" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
+                    <Label fx:id="eventTitleLabel" style="-fx-font-size: 14px; -fx-text-fill: #1e293b;"/>
+                </VBox>
+
+                <Separator/>
+
+                <!-- ❌ SUPPRIMÉ : ComboBox des statuts -->
+
+                <VBox spacing="5">
+                    <Label text="📝 Notes supplémentaires" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
+                    <TextArea fx:id="notesArea" promptText="Ajouter des notes..." prefHeight="100" wrapText="true" style="-fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-background-color: white; -fx-font-size: 14px;"/>
+                </VBox>
+
+                <Label fx:id="messageLabel" wrapText="true" style="-fx-font-size: 13px;"/>
+
+                <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+                    <Button fx:id="submitBtn" text="✅ Enregistrer les modifications" style="-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-padding: 12 30; -fx-background-radius: 25; -fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+                </HBox>
             </children>
         </VBox>
-    </content>
-</ScrollPane>
+    </children>
+</VBox>

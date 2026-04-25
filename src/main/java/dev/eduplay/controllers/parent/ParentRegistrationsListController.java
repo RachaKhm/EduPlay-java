@@ -5,74 +5,69 @@ import dev.eduplay.core.Router;
 import dev.eduplay.entities.EventRegistration;
 import dev.eduplay.entities.User;
 import dev.eduplay.services.EventRegistrationService;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ParentRegistrationsListController {
 
     @FXML private Button refreshBtn;
     @FXML private Button backToEventsBtn;
+    @FXML private ComboBox<String> filterCombo;  // ✅ AJOUTÉ
     @FXML private VBox registrationsContainer;
     @FXML private Label emptyLabel;
 
     private EventRegistrationService service;
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+    private Timeline autoRefresh;
 
     @FXML
     public void initialize() {
+        System.out.println("ParentRegistrationsListController initialisé");
         service = new EventRegistrationService();
         backToEventsBtn.setOnAction(e -> Router.go("parent_event_list"));
         refreshBtn.setOnAction(e -> refreshList());
+
+        // ✅ Initialiser le filtre
+        filterCombo.getItems().clear();
+        filterCombo.getItems().addAll("Toutes", "À venir", "Passées");
+        filterCombo.setValue("Toutes");
+        filterCombo.valueProperty().addListener((obs, old, newVal) -> loadRegistrations());
+
+        // ✅ Rafraîchissement automatique toutes les 30 secondes
+        autoRefresh = new Timeline(new KeyFrame(Duration.seconds(30), e -> {
+            System.out.println("🔄 Rafraîchissement automatique des inscriptions");
+            loadRegistrations();
+        }));
+        autoRefresh.setCycleCount(Timeline.INDEFINITE);
+        autoRefresh.play();
+
         loadRegistrations();
     }
 
-    // ✅ Rafraîchir manuellement
+    // ✅ Méthode pour arrêter le rafraîchissement (appeler lors de la fermeture)
+    public void shutdown() {
+        if (autoRefresh != null) {
+            autoRefresh.stop();
+        }
+    }
+
     private void refreshList() {
         System.out.println("🔄 Rafraîchissement manuel des inscriptions...");
-        cleanExpiredRegistrations();
         loadRegistrations();
         showAlert("Rafraîchissement", "✅ La liste a été actualisée");
-    }
-
-    // ✅ Nettoyage automatique des inscriptions expirées
-    private void cleanExpiredRegistrations() {
-        try {
-            User currentUser = AppContext.getCurrentUser();
-            if (currentUser == null) return;
-
-            LocalDateTime now = LocalDateTime.now();
-            List<EventRegistration> allRegs = service.recupererParParentId(currentUser.getId());
-            List<EventRegistration> expiredRegs = new ArrayList<>();
-
-            for (EventRegistration reg : allRegs) {
-                if (reg.getEvent() != null && reg.getEvent().getEndDate() != null) {
-                    if (reg.getEvent().getEndDate().isBefore(now)) {
-                        expiredRegs.add(reg);
-                    }
-                }
-            }
-
-            if (!expiredRegs.isEmpty()) {
-                for (EventRegistration reg : expiredRegs) {
-                    service.supprimer(reg);
-                    System.out.println("🗑️ Inscription supprimée pour événement expiré: " +
-                            reg.getEvent().getTitle() + " - " + reg.getChildFullName());
-                }
-                showAlert("Nettoyage automatique",
-                        expiredRegs.size() + " inscription(s) supprimée(s) (événements terminés)");
-            }
-        } catch (SQLException e) {
-            System.err.println("Erreur lors du nettoyage: " + e.getMessage());
-        }
     }
 
     private void loadRegistrations() {
@@ -82,12 +77,26 @@ public class ParentRegistrationsListController {
             User currentUser = AppContext.getCurrentUser();
             if (currentUser == null) return;
 
-            // ✅ Nettoyer avant de charger
-            cleanExpiredRegistrations();
-
             List<EventRegistration> registrations = service.recupererParParentId(currentUser.getId());
 
-            if (registrations.isEmpty()) {
+            // ✅ Filtrer selon la sélection
+            String filter = filterCombo.getValue();
+            LocalDateTime now = LocalDateTime.now();
+
+            List<EventRegistration> filtered = registrations.stream()
+                    .filter(r -> {
+                        if ("À venir".equals(filter)) {
+                            return r.getEvent() != null && r.getEvent().getEndDate() != null &&
+                                    r.getEvent().getEndDate().isAfter(now);
+                        } else if ("Passées".equals(filter)) {
+                            return r.getEvent() != null && r.getEvent().getEndDate() != null &&
+                                    r.getEvent().getEndDate().isBefore(now);
+                        }
+                        return true; // "Toutes"
+                    })
+                    .collect(Collectors.toList());
+
+            if (filtered.isEmpty()) {
                 emptyLabel.setVisible(true);
                 emptyLabel.setManaged(true);
                 return;
@@ -96,7 +105,7 @@ public class ParentRegistrationsListController {
             emptyLabel.setVisible(false);
             emptyLabel.setManaged(false);
 
-            for (EventRegistration r : registrations) {
+            for (EventRegistration r : filtered) {
                 registrationsContainer.getChildren().add(createRegistrationCard(r));
             }
 
@@ -121,33 +130,24 @@ public class ParentRegistrationsListController {
         Label dates = new Label("📅 " + dateStr);
         dates.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748b;");
 
-        Label statusLabel = new Label(r.getStatus());
-        statusLabel.setStyle(getStatusStyle(r.getStatus()));
-
-        // ✅ Vérifier si l'événement peut encore être annulé (date non passée)
         boolean canCancel = r.getEvent() != null && r.getEvent().getEndDate() != null &&
                 r.getEvent().getEndDate().isAfter(LocalDateTime.now());
 
         Button cancelBtn = new Button("Annuler");
         cancelBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 12; -fx-background-radius: 20; -fx-cursor: hand;");
         cancelBtn.setOnAction(e -> cancelRegistration(r));
-        cancelBtn.setDisable(!canCancel || !"PENDING".equals(r.getStatus()));
+        cancelBtn.setDisable(!canCancel);
+
+        Button voirBtn = new Button("👁️ Voir détails");
+        voirBtn.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 6 12; -fx-background-radius: 20; -fx-cursor: hand;");
+        voirBtn.setOnAction(e -> Router.go("parent_registration_detail", r.getId()));
 
         HBox bottomRow = new HBox(16);
-        bottomRow.getChildren().addAll(statusLabel, cancelBtn);
+        bottomRow.getChildren().addAll(voirBtn, cancelBtn);
         bottomRow.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
 
         card.getChildren().addAll(eventTitle, childName, dates, bottomRow);
         return card;
-    }
-
-    private String getStatusStyle(String status) {
-        switch (status) {
-            case "APPROVED": return "-fx-text-fill: #10b981; -fx-font-weight: bold; -fx-padding: 4 8; -fx-background-color: #d1fae5; -fx-background-radius: 20;";
-            case "PENDING": return "-fx-text-fill: #f59e0b; -fx-font-weight: bold; -fx-padding: 4 8; -fx-background-color: #fed7aa; -fx-background-radius: 20;";
-            case "REJECTED": return "-fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-padding: 4 8; -fx-background-color: #fee2e2; -fx-background-radius: 20;";
-            default: return "-fx-text-fill: #6b7280; -fx-font-weight: bold;";
-        }
     }
 
     private void cancelRegistration(EventRegistration registration) {
@@ -162,7 +162,7 @@ public class ParentRegistrationsListController {
                 loadRegistrations();
                 showAlert("Succès", "Inscription annulée avec succès");
             } catch (SQLException e) {
-                showAlert("Erreur", "Impossible d'annuler l'inscription");
+                showAlert("Erreur", "Impossible d'annuler l'inscription: " + e.getMessage());
                 e.printStackTrace();
             }
         }

@@ -1,16 +1,16 @@
-package services;
+package dev.eduplay.services;
 import java.sql.*;
 import java.util.*;
 
 import entities.Game;
-import tools.MyDatabase;
+import dev.eduplay.tools.MyDataBase;
 
 public class GameService {
     private Connection cnx;
 
 
     public GameService() throws SQLException {
-        cnx=MyDatabase.getInstance().getConnection();
+        cnx=MyDataBase.getInstance().getCnx();
     }
 
     public void add(Game game)  {
@@ -24,7 +24,7 @@ public class GameService {
             ps.setString(4,game.getDescription());
             ps.setString(5,game.getImage());
             ps.executeUpdate();
-            IO.println("ajout avec succées");
+            System.out.println("ajout avec succées");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -36,7 +36,7 @@ public class GameService {
         PreparedStatement ps = cnx.prepareStatement(sql);
         ps.setInt(1,id);
         ps.executeUpdate();
-        IO.println("suppression avec succées");
+        System.out.println("suppression avec succées");
     }
 
     public void update(Game game) throws SQLException {
@@ -51,7 +51,7 @@ public class GameService {
         ps.setInt(6, game.getId());
 
         ps.executeUpdate();
-        IO.println("update avec succées");
+        System.out.println("update avec succées");
     }
 
     public List<Game> getAll() throws SQLException {

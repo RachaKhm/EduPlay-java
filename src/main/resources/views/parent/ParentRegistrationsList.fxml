@@ -3,7 +3,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
 
+<?import java.lang.String?>
 <VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="dev.eduplay.controllers.parent.ParentRegistrationsListController"
       spacing="20" alignment="TOP_CENTER"
@@ -26,11 +28,26 @@
             </HBox>
         </HBox>
 
+        <!-- ✅ Barre de filtres -->
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <ComboBox fx:id="filterCombo" prefWidth="130" promptText="Filtrer"
+                      style="-fx-padding: 8; -fx-background-radius: 12; -fx-border-color: #e5e7eb; -fx-border-radius: 12;">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Toutes"/>
+                        <String fx:value="À venir"/>
+                        <String fx:value="Passées"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+        </HBox>
+
         <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" style="-fx-background-color: transparent;">
             <content>
                 <VBox spacing="12">
                     <VBox fx:id="registrationsContainer" spacing="12"/>
-                    <Label fx:id="emptyLabel" text="Aucune inscription pour le moment" style="-fx-text-fill: #94a3b8; -fx-font-size: 14px;" visible="false" managed="false"/>
+                    <Label fx:id="emptyLabel" text="Aucune inscription pour le moment"
+                           style="-fx-text-fill: #94a3b8; -fx-font-size: 14px;" visible="false" managed="false"/>
                 </VBox>
             </content>
         </ScrollPane>

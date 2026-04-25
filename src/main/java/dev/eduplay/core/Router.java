@@ -46,13 +46,14 @@ public class Router {
         routes.put("teacher_students",  "/views/teacher/StudentsView.fxml");
 
         // ==================== PARENT (Front Office) ====================
-        routes.put("parent_dashboard",       "/views/parent/ParentDashboardView.fxml");
-        routes.put("parent_children",        "/views/parent/ChildrenView.fxml");
-        routes.put("parent_events",          "/views/parent/EventsView.fxml");
-        routes.put("parent_event_list",      "/views/parent/ParentEventList.fxml");
-        routes.put("parent_registrations",   "/views/parent/ParentRegistrationsList.fxml");
-        routes.put("parent_event_detail",    "/views/parent/ParentEventDetail.fxml");
-        routes.put("parent_registration_form", "/views/parent/ParentRegistrationForm.fxml");
+        routes.put("parent_dashboard",          "/views/parent/ParentDashboardView.fxml");
+        routes.put("parent_children",           "/views/parent/ChildrenView.fxml");
+        routes.put("parent_events",             "/views/parent/EventsView.fxml");
+        routes.put("parent_event_list",         "/views/parent/ParentEventList.fxml");
+        routes.put("parent_registrations",      "/views/parent/ParentRegistrationsList.fxml");
+        routes.put("parent_event_detail",       "/views/parent/ParentEventDetail.fxml");
+        routes.put("parent_registration_form",  "/views/parent/ParentRegistrationForm.fxml");
+        routes.put("parent_registration_detail","/views/parent/ParentRegistrationDetail.fxml");
 
         // ==================== ENFANT ====================
         routes.put("child_dashboard",  "/views/child/ChildDashboardView.fxml");
@@ -106,7 +107,7 @@ public class Router {
         if (route.equals(currentRoute)) return;
 
         try {
-            // ✅ Déterminer si la route est dynamique (dépend d'un ID)
+            // Routes dynamiques (doivent toujours être rechargées)
             boolean isDynamicRoute = route.equals("event_detail") ||
                     route.equals("edit_event") ||
                     route.equals("event_resource") ||
@@ -114,9 +115,12 @@ public class Router {
                     route.equals("registration_detail") ||
                     route.equals("edit_registration") ||
                     route.equals("parent_event_detail") ||
-                    route.equals("parent_registration_form");
+                    route.equals("parent_registration_form") ||
+                    route.equals("parent_registration_detail") ||
+                    route.equals("add_resource") ||
+                    route.equals("edit_resource") ||
+                    route.equals("add_event");
 
-            // ✅ Vider le cache pour les routes dynamiques
             if (isDynamicRoute) {
                 viewCache.remove(route);
             }
@@ -134,9 +138,6 @@ public class Router {
                     Object controller = loader.getController();
                     if (controller != null) {
                         // ==================== BACK OFFICE - ÉVÉNEMENTS ====================
-                        if ("add_event".equals(route)) {
-                            // Rien à faire
-                        }
                         if ("edit_event".equals(route) && routeParams.containsKey("param0")) {
                             try {
                                 Object param = routeParams.get("param0");
@@ -148,6 +149,7 @@ public class Router {
                                 System.err.println("Erreur setEvent: " + e.getMessage());
                             }
                         }
+
                         if ("event_detail".equals(route) && routeParams.containsKey("param0")) {
                             try {
                                 controller.getClass().getMethod("setEventId", int.class)
@@ -156,6 +158,7 @@ public class Router {
                                 System.err.println("Erreur setEventId: " + e.getMessage());
                             }
                         }
+
                         if ("event_resource".equals(route)) {
                             if (routeParams.containsKey("param0")) {
                                 try {
@@ -166,32 +169,42 @@ public class Router {
                                 }
                             }
                         }
+
                         if ("add_resource".equals(route)) {
                             if (routeParams.containsKey("param0")) {
                                 try {
                                     controller.getClass().getMethod("setEventId", int.class)
                                             .invoke(controller, (int) routeParams.get("param0"));
-                                } catch (Exception e) {}
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setEventId add_resource: " + e.getMessage());
+                                }
                             }
                             if (routeParams.containsKey("param1")) {
                                 try {
                                     controller.getClass().getMethod("setEventTitle", String.class)
                                             .invoke(controller, (String) routeParams.get("param1"));
-                                } catch (Exception e) {}
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setEventTitle add_resource: " + e.getMessage());
+                                }
                             }
                         }
+
                         if ("edit_resource".equals(route)) {
                             if (routeParams.containsKey("param0")) {
                                 try {
                                     controller.getClass().getMethod("setEventId", int.class)
                                             .invoke(controller, (int) routeParams.get("param0"));
-                                } catch (Exception e) {}
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setEventId edit_resource: " + e.getMessage());
+                                }
                             }
                             if (routeParams.containsKey("param1")) {
                                 try {
                                     controller.getClass().getMethod("setEventTitle", String.class)
                                             .invoke(controller, (String) routeParams.get("param1"));
-                                } catch (Exception e) {}
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setEventTitle edit_resource: " + e.getMessage());
+                                }
                             }
                             if (routeParams.containsKey("param2")) {
                                 try {
@@ -200,21 +213,28 @@ public class Router {
                                         controller.getClass().getMethod("setResource", EventResource.class)
                                                 .invoke(controller, param);
                                     }
-                                } catch (Exception e) {}
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setResource edit_resource: " + e.getMessage());
+                                }
                             }
                         }
+
                         if ("resource_detail".equals(route)) {
                             if (routeParams.containsKey("param0")) {
                                 try {
                                     controller.getClass().getMethod("setEventId", int.class)
                                             .invoke(controller, (int) routeParams.get("param0"));
-                                } catch (Exception e) {}
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setEventId resource_detail: " + e.getMessage());
+                                }
                             }
                             if (routeParams.containsKey("param1")) {
                                 try {
                                     controller.getClass().getMethod("setEventTitle", String.class)
                                             .invoke(controller, (String) routeParams.get("param1"));
-                                } catch (Exception e) {}
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setEventTitle resource_detail: " + e.getMessage());
+                                }
                             }
                             if (routeParams.containsKey("param2")) {
                                 try {
@@ -223,22 +243,35 @@ public class Router {
                                         controller.getClass().getMethod("setResource", EventResource.class)
                                                 .invoke(controller, param);
                                     }
-                                } catch (Exception e) {}
+                                } catch (Exception e) {
+                                    System.err.println("Erreur setResource resource_detail: " + e.getMessage());
+                                }
                             }
                         }
+
                         // ==================== INSCRIPTIONS ====================
                         if ("registration_detail".equals(route) && routeParams.containsKey("param0")) {
                             try {
                                 Object param = routeParams.get("param0");
                                 if (param instanceof Integer) {
-                                    controller.getClass().getMethod("setRegistrationId", int.class)
-                                            .invoke(controller, (int) param);
+                                    // Charger l'inscription depuis la base de données
+                                    dev.eduplay.services.EventRegistrationService service = new dev.eduplay.services.EventRegistrationService();
+                                    EventRegistration registration = service.recupererParId((int) param);
+                                    if (registration != null) {
+                                        controller.getClass().getMethod("setRegistration", EventRegistration.class)
+                                                .invoke(controller, registration);
+                                    } else {
+                                        System.err.println("Inscription non trouvée pour l'ID: " + param);
+                                    }
                                 } else if (param instanceof EventRegistration) {
                                     controller.getClass().getMethod("setRegistration", EventRegistration.class)
                                             .invoke(controller, param);
                                 }
-                            } catch (Exception e) {}
+                            } catch (Exception e) {
+                                System.err.println("Erreur setRegistration: " + e.getMessage());
+                            }
                         }
+
                         if ("edit_registration".equals(route) && routeParams.containsKey("param0")) {
                             try {
                                 Object param = routeParams.get("param0");
@@ -249,8 +282,11 @@ public class Router {
                                     controller.getClass().getMethod("setRegistration", EventRegistration.class)
                                             .invoke(controller, param);
                                 }
-                            } catch (Exception e) {}
+                            } catch (Exception e) {
+                                System.err.println("Erreur setRegistration edit_registration: " + e.getMessage());
+                            }
                         }
+
                         // ==================== PARENT (Front Office) ====================
                         if ("parent_event_detail".equals(route) && routeParams.containsKey("param0")) {
                             try {
@@ -260,6 +296,7 @@ public class Router {
                                 System.err.println("Erreur setEventId parent_event_detail: " + e.getMessage());
                             }
                         }
+
                         if ("parent_registration_form".equals(route) && routeParams.containsKey("param0")) {
                             try {
                                 controller.getClass().getMethod("setEventId", int.class)
@@ -268,10 +305,18 @@ public class Router {
                                 System.err.println("Erreur setEventId parent_registration_form: " + e.getMessage());
                             }
                         }
+
+                        if ("parent_registration_detail".equals(route) && routeParams.containsKey("param0")) {
+                            try {
+                                controller.getClass().getMethod("setRegistrationId", int.class)
+                                        .invoke(controller, (int) routeParams.get("param0"));
+                            } catch (Exception e) {
+                                System.err.println("Erreur setRegistrationId parent_registration_detail: " + e.getMessage());
+                            }
+                        }
                     }
                 }
 
-                // ✅ Ne mettre en cache que les routes statiques
                 if (!isDynamicRoute) {
                     viewCache.put(route, view);
                 }
@@ -287,6 +332,18 @@ public class Router {
         }
     }
 
+    public static void reload(String route) {
+        viewCache.remove(route);
+        currentRoute = "";
+        go(route);
+    }
+
+    public static void reload(String route, Object... params) {
+        viewCache.remove(route);
+        currentRoute = "";
+        go(route, params);
+    }
+
     private static Node makePlaceholder(String route) {
         Label title = new Label("Vue en cours de développement");
         title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #9999BB;");
@@ -298,7 +355,6 @@ public class Router {
         return box;
     }
 
-    public static void reload(String route) { viewCache.remove(route); currentRoute = ""; go(route); }
     public static String getCurrentRoute() { return currentRoute; }
     public static void setOnRouteChange(Consumer<String> l) { onRouteChange = l; }
     public static void clearCache() { viewCache.clear(); currentRoute = ""; routeParams.clear(); }
