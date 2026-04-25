@@ -2,6 +2,7 @@ package dev.eduplay.services;
 
 import dev.eduplay.entities.EventRegistration;
 import dev.eduplay.entities.SchoolEvent;
+import dev.eduplay.entities.User;
 import dev.eduplay.tools.MyDataBase;
 import dev.eduplay.utils.QRCodeGenerator;
 
@@ -116,7 +117,7 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
 
                 emailService.sendRegistrationConfirmation(
                         registration.getParent().getEmail(),
-                        registration.getParent().getFullName(),
+                        registration.getParent().getFirstName() + " " + registration.getParent().getLastName(),
                         registration.getChildFullName(),
                         registration.getEvent().getTitle(),
                         eventDate,
@@ -191,9 +192,11 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
 
     @Override
     public List<EventRegistration> recuperer() throws SQLException {
-        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location " +
+        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location, " +
+                "u.id as parent_user_id, u.first_name as parent_first_name, u.last_name as parent_last_name, u.email as parent_email " +
                 "FROM event_registration er " +
                 "LEFT JOIN school_event se ON er.event_id = se.id " +
+                "LEFT JOIN user u ON er.parent_id = u.id " +
                 "ORDER BY er.registered_at DESC";
 
         Statement st = cn.createStatement();
@@ -206,9 +209,11 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
     }
 
     public List<EventRegistration> recupererParEventId(int eventId) throws SQLException {
-        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location " +
+        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location, " +
+                "u.id as parent_user_id, u.first_name as parent_first_name, u.last_name as parent_last_name, u.email as parent_email " +
                 "FROM event_registration er " +
                 "LEFT JOIN school_event se ON er.event_id = se.id " +
+                "LEFT JOIN user u ON er.parent_id = u.id " +
                 "WHERE er.event_id = ? " +
                 "ORDER BY er.registered_at DESC";
 
@@ -223,9 +228,11 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
     }
 
     public List<EventRegistration> recupererParParentId(int parentId) throws SQLException {
-        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location " +
+        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location, " +
+                "u.id as parent_user_id, u.first_name as parent_first_name, u.last_name as parent_last_name, u.email as parent_email " +
                 "FROM event_registration er " +
                 "LEFT JOIN school_event se ON er.event_id = se.id " +
+                "LEFT JOIN user u ON er.parent_id = u.id " +
                 "WHERE er.parent_id = ? " +
                 "ORDER BY er.registered_at DESC";
 
@@ -240,9 +247,11 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
     }
 
     public EventRegistration recupererParId(int id) throws SQLException {
-        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location " +
+        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location, " +
+                "u.id as parent_user_id, u.first_name as parent_first_name, u.last_name as parent_last_name, u.email as parent_email " +
                 "FROM event_registration er " +
                 "LEFT JOIN school_event se ON er.event_id = se.id " +
+                "LEFT JOIN user u ON er.parent_id = u.id " +
                 "WHERE er.id = ?";
 
         PreparedStatement pst = cn.prepareStatement(sql);
@@ -298,6 +307,7 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         registration.setReminderSent(rs.getBoolean("reminder_sent"));
         registration.setReminderSentAt(rs.getTimestamp("reminder_sent_at") != null ? rs.getTimestamp("reminder_sent_at").toLocalDateTime() : null);
 
+        // Charger l'événement
         SchoolEvent event = new SchoolEvent();
         event.setId(rs.getInt("event_id"));
         event.setTitle(rs.getString("event_title") != null ? rs.getString("event_title") : "Événement");
@@ -318,6 +328,17 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         } catch (SQLException e) {}
 
         registration.setEvent(event);
+
+        // ✅ CHARGER LE PARENT (version corrigée pour User)
+        int parentId = rs.getInt("parent_user_id");
+        if (parentId > 0) {
+            User parent = new User();
+            parent.setId(parentId);
+            parent.setFirstName(rs.getString("parent_first_name"));
+            parent.setLastName(rs.getString("parent_last_name"));
+            parent.setEmail(rs.getString("parent_email"));
+            registration.setParent(parent);
+        }
 
         return registration;
     }
