@@ -74,7 +74,7 @@ public class ParentRegistrationController {
             SchoolEvent event = eventService.recupererParId(eventId);
             if (event != null) {
                 eventTitleLabel.setText("Événement : " + event.getTitle());
-                // ✅ Vérifier la capacité avant de permettre l'inscription
+                // Vérifier la capacité avant de permettre l'inscription
                 int remaining = event.getRemainingSpaces();
                 if (remaining <= 0) {
                     submitBtn.setDisable(true);
@@ -123,7 +123,7 @@ public class ParentRegistrationController {
                 return;
             }
 
-            // ✅ Vérifier la capacité avant l'insertion
+            // Vérifier la capacité avant l'insertion
             if (!event.hasAvailableSpaces()) {
                 showError("Désolé, cet événement a atteint sa capacité maximale");
                 return;
@@ -138,7 +138,6 @@ public class ParentRegistrationController {
             EventRegistration registration = new EventRegistration();
             registration.setEvent(event);
             registration.setParent(currentUser);
-            // ❌ PLUS DE STATUS - L'inscription est directement validée
             registration.setRegisteredAt(LocalDateTime.now());
             registration.setChildFullName(childName);
             registration.setParentPhone(parentPhone);
@@ -148,15 +147,17 @@ public class ParentRegistrationController {
             registration.setEmergencyContactPhone(emergencyPhoneField.getText().trim().isEmpty() ? null : emergencyPhoneField.getText().trim());
             registration.setNotes(notesArea.getText().trim().isEmpty() ? null : notesArea.getText().trim());
 
-            registration.setTicketQrCode(null);
-            registration.setQrCodePath(null);
+            // ❌ SUPPRIMÉ : Plus besoin de mettre à null, le service génère automatiquement
+            // registration.setTicketQrCode(null);
+            // registration.setQrCodePath(null);
+
             registration.setScannedAt(null);
             registration.setReminderSent(false);
             registration.setReminderSentAt(null);
 
             registrationService.ajouter(registration);
 
-            showSuccess("✅ Inscription envoyée avec succès !");
+            showSuccess("✅ Inscription envoyée avec succès ! QR code généré automatiquement.");
 
             new Thread(() -> {
                 try {

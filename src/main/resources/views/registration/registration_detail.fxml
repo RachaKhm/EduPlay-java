@@ -62,8 +62,6 @@
         <HBox spacing="15" alignment="CENTER">
             <Button fx:id="editBtn" text="✏️ Modifier"
                     style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 8 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;"/>
-            <Button fx:id="generateQrBtn" text="🎫 Générer QR Code"
-                    style="-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-padding: 8 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;"/>
         </HBox>
     </children>
 </VBox>

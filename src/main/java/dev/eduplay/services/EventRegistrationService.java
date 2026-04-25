@@ -3,6 +3,7 @@ package dev.eduplay.services;
 import dev.eduplay.entities.EventRegistration;
 import dev.eduplay.entities.SchoolEvent;
 import dev.eduplay.tools.MyDataBase;
+import dev.eduplay.utils.QRCodeGenerator;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -47,10 +48,19 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
             throw new SQLException("❌ Ce parent a déjà inscrit l'enfant '" + registration.getChildFullName() + "' à cet événement");
         }
 
-        // ✅ Insertion SANS status, avec registered_at
+        // ✅ GÉNÉRER LE QR CODE AUTOMATIQUEMENT
+        String qrCodeValue = "REG_ID:" + System.currentTimeMillis() + "_" + registration.getChildFullName().hashCode();
+        String qrCodePath = QRCodeGenerator.generateQRCode(qrCodeValue, "ticket_" + System.currentTimeMillis());
+
+        registration.setTicketQrCode(qrCodeValue);
+        registration.setQrCodePath(qrCodePath);
+
+        System.out.println("✅ QR Code généré automatiquement: " + qrCodePath);
+
+        // Insertion
         String sql = "INSERT INTO event_registration(event_id, parent_id, registered_at, child_full_name, parent_phone, child_class_level, medical_notes, emergency_contact_name, emergency_contact_phone, notes, ticket_qr_code, qr_code_path, scanned_at, reminder_sent, reminder_sent_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        PreparedStatement ps = cn.prepareStatement(sql);
+        PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ps.setInt(1, registration.getEvent().getId());
         ps.setInt(2, registration.getParent().getId());
         ps.setTimestamp(3, Timestamp.valueOf(registration.getRegisteredAt()));
@@ -68,6 +78,13 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         ps.setTimestamp(15, registration.getReminderSentAt() != null ? Timestamp.valueOf(registration.getReminderSentAt()) : null);
 
         ps.executeUpdate();
+
+        // Récupérer l'ID généré
+        ResultSet generatedKeys = ps.getGeneratedKeys();
+        if (generatedKeys.next()) {
+            registration.setId(generatedKeys.getInt(1));
+            System.out.println("✅ Inscription ajoutée avec ID: " + registration.getId());
+        }
 
         // Incrémenter le compteur d'inscriptions
         String updateCapacitySql = "UPDATE school_event SET current_registrations = current_registrations + 1 WHERE id = ?";
@@ -198,6 +215,23 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         return null;
     }
 
+    public void regenerateQRCode(int registrationId) throws SQLException {
+        EventRegistration registration = recupererParId(registrationId);
+        if (registration != null) {
+            String qrCodeValue = "REG_ID:" + System.currentTimeMillis() + "_" + registration.getChildFullName().hashCode();
+            String qrCodePath = QRCodeGenerator.generateQRCode(qrCodeValue, "ticket_" + registrationId + "_" + System.currentTimeMillis());
+
+            String sql = "UPDATE event_registration SET ticket_qr_code = ?, qr_code_path = ? WHERE id = ?";
+            PreparedStatement ps = cn.prepareStatement(sql);
+            ps.setString(1, qrCodeValue);
+            ps.setString(2, qrCodePath);
+            ps.setInt(3, registrationId);
+            ps.executeUpdate();
+
+            System.out.println("✅ QR Code régénéré pour l'inscription ID: " + registrationId);
+        }
+    }
+
     public void updateQRCode(int registrationId, String qrCodePath, String qrCodeValue) throws SQLException {
         String sql = "UPDATE event_registration SET ticket_qr_code = ?, qr_code_path = ? WHERE id = ?";
         PreparedStatement ps = cn.prepareStatement(sql);
@@ -225,16 +259,31 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         registration.setReminderSent(rs.getBoolean("reminder_sent"));
         registration.setReminderSentAt(rs.getTimestamp("reminder_sent_at") != null ? rs.getTimestamp("reminder_sent_at").toLocalDateTime() : null);
 
+        // ✅ Charger l'événement associé
         SchoolEvent event = new SchoolEvent();
         event.setId(rs.getInt("event_id"));
-        event.setTitle(rs.getString("event_title"));
+        event.setTitle(rs.getString("event_title") != null ? rs.getString("event_title") : "Événement");
+
         if (rs.getTimestamp("start_date") != null) {
             event.setStartDate(rs.getTimestamp("start_date").toLocalDateTime());
         }
         if (rs.getTimestamp("end_date") != null) {
             event.setEndDate(rs.getTimestamp("end_date").toLocalDateTime());
         }
-        event.setLocation(rs.getString("location"));
+        event.setLocation(rs.getString("location") != null ? rs.getString("location") : "");
+
+        // ✅ Ajouter la capacité si disponible (optionnel)
+        try {
+            event.setMaxCapacity(rs.getInt("max_capacity"));
+        } catch (SQLException e) {
+            // Colonne non présente, ignorer
+        }
+        try {
+            event.setCurrentRegistrations(rs.getInt("current_registrations"));
+        } catch (SQLException e) {
+            // Colonne non présente, ignorer
+        }
+
         registration.setEvent(event);
 
         return registration;

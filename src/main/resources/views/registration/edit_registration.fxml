@@ -5,7 +5,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Font?>
 
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<VBox xmlns="http://javafx.com/javafx/20.0.2" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="dev.eduplay.controllers.event.EditRegistrationController"
       spacing="20" alignment="TOP_CENTER"
       style="-fx-background-color: #f3f4f6;">
@@ -54,7 +54,16 @@
 
                 <Separator/>
 
-                <!-- ❌ SUPPRIMÉ : ComboBox des statuts -->
+                <!-- ✅ Statut du scan -->
+                <VBox spacing="5" style="-fx-background-color: #f8fafc; -fx-padding: 12; -fx-background-radius: 12;">
+                    <Label text="🎫 Statut du ticket" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
+                    <Label fx:id="scanStatusLabel" text="⏳ Chargement..." style="-fx-font-size: 13px; -fx-text-fill: #f59e0b; -fx-font-weight: bold;"/>
+                    <Button fx:id="resetScanBtn" text="🔄 Annuler le scan (rendre le ticket à nouveau valide)"
+                            style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 12; -fx-cursor: hand; -fx-margin-top: 10;"
+                            visible="false" managed="false"/>
+                </VBox>
+
+                <Separator/>
 
                 <VBox spacing="5">
                     <Label text="📝 Notes supplémentaires" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>

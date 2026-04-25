@@ -1,5 +1,8 @@
 package dev.eduplay.core;
 
+import dev.eduplay.controllers.ScannerController;
+import dev.eduplay.controllers.event.EditRegistrationController;
+import dev.eduplay.controllers.event.RegistrationDetailController;
 import dev.eduplay.entities.EventRegistration;
 import dev.eduplay.entities.EventResource;
 import dev.eduplay.entities.SchoolEvent;
@@ -26,6 +29,7 @@ public class Router {
     private static Consumer<String> onRouteChange;
 
     private static final Map<String, Object> routeParams = new HashMap<>();
+    private static Object currentController = null;
 
     public static void init(StackPane contentArea) {
         container = contentArea;
@@ -73,6 +77,9 @@ public class Router {
         routes.put("registration_detail", "/views/registration/registration_detail.fxml");
         routes.put("edit_registration", "/views/registration/edit_registration.fxml");
 
+        // ==================== SCANNER QR CODE ====================
+        routes.put("scanner", "/views/scanner/ScannerView.fxml");
+
         // ==================== COMMUN ====================
         routes.put("profile", "/views/shared/ProfileView.fxml");
     }
@@ -106,8 +113,9 @@ public class Router {
         }
         if (route.equals(currentRoute)) return;
 
+        cleanupCurrentController();
+
         try {
-            // Routes dynamiques (doivent toujours être rechargées)
             boolean isDynamicRoute = route.equals("event_detail") ||
                     route.equals("edit_event") ||
                     route.equals("event_resource") ||
@@ -119,7 +127,8 @@ public class Router {
                     route.equals("parent_registration_detail") ||
                     route.equals("add_resource") ||
                     route.equals("edit_resource") ||
-                    route.equals("add_event");
+                    route.equals("add_event") ||
+                    route.equals("scanner");
 
             if (isDynamicRoute) {
                 viewCache.remove(route);
@@ -128,220 +137,213 @@ public class Router {
             Node view = viewCache.get(route);
 
             if (view == null) {
-                URL resource = Router.class.getResource(routes.get(route));
+                String fxmlPath = routes.get(route);
+                System.out.println("Chargement FXML: " + fxmlPath);
+                URL resource = Router.class.getResource(fxmlPath);
+
                 if (resource == null) {
+                    System.err.println("Resource non trouvée: " + fxmlPath);
                     view = makePlaceholder(route);
+                    currentController = null;
                 } else {
                     FXMLLoader loader = new FXMLLoader(resource);
                     view = loader.load();
-
                     Object controller = loader.getController();
+                    currentController = controller;
+
                     if (controller != null) {
-                        // ==================== BACK OFFICE - ÉVÉNEMENTS ====================
-                        if ("edit_event".equals(route) && routeParams.containsKey("param0")) {
-                            try {
-                                Object param = routeParams.get("param0");
-                                if (param instanceof SchoolEvent) {
-                                    controller.getClass().getMethod("setEvent", SchoolEvent.class)
-                                            .invoke(controller, param);
-                                }
-                            } catch (Exception e) {
-                                System.err.println("Erreur setEvent: " + e.getMessage());
-                            }
-                        }
-
-                        if ("event_detail".equals(route) && routeParams.containsKey("param0")) {
-                            try {
-                                controller.getClass().getMethod("setEventId", int.class)
-                                        .invoke(controller, (int) routeParams.get("param0"));
-                            } catch (Exception e) {
-                                System.err.println("Erreur setEventId: " + e.getMessage());
-                            }
-                        }
-
-                        if ("event_resource".equals(route)) {
-                            if (routeParams.containsKey("param0")) {
-                                try {
-                                    controller.getClass().getMethod("setEventId", int.class, String.class)
-                                            .invoke(controller, (int) routeParams.get("param0"), (String) routeParams.get("param1"));
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setEventId event_resource: " + e.getMessage());
-                                }
-                            }
-                        }
-
-                        if ("add_resource".equals(route)) {
-                            if (routeParams.containsKey("param0")) {
-                                try {
-                                    controller.getClass().getMethod("setEventId", int.class)
-                                            .invoke(controller, (int) routeParams.get("param0"));
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setEventId add_resource: " + e.getMessage());
-                                }
-                            }
-                            if (routeParams.containsKey("param1")) {
-                                try {
-                                    controller.getClass().getMethod("setEventTitle", String.class)
-                                            .invoke(controller, (String) routeParams.get("param1"));
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setEventTitle add_resource: " + e.getMessage());
-                                }
-                            }
-                        }
-
-                        if ("edit_resource".equals(route)) {
-                            if (routeParams.containsKey("param0")) {
-                                try {
-                                    controller.getClass().getMethod("setEventId", int.class)
-                                            .invoke(controller, (int) routeParams.get("param0"));
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setEventId edit_resource: " + e.getMessage());
-                                }
-                            }
-                            if (routeParams.containsKey("param1")) {
-                                try {
-                                    controller.getClass().getMethod("setEventTitle", String.class)
-                                            .invoke(controller, (String) routeParams.get("param1"));
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setEventTitle edit_resource: " + e.getMessage());
-                                }
-                            }
-                            if (routeParams.containsKey("param2")) {
-                                try {
-                                    Object param = routeParams.get("param2");
-                                    if (param instanceof EventResource) {
-                                        controller.getClass().getMethod("setResource", EventResource.class)
-                                                .invoke(controller, param);
-                                    }
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setResource edit_resource: " + e.getMessage());
-                                }
-                            }
-                        }
-
-                        if ("resource_detail".equals(route)) {
-                            if (routeParams.containsKey("param0")) {
-                                try {
-                                    controller.getClass().getMethod("setEventId", int.class)
-                                            .invoke(controller, (int) routeParams.get("param0"));
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setEventId resource_detail: " + e.getMessage());
-                                }
-                            }
-                            if (routeParams.containsKey("param1")) {
-                                try {
-                                    controller.getClass().getMethod("setEventTitle", String.class)
-                                            .invoke(controller, (String) routeParams.get("param1"));
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setEventTitle resource_detail: " + e.getMessage());
-                                }
-                            }
-                            if (routeParams.containsKey("param2")) {
-                                try {
-                                    Object param = routeParams.get("param2");
-                                    if (param instanceof EventResource) {
-                                        controller.getClass().getMethod("setResource", EventResource.class)
-                                                .invoke(controller, param);
-                                    }
-                                } catch (Exception e) {
-                                    System.err.println("Erreur setResource resource_detail: " + e.getMessage());
-                                }
-                            }
-                        }
-
-                        // ==================== INSCRIPTIONS ====================
-                        if ("registration_detail".equals(route) && routeParams.containsKey("param0")) {
-                            try {
-                                Object param = routeParams.get("param0");
-                                if (param instanceof Integer) {
-                                    // Charger l'inscription depuis la base de données
-                                    dev.eduplay.services.EventRegistrationService service = new dev.eduplay.services.EventRegistrationService();
-                                    EventRegistration registration = service.recupererParId((int) param);
-                                    if (registration != null) {
-                                        controller.getClass().getMethod("setRegistration", EventRegistration.class)
-                                                .invoke(controller, registration);
-                                    } else {
-                                        System.err.println("Inscription non trouvée pour l'ID: " + param);
-                                    }
-                                } else if (param instanceof EventRegistration) {
-                                    controller.getClass().getMethod("setRegistration", EventRegistration.class)
-                                            .invoke(controller, param);
-                                }
-                            } catch (Exception e) {
-                                System.err.println("Erreur setRegistration: " + e.getMessage());
-                            }
-                        }
-
-                        if ("edit_registration".equals(route) && routeParams.containsKey("param0")) {
-                            try {
-                                Object param = routeParams.get("param0");
-                                if (param instanceof Integer) {
-                                    controller.getClass().getMethod("setRegistrationId", int.class)
-                                            .invoke(controller, (int) param);
-                                } else if (param instanceof EventRegistration) {
-                                    controller.getClass().getMethod("setRegistration", EventRegistration.class)
-                                            .invoke(controller, param);
-                                }
-                            } catch (Exception e) {
-                                System.err.println("Erreur setRegistration edit_registration: " + e.getMessage());
-                            }
-                        }
-
-                        // ==================== PARENT (Front Office) ====================
-                        if ("parent_event_detail".equals(route) && routeParams.containsKey("param0")) {
-                            try {
-                                controller.getClass().getMethod("setEventId", int.class)
-                                        .invoke(controller, (int) routeParams.get("param0"));
-                            } catch (Exception e) {
-                                System.err.println("Erreur setEventId parent_event_detail: " + e.getMessage());
-                            }
-                        }
-
-                        if ("parent_registration_form".equals(route) && routeParams.containsKey("param0")) {
-                            try {
-                                controller.getClass().getMethod("setEventId", int.class)
-                                        .invoke(controller, (int) routeParams.get("param0"));
-                            } catch (Exception e) {
-                                System.err.println("Erreur setEventId parent_registration_form: " + e.getMessage());
-                            }
-                        }
-
-                        if ("parent_registration_detail".equals(route) && routeParams.containsKey("param0")) {
-                            try {
-                                controller.getClass().getMethod("setRegistrationId", int.class)
-                                        .invoke(controller, (int) routeParams.get("param0"));
-                            } catch (Exception e) {
-                                System.err.println("Erreur setRegistrationId parent_registration_detail: " + e.getMessage());
-                            }
-                        }
+                        injectParameters(route, controller);
                     }
                 }
 
-                if (!isDynamicRoute) {
+                if (!isDynamicRoute && view != null) {
                     viewCache.put(route, view);
                 }
             }
 
-            container.getChildren().setAll(view);
-            currentRoute = route;
-            if (onRouteChange != null) onRouteChange.accept(route);
+            if (view != null) {
+                container.getChildren().setAll(view);
+                currentRoute = route;
+                if (onRouteChange != null) onRouteChange.accept(route);
+            }
 
         } catch (IOException e) {
             System.err.println("[Router] Erreur '" + route + "' : " + e.getMessage());
+            e.printStackTrace();
             container.getChildren().setAll(makePlaceholder(route));
+            currentController = null;
+        }
+    }
+
+    private static void injectParameters(String route, Object controller) {
+        try {
+            // ==================== SCANNER ====================
+            if ("scanner".equals(route) && routeParams.containsKey("param0")) {
+                Boolean continuousMode = (Boolean) routeParams.get("param0");
+                controller.getClass().getMethod("setContinuousMode", boolean.class)
+                        .invoke(controller, continuousMode);
+            }
+
+            // ==================== REGISTRATION DETAIL (ADMIN) ====================
+            if ("registration_detail".equals(route) && routeParams.containsKey("param0")) {
+                Object param = routeParams.get("param0");
+                System.out.println("Injection registration_detail avec param: " + param);
+                if (param instanceof Integer) {
+                    controller.getClass().getMethod("setRegistrationId", int.class)
+                            .invoke(controller, (int) param);
+                } else if (param instanceof EventRegistration) {
+                    controller.getClass().getMethod("setRegistration", EventRegistration.class)
+                            .invoke(controller, param);
+                }
+            }
+
+            // ==================== EDIT REGISTRATION (ADMIN) ====================
+            if ("edit_registration".equals(route) && routeParams.containsKey("param0")) {
+                Object param = routeParams.get("param0");
+                System.out.println("Injection edit_registration avec param: " + param);
+                if (param instanceof Integer) {
+                    controller.getClass().getMethod("setRegistrationId", int.class)
+                            .invoke(controller, (int) param);
+                } else if (param instanceof EventRegistration) {
+                    controller.getClass().getMethod("setRegistration", EventRegistration.class)
+                            .invoke(controller, param);
+                }
+            }
+
+            // ==================== PARENT REGISTRATION DETAIL ====================
+            if ("parent_registration_detail".equals(route) && routeParams.containsKey("param0")) {
+                Object param = routeParams.get("param0");
+                if (param instanceof Integer) {
+                    controller.getClass().getMethod("setRegistrationId", int.class)
+                            .invoke(controller, (int) param);
+                } else if (param instanceof EventRegistration) {
+                    controller.getClass().getMethod("setRegistration", EventRegistration.class)
+                            .invoke(controller, param);
+                }
+            }
+
+            // ==================== BACK OFFICE - ÉVÉNEMENTS ====================
+            if ("edit_event".equals(route) && routeParams.containsKey("param0")) {
+                Object param = routeParams.get("param0");
+                if (param instanceof SchoolEvent) {
+                    controller.getClass().getMethod("setEvent", SchoolEvent.class)
+                            .invoke(controller, param);
+                }
+            }
+
+            if ("event_detail".equals(route) && routeParams.containsKey("param0")) {
+                controller.getClass().getMethod("setEventId", int.class)
+                        .invoke(controller, (int) routeParams.get("param0"));
+            }
+
+            if ("event_resource".equals(route)) {
+                if (routeParams.containsKey("param0")) {
+                    controller.getClass().getMethod("setEventId", int.class, String.class)
+                            .invoke(controller, (int) routeParams.get("param0"), (String) routeParams.get("param1"));
+                }
+            }
+
+            if ("add_resource".equals(route)) {
+                if (routeParams.containsKey("param0")) {
+                    controller.getClass().getMethod("setEventId", int.class)
+                            .invoke(controller, (int) routeParams.get("param0"));
+                }
+                if (routeParams.containsKey("param1")) {
+                    controller.getClass().getMethod("setEventTitle", String.class)
+                            .invoke(controller, (String) routeParams.get("param1"));
+                }
+            }
+
+            if ("edit_resource".equals(route)) {
+                if (routeParams.containsKey("param0")) {
+                    controller.getClass().getMethod("setEventId", int.class)
+                            .invoke(controller, (int) routeParams.get("param0"));
+                }
+                if (routeParams.containsKey("param1")) {
+                    controller.getClass().getMethod("setEventTitle", String.class)
+                            .invoke(controller, (String) routeParams.get("param1"));
+                }
+                if (routeParams.containsKey("param2")) {
+                    Object param = routeParams.get("param2");
+                    if (param instanceof EventResource) {
+                        controller.getClass().getMethod("setResource", EventResource.class)
+                                .invoke(controller, param);
+                    }
+                }
+            }
+
+            if ("resource_detail".equals(route)) {
+                if (routeParams.containsKey("param0")) {
+                    controller.getClass().getMethod("setEventId", int.class)
+                            .invoke(controller, (int) routeParams.get("param0"));
+                }
+                if (routeParams.containsKey("param1")) {
+                    controller.getClass().getMethod("setEventTitle", String.class)
+                            .invoke(controller, (String) routeParams.get("param1"));
+                }
+                if (routeParams.containsKey("param2")) {
+                    Object param = routeParams.get("param2");
+                    if (param instanceof EventResource) {
+                        controller.getClass().getMethod("setResource", EventResource.class)
+                                .invoke(controller, param);
+                    }
+                }
+            }
+
+            // ==================== PARENT (Front Office) ====================
+            if ("parent_event_detail".equals(route) && routeParams.containsKey("param0")) {
+                controller.getClass().getMethod("setEventId", int.class)
+                        .invoke(controller, (int) routeParams.get("param0"));
+            }
+
+            if ("parent_registration_form".equals(route) && routeParams.containsKey("param0")) {
+                controller.getClass().getMethod("setEventId", int.class)
+                        .invoke(controller, (int) routeParams.get("param0"));
+            }
+
+        } catch (Exception e) {
+            System.err.println("Erreur injection paramètres pour route '" + route + "': " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private static void cleanupCurrentController() {
+        if (currentController != null) {
+            if (currentController instanceof ScannerController) {
+                try {
+                    System.out.println("[Router] Nettoyage du ScannerController...");
+                    ((ScannerController) currentController).cleanup();
+                } catch (Exception e) {
+                    System.err.println("[Router] Erreur nettoyage ScannerController: " + e.getMessage());
+                }
+            }
+            try {
+                currentController.getClass().getMethod("cleanup").invoke(currentController);
+            } catch (NoSuchMethodException e) {
+                // Pas de méthode cleanup, c'est normal
+            } catch (Exception e) {
+                System.err.println("[Router] Erreur appel cleanup(): " + e.getMessage());
+            }
         }
     }
 
     public static void reload(String route) {
+        cleanupCurrentController();
         viewCache.remove(route);
         currentRoute = "";
         go(route);
     }
 
     public static void reload(String route, Object... params) {
+        cleanupCurrentController();
         viewCache.remove(route);
         currentRoute = "";
         go(route, params);
+    }
+
+    public static void cleanupAll() {
+        cleanupCurrentController();
+        clearCache();
     }
 
     private static Node makePlaceholder(String route) {
@@ -357,5 +359,11 @@ public class Router {
 
     public static String getCurrentRoute() { return currentRoute; }
     public static void setOnRouteChange(Consumer<String> l) { onRouteChange = l; }
-    public static void clearCache() { viewCache.clear(); currentRoute = ""; routeParams.clear(); }
+    public static void clearCache() {
+        viewCache.clear();
+        currentRoute = "";
+        routeParams.clear();
+        currentController = null;
+    }
+    public static Object getCurrentController() { return currentController; }
 }

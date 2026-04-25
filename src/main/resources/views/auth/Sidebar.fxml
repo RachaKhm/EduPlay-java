@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
@@ -29,7 +30,7 @@
                 onAction="#showDashboard"
                 styleClass="nav-btn"/>
 
-        <!-- ── SECTION ADMIN (masquée pour parent) ── -->
+        <!-- ── SECTION ADMIN (visible pour admin) ── -->
         <Label text="ADMIN" styleClass="sidebar-section-label" fx:id="sectionAdmin"/>
 
         <Button fx:id="btnUsers"
@@ -48,7 +49,7 @@
                 styleClass="nav-btn"/>
 
         <Button fx:id="btnEventList"
-                text="  Liste des événements"
+                text="  Événements"
                 onAction="#showEventList"
                 styleClass="nav-btn"/>
 
@@ -56,6 +57,16 @@
                 text="  Inscriptions"
                 onAction="#showRegistrationList"
                 styleClass="nav-btn"/>
+
+        <!-- NOUVEAU : Bouton Scanner QR Code -->
+        <Button fx:id="btnScanner"
+                text="  📷 Scanner QR"
+                onAction="#showScanner"
+                styleClass="nav-btn">
+            <tooltip>
+                <Tooltip text="Scanner un QR code pour valider une entrée à un événement"/>
+            </tooltip>
+        </Button>
 
         <!-- ── SECTION ENSEIGNANT (masquée pour parent) ── -->
         <Label text="COURS" styleClass="sidebar-section-label" fx:id="sectionTeacher"/>

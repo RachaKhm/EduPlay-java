@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  *   • 4 cartes statistiques (total, enseignants, parents, enfants)
  *   • Tableau des 5 derniers utilisateurs inscrits
 
- * Toute navigation est déléguée à Router-go("route").
+ * Toute navigation est déléguée à Router.go("route").
  * Ce controller ne crée JAMAIS de Stage ni de Scene.
  * ─────────────────────────────────────────────────────────────
  */

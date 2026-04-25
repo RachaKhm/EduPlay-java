@@ -1,0 +1,34 @@
+.button {
+    -fx-transition: all 0.2s ease;
+}
+
+.button:hover {
+    -fx-scale-y: 1.05;
+    -fx-scale-x: 1.05;
+}
+
+.button:pressed {
+    -fx-scale-y: 0.95;
+    -fx-scale-x: 0.95;
+}
+
+.scan-overlay {
+    -fx-effect: dropshadow(gaussian, rgba(0,255,0,0.5), 10, 0, 0, 0);
+}
+
+.result-box-success {
+    -fx-background-color: #f0fdf4;
+    -fx-border-color: #86efac;
+    -fx-animation: fadeIn 0.3s ease;
+}
+
+.result-box-error {
+    -fx-background-color: #fef2f2;
+    -fx-border-color: #fca5a5;
+    -fx-animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}

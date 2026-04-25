@@ -17,7 +17,6 @@ public class RegistrationDetailController {
 
     @FXML private Button backBtn;
     @FXML private Button editBtn;
-    @FXML private Button generateQrBtn;
     @FXML private Label eventValue;
     @FXML private Label childNameValue;
     @FXML private Label phoneValue;
@@ -48,15 +47,30 @@ public class RegistrationDetailController {
                 Router.go("edit_registration", currentRegistration.getId());
             }
         });
-
-        generateQrBtn.setOnAction(e -> generateQRCode());
     }
 
-    // ✅ Méthode appelée par Router
+    // ✅ Méthode appelée par Router quand on passe un ID
+    public void setRegistrationId(int registrationId) {
+        System.out.println("=== setRegistrationId appelé avec ID: " + registrationId);
+        try {
+            EventRegistration registration = service.recupererParId(registrationId);
+            if (registration != null) {
+                this.currentRegistration = registration;
+                displayDetails();
+            } else {
+                System.out.println("❌ Inscription non trouvée avec ID: " + registrationId);
+                showErrorMessage("Inscription non trouvée");
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur chargement inscription: " + e.getMessage());
+            e.printStackTrace();
+            showErrorMessage("Erreur lors du chargement: " + e.getMessage());
+        }
+    }
+
+    // ✅ Méthode appelée par Router quand on passe l'objet complet
     public void setRegistration(EventRegistration registration) {
-        System.out.println("=== setRegistration appelé ===");
-        System.out.println("Registration ID: " + registration.getId());
-        System.out.println("Enfant: " + registration.getChildFullName());
+        System.out.println("=== setRegistration appelé avec ID: " + registration.getId());
         this.currentRegistration = registration;
         displayDetails();
     }
@@ -69,37 +83,66 @@ public class RegistrationDetailController {
 
         System.out.println("Affichage détails inscription ID: " + currentRegistration.getId());
 
-        if (currentRegistration.getEvent() != null) {
-            eventValue.setText(currentRegistration.getEvent().getTitle());
-            System.out.println("Événement: " + currentRegistration.getEvent().getTitle());
-        } else {
-            eventValue.setText("Événement non trouvé");
+        try {
+            if (currentRegistration.getEvent() != null) {
+                eventValue.setText(currentRegistration.getEvent().getTitle() != null ?
+                        currentRegistration.getEvent().getTitle() : "Titre non disponible");
+            } else {
+                eventValue.setText("Événement non disponible");
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur affichage événement: " + e.getMessage());
+            eventValue.setText("Erreur chargement");
         }
 
-        childNameValue.setText(currentRegistration.getChildFullName() != null ? currentRegistration.getChildFullName() : "Non spécifié");
-        phoneValue.setText(currentRegistration.getParentPhone() != null ? currentRegistration.getParentPhone() : "Non spécifié");
-
-        if (currentRegistration.getRegisteredAt() != null) {
-            registeredAtValue.setText(currentRegistration.getRegisteredAt().format(dateFormatter));
-        } else {
-            registeredAtValue.setText("Date non spécifiée");
+        try {
+            childNameValue.setText(currentRegistration.getChildFullName() != null ?
+                    currentRegistration.getChildFullName() : "Non spécifié");
+        } catch (Exception e) {
+            childNameValue.setText("Erreur");
         }
 
-        if (currentRegistration.getScannedAt() != null) {
-            scannedAtValue.setText(currentRegistration.getScannedAt().format(dateFormatter));
-            scannedBox.setVisible(true);
-            scannedBox.setManaged(true);
-        } else {
+        try {
+            phoneValue.setText(currentRegistration.getParentPhone() != null ?
+                    currentRegistration.getParentPhone() : "Non spécifié");
+        } catch (Exception e) {
+            phoneValue.setText("Erreur");
+        }
+
+        try {
+            if (currentRegistration.getRegisteredAt() != null) {
+                registeredAtValue.setText(currentRegistration.getRegisteredAt().format(dateFormatter));
+            } else {
+                registeredAtValue.setText("Date non disponible");
+            }
+        } catch (Exception e) {
+            registeredAtValue.setText("Erreur");
+        }
+
+        try {
+            if (currentRegistration.getScannedAt() != null) {
+                scannedAtValue.setText(currentRegistration.getScannedAt().format(dateFormatter));
+                scannedBox.setVisible(true);
+                scannedBox.setManaged(true);
+            } else {
+                scannedBox.setVisible(false);
+                scannedBox.setManaged(false);
+            }
+        } catch (Exception e) {
             scannedBox.setVisible(false);
-            scannedBox.setManaged(false);
         }
 
         displayQRCode();
     }
 
     private void displayQRCode() {
-        String qrPath = currentRegistration.getQrCodePath();
-        System.out.println("QR Path: " + qrPath);
+        String qrPath = null;
+        try {
+            qrPath = currentRegistration.getQrCodePath();
+            System.out.println("QR Path: " + qrPath);
+        } catch (Exception e) {
+            System.err.println("Erreur récupération QR path: " + e.getMessage());
+        }
 
         if (qrPath != null && !qrPath.isEmpty()) {
             File qrFile = new File(qrPath);
@@ -125,34 +168,12 @@ public class RegistrationDetailController {
         }
     }
 
-    private void generateQRCode() {
-        if (currentRegistration == null) {
-            showAlert("Erreur", "Aucune inscription sélectionnée");
-            return;
-        }
-
-        try {
-            String qrCodePath = dev.eduplay.utils.QRCodeGenerator.generateForRegistration(currentRegistration.getId());
-            String qrCodeValueData = "REGISTRATION_ID:" + currentRegistration.getId();
-
-            service.updateQRCode(currentRegistration.getId(), qrCodePath, qrCodeValueData);
-
-            currentRegistration = service.recupererParId(currentRegistration.getId());
-            displayQRCode();
-
-            showAlert("Succès", "✅ QR Code généré avec succès !");
-
-        } catch (SQLException e) {
-            showAlert("Erreur", "Erreur lors de la génération: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    private void showAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
+    private void showErrorMessage(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erreur");
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+        Router.go("registration_list");
     }
 }

@@ -37,6 +37,7 @@ public class SidebarController {
     @FXML private Button btnParents;
     @FXML private Button btnEventList;
     @FXML private Button btnRegistrationList;
+    @FXML private Button btnScanner;      // NOUVEAU : bouton scanner QR code
 
     /* ── Boutons Enseignant (cachés pour parent) ───────────── */
 
@@ -72,7 +73,8 @@ public class SidebarController {
                 btnMyCoursesChild, btnGames,
                 btnProfile,
                 btnEventList, btnRegistrationList,
-                btnParentEventList, btnParentRegistrations
+                btnParentEventList, btnParentRegistrations,
+                btnScanner      // NOUVEAU : ajout aux boutons de navigation
         );
 
         String fullName = AppContext.getFullName();
@@ -100,6 +102,11 @@ public class SidebarController {
     @FXML private void showParents() { Router.go("parents"); }
     @FXML private void showEventList() { Router.go("event_list"); }
     @FXML private void showRegistrationList() { Router.go("registration_list"); }
+
+    // NOUVEAU : Scanner de QR code
+    @FXML private void showScanner() {
+        Router.go("scanner");
+    }
 
     // Enseignant
     @FXML private void showCourses() { Router.go("teacher_courses"); }
@@ -151,6 +158,7 @@ public class SidebarController {
             case "registration_list" -> btnRegistrationList;
             case "parent_event_list" -> btnParentEventList;
             case "parent_registrations" -> btnParentRegistrations;
+            case "scanner" -> btnScanner;  // NOUVEAU : route du scanner
             default -> btnDashboard;
         };
 
@@ -170,6 +178,7 @@ public class SidebarController {
         setVisible(btnParents, false);
         setVisible(btnEventList, false);
         setVisible(btnRegistrationList, false);
+        setVisible(btnScanner, false);  // NOUVEAU : cacher le scanner par défaut
 
         // Enseignant
         setVisible(sectionTeacher, false);
@@ -198,11 +207,14 @@ public class SidebarController {
                 setVisible(btnParents, true);
                 setVisible(btnEventList, true);
                 setVisible(btnRegistrationList, true);
+                setVisible(btnScanner, true);  // NOUVEAU : montrer le scanner pour admin
             }
             case "enseignant" -> {
                 setVisible(sectionTeacher, true);
                 setVisible(btnCourses, true);
                 setVisible(btnStudents, true);
+                // Les enseignants peuvent aussi avoir accès au scanner ?
+                // setVisible(btnScanner, true); // Décommentez si besoin
             }
             case "parent" -> {
                 setVisible(sectionEvents, true);
@@ -210,6 +222,8 @@ public class SidebarController {
                 setVisible(btnParentRegistrations, true);
                 setVisible(sectionFamily, true);
                 setVisible(btnChildren, true);
+                // Les parents peuvent scanner des QR codes pour leurs enfants ?
+                // setVisible(btnScanner, true); // Décommentez si besoin
             }
             case "enfant" -> {
                 setVisible(sectionChild, true);
