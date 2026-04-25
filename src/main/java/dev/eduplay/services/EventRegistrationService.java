@@ -2,13 +2,14 @@ package dev.eduplay.services;
 
 import dev.eduplay.entities.EventRegistration;
 import dev.eduplay.entities.SchoolEvent;
+import dev.eduplay.interfaces.IGeneralService;
 import dev.eduplay.tools.MyDataBase;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventRegistrationService implements IGeneralService<EventRegistration>{
+public class EventRegistrationService implements IGeneralService<EventRegistration> {
     Connection cn;
     public EventRegistrationService() {
         cn = MyDataBase.getInstance().getCnx();

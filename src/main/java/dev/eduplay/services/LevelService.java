@@ -1,6 +1,6 @@
-package services;
+package dev.eduplay.services;
 
-import tools.MyDatabase;
+import dev.eduplay.tools.MyDataBase;
 import entities.Level;
 
 
@@ -12,7 +12,7 @@ public class LevelService {
     private Connection cnx;
 
     public LevelService() throws SQLException {
-        cnx = MyDatabase.getInstance().getConnection();
+        cnx = MyDataBase.getInstance().getCnx();
     }
 
     public void add(Level level) throws SQLException {

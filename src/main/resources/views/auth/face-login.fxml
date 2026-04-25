@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="dev.eduplay.controllers.FaceLoginController"
+           stylesheets="@../../styles/auth.css"
+           styleClass="auth-stack-pane">
+
+    <HBox>
+
+        <!-- Panneau gauche branding -->
+        <VBox alignment="CENTER" prefWidth="420"
+              styleClass="auth-branding-panel">
+            <VBox spacing="16" alignment="CENTER">
+                <Label text="EduPlay"
+                       styleClass="auth-logo-text"/>
+                <Label text="Connexion par visage"
+                       styleClass="auth-subtitle"/>
+                <VBox spacing="12" style="-fx-padding: 30 0 0 0;">
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label text="1"
+                                style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;
+                                       -fx-background-color: #E94560; -fx-background-radius: 12;
+                                       -fx-min-width: 24; -fx-min-height: 24; -fx-alignment: CENTER;"/>
+                        <Label text="Entrez votre identifiant"
+                               styleClass="auth-feature-text"/>
+                    </HBox>
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label text="2"
+                                style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;
+                                       -fx-background-color: #E94560; -fx-background-radius: 12;
+                                       -fx-min-width: 24; -fx-min-height: 24; -fx-alignment: CENTER;"/>
+                        <Label text="Placez-vous devant la caméra"
+                               styleClass="auth-feature-text"/>
+                    </HBox>
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label text="3"
+                                style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;
+                                       -fx-background-color: #E94560; -fx-background-radius: 12;
+                                       -fx-min-width: 24; -fx-min-height: 24; -fx-alignment: CENTER;"/>
+                        <Label text="Cliquez sur Capturer et vérifier"
+                               styleClass="auth-feature-text"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </VBox>
+
+        <!-- Panneau droit -->
+        <VBox alignment="CENTER" HBox.hgrow="ALWAYS"
+              styleClass="auth-form-panel">
+            <VBox spacing="0" maxWidth="380">
+
+                <Label text="Reconnaissance faciale"
+                       style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #22223A;"/>
+                <Label text="Regardez la caméra et restez immobile."
+                       styleClass="auth-form-subtitle" style="-fx-padding: 4 0 20 0;"/>
+
+                <!-- Live preview webcam -->
+                <StackPane styleClass="camera-preview-container" style="-fx-min-height: 240; -fx-max-height: 240;">
+                    <ImageView fx:id="webcamView"
+                               fitWidth="320" fitHeight="240"
+                               preserveRatio="true"/>
+                    <!-- Overlay quand caméra non démarrée -->
+                    <VBox fx:id="cameraOffOverlay" alignment="CENTER" spacing="8">
+                        <Label text="📷" style="-fx-font-size: 40px;"/>
+                        <Label text="Caméra non démarrée"
+                               styleClass="camera-off-overlay"/>
+                    </VBox>
+                </StackPane>
+
+                <!-- Boutons caméra -->
+                <HBox spacing="8" style="-fx-padding: 10 0 0 0;">
+                    <Button fx:id="startCamBtn"
+                            text="▶  Démarrer la caméra"
+                            onAction="#handleStartCamera"
+                            HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                            styleClass="auth-secondary-button" style="-fx-font-size: 12px; -fx-padding: 9;"/>
+                    <Button fx:id="stopCamBtn"
+                            text="⏹  Arrêter"
+                            onAction="#handleStopCamera"
+                            disable="true"
+                            HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                            styleClass="camera-button-secondary"/>
+                </HBox>
+
+                <!-- Identifiant -->
+                <Label text="Email ou identifiant"
+                       styleClass="auth-label" style="-fx-padding: 14 0 0 0;"/>
+                <TextField fx:id="usernameField"
+                           promptText="votre@email.com ou identifiant"
+                           styleClass="auth-input"/>
+
+                <!-- Status -->
+                <Label fx:id="statusLabel" text="" wrapText="true"
+                       styleClass="auth-error-label"/>
+
+                <!-- Bouton capturer + vérifier -->
+                <Button fx:id="captureBtn"
+                        text="📸  Capturer et vérifier"
+                        onAction="#handleCaptureAndVerify"
+                        maxWidth="Infinity" disable="true"
+                        styleClass="auth-primary-button">
+                    <VBox.margin><Insets top="12"/></VBox.margin>
+                </Button>
+
+                <Hyperlink text="← Retour à la connexion normale"
+                           onAction="#goToLogin"
+                           styleClass="auth-footer-link" style="-fx-padding: 12 0 0 0;"/>
+            </VBox>
+        </VBox>
+    </HBox>
+</StackPane>

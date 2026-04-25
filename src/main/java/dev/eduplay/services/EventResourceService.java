@@ -2,10 +2,10 @@ package dev.eduplay.services;
 
 import dev.eduplay.entities.EventResource;
 import dev.eduplay.entities.SchoolEvent;
+import dev.eduplay.interfaces.IGeneralService;
 import dev.eduplay.tools.MyDataBase;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

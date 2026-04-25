@@ -1,5 +1,6 @@
 package dev.eduplay.mains;
 
+import dev.eduplay.core.ResetTokenServer;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -15,6 +16,9 @@ public class MainFX extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
 
+        // Démarrer le serveur HTTP local pour intercepter les clics email
+        ResetTokenServer.start(primaryStage);
+
         // Charger la vue de connexion
         FXMLLoader loader = new FXMLLoader(
                 getClass().getResource("/views/auth/LoginView.fxml"));
@@ -22,7 +26,6 @@ public class MainFX extends Application {
 
         Scene scene = new Scene(root, 860, 540);
 
-        // Charger le CSS global (app.css dans resources/styles/)
         try {
             scene.getStylesheets().add(
                     Objects.requireNonNull(
@@ -38,12 +41,14 @@ public class MainFX extends Application {
         primaryStage.setMinHeight(480);
         primaryStage.centerOnScreen();
 
-        // Icône application (optionnel)
         try {
             primaryStage.getIcons().add(
                     new Image(Objects.requireNonNull(
                             getClass().getResourceAsStream("/styles/icon.png"))));
         } catch (Exception ignored) {}
+
+        // Arrêter le serveur proprement à la fermeture
+        primaryStage.setOnCloseRequest(e -> ResetTokenServer.stop());
 
         primaryStage.show();
     }
