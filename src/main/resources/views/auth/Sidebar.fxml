@@ -9,11 +9,12 @@
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="dev.eduplay.controllers.SidebarController"
-      style="-fx-background-color: white; -fx-border-color: #E5E7EB; -fx-border-width: 0 1 0 0;"
+      stylesheets="@../../styles/auth.css"
+      styleClass="sidebar-container"
       prefWidth="260" spacing="0">
       
       <!-- Header avec logo moderne -->
-      <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 24; -fx-border-color: #E5E7EB; -fx-border-width: 0 0 1 0;">
+      <HBox alignment="CENTER_LEFT" spacing="12" styleClass="sidebar-header">
           <StackPane>
               <!-- Background Gradient -->
               <Rectangle width="48" height="48" arcWidth="24" arcHeight="24">
@@ -30,16 +31,16 @@
           </StackPane>
           <VBox alignment="CENTER_LEFT" spacing="2">
               <HBox>
-                  <Label text="Edu" style="-fx-font-weight: bold; -fx-font-size: 20px; -fx-text-fill: #111827;"/>
-                  <Label text="Play" style="-fx-font-weight: bold; -fx-font-size: 20px; -fx-text-fill: #2563EB;"/>
+                  <Label text="Edu" styleClass="sidebar-logo-text-edu"/>
+                  <Label text="Play" styleClass="sidebar-logo-text-play"/>
               </HBox>
-              <Label text="Super Admin" style="-fx-text-fill: #6B7280; -fx-font-size: 13px;"/>
+              <Label text="Super Admin" styleClass="sidebar-role-text"/>
           </VBox>
       </HBox>
 
       <!-- Navigation Content -->
-      <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: white; -fx-padding: 0; -fx-border-color: transparent;" VBox.vgrow="ALWAYS">
-          <VBox spacing="4" style="-fx-padding: 16; -fx-background-color: white;">
+      <ScrollPane fitToWidth="true" styleClass="sidebar-scroll-pane" VBox.vgrow="ALWAYS">
+          <VBox spacing="4" styleClass="sidebar-nav-container">
               
               <HBox fx:id="btnDashboard" onMouseClicked="#showDashboard" alignment="CENTER_LEFT" spacing="12" styleClass="modern-nav-btn">
 <StackPane styleClass="nav-icon-bg">
@@ -52,7 +53,7 @@
               </HBox>
 
               <!-- ADMIN SECTION -->
-              <HBox fx:id="sectionAdminBox" alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 24 0 8 0;">
+              <HBox fx:id="sectionAdminBox" alignment="CENTER_LEFT" spacing="8" styleClass="sidebar-section-header">
                   <Rectangle width="4" height="16" arcWidth="4" arcHeight="4">
                       <fill>
                           <LinearGradient startX="0" startY="0" endX="0" endY="1">
@@ -63,7 +64,7 @@
                           </LinearGradient>
                       </fill>
                   </Rectangle>
-                  <Label fx:id="sectionAdmin" text="E-COMMERCE" style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #9CA3AF;"/>
+                  <Label fx:id="sectionAdmin" text="E-COMMERCE" styleClass="sidebar-section-label"/>
               </HBox>
 
               
@@ -93,9 +94,9 @@
               </HBox>
 
               <!-- ENSEIGNANT SECTION -->
-              <HBox fx:id="sectionTeacherBox" alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 24 0 8 0;">
+              <HBox fx:id="sectionTeacherBox" alignment="CENTER_LEFT" spacing="8" styleClass="sidebar-section-header">
                   <Rectangle width="4" height="16" arcWidth="4" arcHeight="4" fill="#10B981"/>
-                  <Label fx:id="sectionTeacher" text="COURS" style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #9CA3AF;"/>
+                  <Label fx:id="sectionTeacher" text="COURS" styleClass="sidebar-section-label"/>
               </HBox>
               <HBox fx:id="btnCourses" onMouseClicked="#showCourses" alignment="CENTER_LEFT" spacing="12" styleClass="modern-nav-btn">
 <StackPane styleClass="nav-icon-bg">
@@ -115,9 +116,9 @@
               </HBox>
 
               <!-- PARENT SECTION -->
-              <HBox fx:id="sectionParentBox" alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 24 0 8 0;">
+              <HBox fx:id="sectionParentBox" alignment="CENTER_LEFT" spacing="8" styleClass="sidebar-section-header">
                   <Rectangle width="4" height="16" arcWidth="4" arcHeight="4" fill="#F59E0B"/>
-                  <Label fx:id="sectionParent" text="FAMILLE" style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #9CA3AF;"/>
+                  <Label fx:id="sectionParent" text="FAMILLE" styleClass="sidebar-section-label"/>
               </HBox>
               <HBox fx:id="btnChildren" onMouseClicked="#showChildren" alignment="CENTER_LEFT" spacing="12" styleClass="modern-nav-btn">
 <StackPane styleClass="nav-icon-bg">
@@ -137,9 +138,9 @@
               </HBox>
 
               <!-- ENFANT SECTION -->
-              <HBox fx:id="sectionChildBox" alignment="CENTER_LEFT" spacing="8" style="-fx-padding: 24 0 8 0;">
+              <HBox fx:id="sectionChildBox" alignment="CENTER_LEFT" spacing="8" styleClass="sidebar-section-header">
                   <Rectangle width="4" height="16" arcWidth="4" arcHeight="4" fill="#8B5CF6"/>
-                  <Label fx:id="sectionChild" text="APPRENTISSAGE" style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #9CA3AF;"/>
+                  <Label fx:id="sectionChild" text="APPRENTISSAGE" styleClass="sidebar-section-label"/>
               </HBox>
               <HBox fx:id="btnMyCoursesChild" onMouseClicked="#showMyCoursesChild" alignment="CENTER_LEFT" spacing="12" styleClass="modern-nav-btn">
 <StackPane styleClass="nav-icon-bg">
@@ -173,9 +174,8 @@
       </ScrollPane>
 
       <!-- Footer logout -->
-      <VBox style="-fx-padding: 16; -fx-border-color: #E5E7EB; -fx-border-width: 1 0 0 0;">
-          <Button onAction="#handleLogout" styleClass="modern-logout-btn" 
-                  style="-fx-background-color: #FEF2F2; -fx-border-width: 0; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 8 12; -fx-cursor: hand; -fx-pref-width: 250;">
+      <VBox styleClass="sidebar-footer">
+          <Button onAction="#handleLogout" styleClass="modern-logout-btn, logout-btn-container">
               <graphic>
                   <HBox alignment="CENTER_LEFT" spacing="12">
                       <StackPane>
@@ -192,8 +192,8 @@
                           <Label text="➔" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
                       </StackPane>
                       <VBox alignment="CENTER_LEFT">
-                          <Label text="Déconnexion" style="-fx-text-fill: #DC2626; -fx-font-weight: bold;"/>
-                          <Label fx:id="labelUserName" text="Utilisateur" style="-fx-text-fill: #6B7280; -fx-font-size: 11px;"/>
+                          <Label text="Déconnexion" styleClass="logout-text-primary"/>
+                          <Label fx:id="labelUserName" text="Utilisateur" styleClass="logout-text-secondary"/>
                       </VBox>
                   </HBox>
               </graphic>

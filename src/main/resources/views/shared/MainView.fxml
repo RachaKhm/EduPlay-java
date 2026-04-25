@@ -9,7 +9,8 @@
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dev.eduplay.controllers.MainController"
             prefWidth="1300" prefHeight="800"
-            style="-fx-background-color: #F8F9FA;">
+            styleClass="main-root"
+            stylesheets="@/styles/main-view.css">
 
     <!-- ═══ SIDEBAR ═══ -->
     <left>
@@ -20,37 +21,54 @@
     <center>
         <BorderPane>
 
-            <!-- Topbar Custom Navbar -->
+            <!-- Topbar -->
             <top>
-                <HBox alignment="CENTER_RIGHT" spacing="24" style="-fx-background-color: white; -fx-padding: 12 24; -fx-border-color: #E5E7EB; -fx-border-width: 0 0 1 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+                <HBox alignment="CENTER_RIGHT" spacing="16" styleClass="topbar">
+
+                    <!-- Barre de recherche -->
                     <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-                        <HBox spacing="8" alignment="CENTER_LEFT" style="-fx-background-color: #F3F4F6; -fx-background-radius: 20; -fx-padding: 0 16; -fx-pref-height: 40; -fx-pref-width: 300;">
-                            <Label text="🔍" style="-fx-text-fill: #9CA3AF;"/>
-                            <TextField promptText="Rechercher..." style="-fx-background-color: transparent; -fx-text-fill: #374151; -fx-pref-width: 250; -fx-border-width: 0;"/>
+                        <HBox spacing="8" alignment="CENTER_LEFT" styleClass="search-box">
+                            <Label text="🔍" styleClass="search-icon"/>
+                            <TextField promptText="Rechercher..." styleClass="search-field"/>
                         </HBox>
                     </HBox>
 
+                    <!-- Bouton Enrollment Facial -->
+                    <StackPane fx:id="faceEnrollBtn"
+                               onMouseClicked="#handleFaceEnroll"
+                               styleClass="icon-btn">
+                        <Label text="🪪" styleClass="icon-label">
+                            <tooltip>
+                                <Tooltip text="Enregistrer / Modifier mon visage"/>
+                            </tooltip>
+                        </Label>
+                    </StackPane>
+
                     <!-- Notification Bell -->
-                    <StackPane style="-fx-background-color: #F3F4F6; -fx-background-radius: 20; -fx-min-width: 40; -fx-min-height: 40; -fx-max-width: 40; -fx-max-height: 40; -fx-cursor: hand;">
-                        <Label text="🔔" style="-fx-font-size: 16px;"/>
-                        <Label text="3" style="-fx-background-color: #EF4444; -fx-text-fill: white; -fx-font-size: 9px; -fx-font-weight: bold; -fx-padding: 1 5; -fx-background-radius: 10; -fx-translate-x: 10; -fx-translate-y: -10;"/>
+                    <StackPane styleClass="icon-btn">
+                        <Label text="🔔" styleClass="icon-label"/>
+                        <Label text="3" styleClass="notif-badge"/>
                     </StackPane>
 
                     <!-- Profile Button -->
-                    <HBox fx:id="btnProfile" onMouseClicked="#showProfile" alignment="CENTER" spacing="12" style="-fx-background-color: linear-gradient(to right, #667EEA, #764BA2); -fx-padding: 4 16 4 4; -fx-background-radius: 24; -fx-cursor: hand;">
-                        <StackPane style="-fx-background-color: rgba(255,255,255,0.2); -fx-background-radius: 20; -fx-min-width: 36; -fx-min-height: 36; -fx-max-width: 36; -fx-max-height: 36;">
+                    <HBox fx:id="btnProfile" onMouseClicked="#showProfile"
+                          alignment="CENTER" spacing="12"
+                          styleClass="profile-btn">
+                        <StackPane styleClass="profile-avatar">
+                            <Label fx:id="pillInitials" text="U" styleClass="profile-initials"/>
                         </StackPane>
                         <VBox alignment="CENTER_LEFT">
-                            <Label text="Mon Profil" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px;"/>
-                            <Label text="Actif" style="-fx-text-fill: rgba(255,255,255,0.8); -fx-font-size: 11px;"/>
+                            <Label fx:id="pillName"   text="Utilisateur" styleClass="profile-name"/>
+                            <Label fx:id="pillRole"   text="Rôle"        styleClass="profile-role"/>
                         </VBox>
                     </HBox>
+
                 </HBox>
             </top>
 
-            <!-- Contenu dynamique : le Router.go() remplace ce StackPane -->
+            <!-- Contenu dynamique -->
             <center>
-                <StackPane fx:id="contentArea" style="-fx-padding: 24; -fx-background-color: #F8F9FA;"/>
+                <StackPane fx:id="contentArea" styleClass="content-area"/>
             </center>
 
         </BorderPane>

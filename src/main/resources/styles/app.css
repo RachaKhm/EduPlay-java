@@ -167,3 +167,45 @@
     -fx-text-fill: #374151;
     -fx-font-size: 13px;
 }
+
+/* ── Modern Dialogs ────────────────────────────────── */
+.modern-dialog {
+    -fx-background-color: #FFFFFF;
+    -fx-font-family: "Segoe UI", "Inter", sans-serif;
+}
+.modern-dialog .content.label {
+    -fx-font-size: 15px;
+    -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+    -fx-padding: 24 24 12 24;
+}
+.modern-dialog .header-panel {
+    -fx-background-color: #FEF2F2;
+    -fx-padding: 16 24;
+}
+.modern-dialog .header-panel .label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #DC2626;
+    -fx-font-weight: 900;
+}
+.modern-dialog .button-bar {
+    -fx-padding: 12 24 24 24;
+}
+.modern-dialog .button {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+    -fx-background-radius: 100;
+    -fx-padding: 8 20;
+    -fx-cursor: hand;
+}
+.modern-dialog .button:hover {
+    -fx-background-color: #E2E8F0;
+}
+.modern-dialog .button:default {
+    -fx-background-color: #EF4444;
+    -fx-text-fill: white;
+}
+.modern-dialog .button:default:hover {
+    -fx-background-color: #DC2626;
+}

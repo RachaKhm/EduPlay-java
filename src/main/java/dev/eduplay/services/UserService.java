@@ -372,7 +372,18 @@ public class UserService implements IGeneralService<User> {
 
         return user;
     }
-    // Sauvegarder l'embedding facial lors de l'inscription de l'enfant
+    // Récupérer l'embedding par ID (utilisé dans FaceLoginController)
+    public String getFacialEmbedding(int userId) {
+        String sql = "SELECT facial_embedding FROM user WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getString("facial_embedding");
+        } catch (Exception e) { e.printStackTrace(); }
+        return null;
+    }
+
+    // Sauvegarder l'embedding lors de l'enrollment
     public boolean saveFacialEmbedding(int userId, String embeddingJson) {
         String sql = "UPDATE user SET facial_embedding = ? WHERE id = ?";
         try (PreparedStatement ps = cnx.prepareStatement(sql)) {
@@ -381,16 +392,5 @@ public class UserService implements IGeneralService<User> {
             ps.executeUpdate();
             return true;
         } catch (Exception e) { e.printStackTrace(); return false; }
-    }
-
-    // Récupérer l'embedding stocké pour un enfant
-    public String getFacialEmbedding(String username) {
-        String sql = "SELECT facial_embedding FROM user WHERE username = ? AND type = 'enfant'";
-        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-            ps.setString(1, username);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) return rs.getString("facial_embedding");
-        } catch (Exception e) { e.printStackTrace(); }
-        return null;
     }
 }

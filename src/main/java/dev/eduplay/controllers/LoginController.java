@@ -10,40 +10,42 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.util.Set;
 
 public class LoginController {
 
-    // ── Comptes de test : bypass OTP automatique ──────────────────────────
+    // ── Comptes de test : bypass OTP ──────────────────────────────────────
     private static final Set<String> TEST_ACCOUNTS = Set.of(
-            "admin@gmail.com",
-            "parent@gmail.com",
-            "teacher@gmail.com",
-            "child",
-            "admin",
-            "parent",
-            "teacher"
+            "admin@gmail.com", "parent@gmail.com", "teacher@gmail.com",
+            "child", "admin", "parent", "teacher"
     );
 
+    // ── Vue login normale ─────────────────────────────────────────────────
+    @FXML private HBox loginBox;
     @FXML private TextField emailField;
     @FXML private PasswordField passwordField;
     @FXML private Label errorLabel;
-    @FXML private VBox otpBox;
+
+    // ── Vue OTP (superposée) ──────────────────────────────────────────────
+    @FXML private HBox otpBox;
     @FXML private TextField otpField;
+    @FXML private Label otpInfoLabel;
+    @FXML private Label otpErrorLabel;
 
     private final UserService userService = new UserService();
     private User pendingUser;
 
     @FXML
     public void initialize() {
-        if (otpBox != null) {
-            otpBox.setVisible(false);
-            otpBox.setManaged(false);
-        }
+        // OTP caché au départ
+        otpBox.setVisible(false);
+        otpBox.setManaged(false);
     }
+
+    // ─── LOGIN ────────────────────────────────────────────────────────────
 
     @FXML
     private void handleLogin() {
@@ -51,62 +53,97 @@ public class LoginController {
         String password   = passwordField.getText();
 
         if (identifier.isEmpty() || password.isEmpty()) {
-            showError("Veuillez remplir tous les champs.");
+            showLoginError("Veuillez remplir tous les champs.");
             return;
         }
 
-        // 1. Compte verrouillé ?
         if (userService.isAccountLocked(identifier)) {
-            showError("Compte temporairement bloqué. Réessayez dans 15 minutes.");
+            showLoginError("Compte temporairement bloqué. Réessayez dans 15 minutes.");
             return;
         }
 
-        // 2. Vérifier les identifiants
         User user = userService.authenticate(identifier, password);
         if (user == null) {
             userService.recordFailedAttempt(identifier);
-            showError("Identifiants incorrects.");
+            showLoginError("Identifiants incorrects.");
             return;
         }
 
-        // 3. Identifiants OK
         pendingUser = user;
         userService.resetFailedAttempts(user.getId());
 
-        // 4. Bypass OTP pour les comptes de test
+        // Bypass OTP pour comptes de test
         if (isTestAccount(identifier)) {
             finalizeLogin(user);
             return;
         }
 
-        // 5. Envoi OTP pour les vrais comptes
+        // Envoi OTP
         new Thread(() -> {
             boolean sent = userService.sendOtp(user);
             javafx.application.Platform.runLater(() -> {
                 if (sent) {
                     showOtpStep();
                 } else {
+                    // Email non configuré → login direct
                     finalizeLogin(user);
                 }
             });
         }).start();
     }
 
+    // ─── OTP ──────────────────────────────────────────────────────────────
+
     @FXML
     private void handleVerifyOtp() {
-        if (otpField == null || otpField.getText().trim().isEmpty()) {
-            showError("Entrez le code reçu.");
+        String otp = otpField.getText().trim();
+        if (otp.isEmpty()) {
+            otpErrorLabel.setText("Entrez le code reçu.");
             return;
         }
 
-        boolean valid = userService.verifyOtp(pendingUser.getId(), otpField.getText().trim());
+        boolean valid = userService.verifyOtp(pendingUser.getId(), otp);
         if (!valid) {
-            showError("Code invalide ou expiré.");
+            otpErrorLabel.setStyle("-fx-text-fill: #E94560; -fx-font-size: 12px;");
+            otpErrorLabel.setText("Code invalide ou expiré.");
             return;
         }
 
         finalizeLogin(pendingUser);
     }
+
+    @FXML
+    private void backToLogin() {
+        otpBox.setVisible(false);
+        otpBox.setManaged(false);
+        loginBox.setVisible(true);
+        loginBox.setManaged(true);
+        otpField.clear();
+        otpErrorLabel.setText("");
+        emailField.setDisable(false);
+        passwordField.setDisable(false);
+        pendingUser = null;
+    }
+
+    private void showOtpStep() {
+        loginBox.setVisible(false);
+        loginBox.setManaged(false);
+        otpBox.setVisible(true);
+        otpBox.setManaged(true);
+        if (otpInfoLabel != null) {
+            otpInfoLabel.setText("Code envoyé à " + pendingUser.getEmail());
+        }
+        otpField.requestFocus();
+    }
+
+    // ─── WEBCAM ───────────────────────────────────────────────────────────
+
+    @FXML
+    private void goToFaceLogin() {
+        navigateTo("/views/face-login.fxml", "/views/auth/face-login.fxml");
+    }
+
+    // ─── FINALISATION LOGIN ───────────────────────────────────────────────
 
     private void finalizeLogin(User user) {
         String token = userService.createSession(user.getId());
@@ -123,29 +160,63 @@ public class LoginController {
 
         try {
             FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/views/MainView.fxml")
+                    getClass().getResource("/views/shared/MainView.fxml")
             );
             Parent root = loader.load();
-
             Stage stage = (Stage) emailField.getScene().getWindow();
             Scene scene = new Scene(root);
 
             try {
-                var css = getClass().getResource("/styles/main.css");
+                var css = getClass().getResource("/styles/app.css");
+                if (css == null) css = getClass().getResource("/styles/main.css");
                 if (css != null) scene.getStylesheets().add(css.toExternalForm());
             } catch (Exception ignored) {}
 
             stage.setScene(scene);
             stage.setMaximized(true);
             stage.show();
-
             Router.go(route);
 
         } catch (Exception e) {
-            showError("Erreur lors du chargement : " + e.getMessage());
+            showLoginError("Erreur lors du chargement : " + e.getMessage());
             e.printStackTrace();
         }
     }
+
+    // ─── NAVIGATION ───────────────────────────────────────────────────────
+
+    @FXML
+    private void goToSignup() {
+        navigateTo("/views/auth/SignupView.fxml", "/views/SignupView.fxml");
+    }
+
+    @FXML
+    private void goToForgotPassword() {
+        navigateTo("/views/forgot-password.fxml", "/views/auth/forgot-password.fxml");
+    }
+
+    /**
+     * Essaie les chemins dans l'ordre jusqu'à en trouver un valide.
+     */
+    private void navigateTo(String... paths) {
+        for (String path : paths) {
+            var url = getClass().getResource(path);
+            if (url != null) {
+                try {
+                    FXMLLoader loader = new FXMLLoader(url);
+                    Parent root = loader.load();
+                    Stage stage = (Stage) emailField.getScene().getWindow();
+                    stage.setScene(new Scene(root, 860, 540));
+                    return;
+                } catch (Exception e) {
+                    System.err.println("[LoginController] Erreur " + path + " : " + e.getMessage());
+                }
+            }
+        }
+        showLoginError("Vue introuvable. Vérifiez la console.");
+    }
+
+    // ─── UTILS ────────────────────────────────────────────────────────────
 
     private boolean isTestAccount(String identifier) {
         if (TEST_ACCOUNTS.contains(identifier.toLowerCase())) return true;
@@ -157,51 +228,10 @@ public class LoginController {
         return false;
     }
 
-    private void showOtpStep() {
-        emailField.setDisable(true);
-        passwordField.setDisable(true);
-        if (otpBox != null) {
-            otpBox.setVisible(true);
-            otpBox.setManaged(true);
-        }
-        showSuccess("Code envoyé à " + pendingUser.getEmail());
-    }
-
-    private void showError(String msg) {
+    private void showLoginError(String msg) {
         if (errorLabel != null) {
-            errorLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #E94560; -fx-padding: 10 0 0 0;");
+            errorLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #E94560; -fx-padding: 8 0 0 0;");
             errorLabel.setText(msg);
         }
-    }
-
-    private void showSuccess(String msg) {
-        if (errorLabel != null) {
-            errorLabel.setStyle("-fx-font-size: 12px; -fx-text-fill: #2E9E6E; -fx-padding: 10 0 0 0;");
-            errorLabel.setText(msg);
-        }
-    }
-
-    @FXML
-    private void goToSignup() {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/views/auth/ParentSignup.fxml")
-            );
-            Parent root = loader.load();
-            Stage stage = (Stage) emailField.getScene().getWindow();
-            stage.setScene(new Scene(root, 860, 540));
-        } catch (Exception e) { e.printStackTrace(); }
-    }
-
-    @FXML
-    private void goToForgotPassword() {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/views/auth/forgot-password.fxml")
-            );
-            Parent root = loader.load();
-            Stage stage = (Stage) emailField.getScene().getWindow();
-            stage.setScene(new Scene(root, 860, 540));
-        } catch (Exception e) { e.printStackTrace(); }
     }
 }

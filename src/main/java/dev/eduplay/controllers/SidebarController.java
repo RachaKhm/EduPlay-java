@@ -100,7 +100,29 @@ public class SidebarController {
     @FXML
     private void handleLogout() {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                "Se déconnecter ?", ButtonType.YES, ButtonType.NO);
+                "Voulez-vous vraiment vous déconnecter ?", ButtonType.YES, ButtonType.NO);
+        
+        // Supprimer la barre du haut (titre, croix de fermeture)
+        confirm.initStyle(javafx.stage.StageStyle.UNDECORATED);
+        // Supprimer l'icône (?)
+        confirm.setGraphic(null);
+        
+        confirm.setHeaderText("Confirmation de déconnexion");
+
+        try {
+            javafx.scene.control.DialogPane dialogPane = confirm.getDialogPane();
+            // Assure la suppression complète de l'icône dans l'en-tête
+            dialogPane.setGraphic(null);
+            
+            dialogPane.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
+            dialogPane.getStyleClass().add("modern-dialog");
+            
+            // Personnalisation des boutons
+            ((javafx.scene.control.Button) dialogPane.lookupButton(ButtonType.YES)).setText("Oui, me déconnecter");
+            ((javafx.scene.control.Button) dialogPane.lookupButton(ButtonType.NO)).setText("Annuler");
+        } catch (Exception e) {
+            System.err.println("Impossible de charger les styles pour le popup de déconnexion.");
+        }
 
         confirm.showAndWait().ifPresent(btn -> {
             if (btn == ButtonType.YES) {
