@@ -16,11 +16,11 @@
             <HBox alignment="CENTER_LEFT" spacing="16"
                   styleClass="admin-header-container">
                 <Label text="EduPlay"
-                       styleClass="auth-logo-text" style="-fx-font-size: 20px;"/>
+                       styleClass="sidebar-brand-edu" style="-fx-font-size: 18px; -fx-text-fill: white;"/>
                 <Label text="›"
                        styleClass="admin-breadcrumb-separator"/>
                 <Label text="Gestion des utilisateurs"
-                       styleClass="admin-breadcrumb-text"/>
+                       styleClass="admin-breadcrumb-text, admin-breadcrumb-text-active"/>
                 <HBox HBox.hgrow="ALWAYS"/>
                 <Button text="+ Nouvel utilisateur"
                         onAction="#openAddUserForm"
