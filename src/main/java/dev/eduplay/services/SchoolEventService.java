@@ -1,17 +1,20 @@
 package dev.eduplay.services;
 
+import dev.eduplay.entities.EventRegistration;
 import dev.eduplay.entities.EventResource;
 import dev.eduplay.entities.SchoolEvent;
 import dev.eduplay.tools.MyDataBase;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SchoolEventService implements IGeneralService<SchoolEvent> {
 
     Connection cn;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     public SchoolEventService() {
         cn = MyDataBase.getInstance().getCnx();
@@ -30,10 +33,9 @@ public class SchoolEventService implements IGeneralService<SchoolEvent> {
         ps.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
         ps.setString(8, event.getLatitude());
         ps.setString(9, event.getLongitude());
-        ps.setInt(10, event.getMaxCapacity());  // ✅ Ajout de la capacité max
-        ps.setInt(11, 0);  // current_registrations initialisé à 0
+        ps.setInt(10, event.getMaxCapacity());
+        ps.setInt(11, 0);
 
-        System.out.println("Executing insert school_event with max_capacity: " + event.getMaxCapacity());
         ps.executeUpdate();
 
         ResultSet rs = ps.getGeneratedKeys();
@@ -83,6 +85,9 @@ public class SchoolEventService implements IGeneralService<SchoolEvent> {
 
     @Override
     public void modifier(SchoolEvent event) throws SQLException {
+        // Récupérer l'ancienne version avant modification
+        SchoolEvent oldEvent = recupererParId(event.getId());
+
         String sql = "UPDATE school_event SET title = ?, description = ?, start_date = ?, end_date = ?, location = ?, image_path = ?, latitude = ?, longitude = ?, max_capacity = ? WHERE id = ?";
         PreparedStatement pst = cn.prepareStatement(sql);
         pst.setString(1, event.getTitle());
@@ -93,11 +98,74 @@ public class SchoolEventService implements IGeneralService<SchoolEvent> {
         pst.setString(6, event.getImagePath());
         pst.setString(7, event.getLatitude());
         pst.setString(8, event.getLongitude());
-        pst.setInt(9, event.getMaxCapacity());  // ✅ Modification de la capacité
+        pst.setInt(9, event.getMaxCapacity());
         pst.setInt(10, event.getId());
 
-        System.out.println("Updating event ID: " + event.getId() + " with max_capacity: " + event.getMaxCapacity());
         pst.executeUpdate();
+
+        // Vérifier si des modifications importantes ont été faites (date ou lieu)
+        boolean hasImportantChanges = hasImportantChanges(oldEvent, event);
+
+        // Notifier les parents si nécessaire
+        if (hasImportantChanges) {
+            notifyParentsOfEventChange(oldEvent, event);
+        }
+    }
+
+    /**
+     * Vérifie si les modifications sont importantes (date ou lieu)
+     */
+    private boolean hasImportantChanges(SchoolEvent oldEvent, SchoolEvent newEvent) {
+        if (oldEvent == null || newEvent == null) return false;
+
+        boolean dateChanged = false;
+        boolean locationChanged = false;
+
+        if (oldEvent.getStartDate() != null && newEvent.getStartDate() != null) {
+            dateChanged = !oldEvent.getStartDate().equals(newEvent.getStartDate());
+        }
+
+        if (oldEvent.getLocation() != null && newEvent.getLocation() != null) {
+            locationChanged = !oldEvent.getLocation().equals(newEvent.getLocation());
+        }
+
+        return dateChanged || locationChanged;
+    }
+
+    /**
+     * Notifie tous les parents inscrits à un événement modifié
+     */
+    private void notifyParentsOfEventChange(SchoolEvent oldEvent, SchoolEvent newEvent) throws SQLException {
+        EventRegistrationService registrationService = new EventRegistrationService();
+        EmailService emailService = new EmailService();
+
+        List<EventRegistration> registrations = registrationService.recupererParEventId(newEvent.getId());
+
+        String oldDate = oldEvent.getStartDate() != null ? oldEvent.getStartDate().format(formatter) : null;
+        String newDate = newEvent.getStartDate() != null ? newEvent.getStartDate().format(formatter) : null;
+        String oldLocation = oldEvent.getLocation();
+        String newLocation = newEvent.getLocation();
+
+        System.out.println("📧 Envoi de notifications à " + registrations.size() + " parents pour modification de l'événement");
+
+        for (EventRegistration registration : registrations) {
+            if (registration.getParent() != null && registration.getParent().getEmail() != null) {
+                emailService.sendEventModificationNotification(
+                        registration.getParent().getEmail(),
+                        registration.getParent().getFullName(),
+                        registration.getChildFullName(),
+                        newEvent.getTitle(),
+                        oldDate, newDate,
+                        oldLocation, newLocation
+                );
+
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }
     }
 
     @Override
@@ -118,8 +186,8 @@ public class SchoolEventService implements IGeneralService<SchoolEvent> {
                     rs.getTimestamp("created_at").toLocalDateTime(),
                     rs.getString("latitude"),
                     rs.getString("longitude"));
-            event.setMaxCapacity(rs.getInt("max_capacity"));  // ✅ Récupération capacité
-            event.setCurrentRegistrations(rs.getInt("current_registrations"));  // ✅ Récupération inscriptions
+            event.setMaxCapacity(rs.getInt("max_capacity"));
+            event.setCurrentRegistrations(rs.getInt("current_registrations"));
             events.add(event);
         }
         return events;
@@ -143,10 +211,40 @@ public class SchoolEventService implements IGeneralService<SchoolEvent> {
             event.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
             event.setLatitude(rs.getString("latitude"));
             event.setLongitude(rs.getString("longitude"));
-            event.setMaxCapacity(rs.getInt("max_capacity"));  // ✅ Récupération capacité
-            event.setCurrentRegistrations(rs.getInt("current_registrations"));  // ✅ Récupération inscriptions
+            event.setMaxCapacity(rs.getInt("max_capacity"));
+            event.setCurrentRegistrations(rs.getInt("current_registrations"));
             return event;
         }
         return null;
+    }
+
+    /**
+     * Récupère les événements qui commencent entre deux dates
+     */
+    public List<SchoolEvent> getEventsStartingBetween(LocalDateTime start, LocalDateTime end) throws SQLException {
+        String sql = "SELECT * FROM school_event WHERE start_date BETWEEN ? AND ? ORDER BY start_date ASC";
+        PreparedStatement pst = cn.prepareStatement(sql);
+        pst.setTimestamp(1, Timestamp.valueOf(start));
+        pst.setTimestamp(2, Timestamp.valueOf(end));
+        ResultSet rs = pst.executeQuery();
+
+        List<SchoolEvent> events = new ArrayList<>();
+        while (rs.next()) {
+            SchoolEvent event = new SchoolEvent();
+            event.setId(rs.getInt("id"));
+            event.setTitle(rs.getString("title"));
+            event.setDescription(rs.getString("description"));
+            event.setStartDate(rs.getTimestamp("start_date").toLocalDateTime());
+            event.setEndDate(rs.getTimestamp("end_date").toLocalDateTime());
+            event.setLocation(rs.getString("location"));
+            event.setImagePath(rs.getString("image_path"));
+            event.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+            event.setLatitude(rs.getString("latitude"));
+            event.setLongitude(rs.getString("longitude"));
+            event.setMaxCapacity(rs.getInt("max_capacity"));
+            event.setCurrentRegistrations(rs.getInt("current_registrations"));
+            events.add(event);
+        }
+        return events;
     }
 }

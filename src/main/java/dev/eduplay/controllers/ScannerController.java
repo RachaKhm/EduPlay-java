@@ -31,8 +31,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ScannerController {
 
@@ -225,7 +223,7 @@ public class ScannerController {
         int registrationId = extractRegistrationId(qrData);
 
         if (registrationId == -1) {
-            showError("QR Code invalide", "Ce QR code n'est pas reconnu par le système.\nFormat attendu: REG_ID:123 ou un identifiant numérique.");
+            showError("QR Code invalide", "Ce QR code n'est pas reconnu par le système.\nFormat attendu: REG_ID:123");
             return;
         }
 
@@ -237,7 +235,7 @@ public class ScannerController {
                 return;
             }
 
-            // ✅ Vérifier si le QR code a déjà été scanné (scannedAt != null)
+            // Vérifier si le QR code a déjà été scanné
             if (registration.getScannedAt() != null) {
                 System.out.println("❌ QR code déjà scanné le: " + registration.getScannedAt());
                 showError("Déjà scanné",
@@ -245,7 +243,7 @@ public class ScannerController {
                 return;
             }
 
-            // ✅ Valider l'inscription : enregistrer la date/heure du scan
+            // Valider l'inscription
             registration.setScannedAt(LocalDateTime.now());
             registrationService.modifier(registration);
 
@@ -259,25 +257,25 @@ public class ScannerController {
         }
     }
 
+    /**
+     * Extrait l'ID d'inscription du QR code
+     * Format attendu: REG_ID:123 (exemple: REG_ID:30)
+     */
     private int extractRegistrationId(String qrData) {
         try {
             if (qrData != null) {
-                // Format REG_ID:123_abc
+                // Nouveau format: REG_ID:123
                 if (qrData.startsWith("REG_ID:")) {
-                    String[] parts = qrData.split(":")[1].split("_");
-                    return Integer.parseInt(parts[0]);
+                    String idStr = qrData.substring(7); // Prend tout après "REG_ID:"
+                    // Gérer le cas où il y aurait encore un underscore (ancien format)
+                    if (idStr.contains("_")) {
+                        idStr = idStr.split("_")[0];
+                    }
+                    return Integer.parseInt(idStr);
                 }
                 // Format direct numérique
                 else if (qrData.matches("\\d+")) {
                     return Integer.parseInt(qrData);
-                }
-                // Rechercher n'importe quel nombre dans le texte
-                else {
-                    Pattern pattern = Pattern.compile("\\d+");
-                    Matcher matcher = pattern.matcher(qrData);
-                    if (matcher.find()) {
-                        return Integer.parseInt(matcher.group());
-                    }
                 }
             }
         } catch (Exception e) {
@@ -325,7 +323,6 @@ public class ScannerController {
         resultBox.setStyle("-fx-background-color: #fef2f2; -fx-background-radius: 16; -fx-padding: 20; -fx-border-color: #fca5a5; -fx-border-radius: 16;");
         statusLabel.setText("❌ " + title);
 
-        // ✅ En cas d'erreur "Déjà scanné", on arrête le scanner
         if ("Déjà scanné".equals(title)) {
             System.out.println("⏹ Arrêt du scanner car le QR code a déjà été utilisé");
             stopScanner();

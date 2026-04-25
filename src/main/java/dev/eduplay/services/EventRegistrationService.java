@@ -7,6 +7,7 @@ import dev.eduplay.utils.QRCodeGenerator;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,17 +49,8 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
             throw new SQLException("❌ Ce parent a déjà inscrit l'enfant '" + registration.getChildFullName() + "' à cet événement");
         }
 
-        // ✅ GÉNÉRER LE QR CODE AUTOMATIQUEMENT
-        String qrCodeValue = "REG_ID:" + System.currentTimeMillis() + "_" + registration.getChildFullName().hashCode();
-        String qrCodePath = QRCodeGenerator.generateQRCode(qrCodeValue, "ticket_" + System.currentTimeMillis());
-
-        registration.setTicketQrCode(qrCodeValue);
-        registration.setQrCodePath(qrCodePath);
-
-        System.out.println("✅ QR Code généré automatiquement: " + qrCodePath);
-
-        // Insertion
-        String sql = "INSERT INTO event_registration(event_id, parent_id, registered_at, child_full_name, parent_phone, child_class_level, medical_notes, emergency_contact_name, emergency_contact_phone, notes, ticket_qr_code, qr_code_path, scanned_at, reminder_sent, reminder_sent_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // ========== 1. D'abord, insérer sans QR code ==========
+        String sql = "INSERT INTO event_registration(event_id, parent_id, registered_at, child_full_name, parent_phone, child_class_level, medical_notes, emergency_contact_name, emergency_contact_phone, notes, scanned_at, reminder_sent, reminder_sent_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ps.setInt(1, registration.getEvent().getId());
@@ -71,26 +63,73 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         ps.setString(8, registration.getEmergencyContactName());
         ps.setString(9, registration.getEmergencyContactPhone());
         ps.setString(10, registration.getNotes());
-        ps.setString(11, registration.getTicketQrCode());
-        ps.setString(12, registration.getQrCodePath());
-        ps.setTimestamp(13, registration.getScannedAt() != null ? Timestamp.valueOf(registration.getScannedAt()) : null);
-        ps.setBoolean(14, registration.isReminderSent());
-        ps.setTimestamp(15, registration.getReminderSentAt() != null ? Timestamp.valueOf(registration.getReminderSentAt()) : null);
+        ps.setTimestamp(11, registration.getScannedAt() != null ? Timestamp.valueOf(registration.getScannedAt()) : null);
+        ps.setBoolean(12, registration.isReminderSent());
+        ps.setTimestamp(13, registration.getReminderSentAt() != null ? Timestamp.valueOf(registration.getReminderSentAt()) : null);
 
         ps.executeUpdate();
 
         // Récupérer l'ID généré
         ResultSet generatedKeys = ps.getGeneratedKeys();
+        int registrationId = -1;
         if (generatedKeys.next()) {
-            registration.setId(generatedKeys.getInt(1));
-            System.out.println("✅ Inscription ajoutée avec ID: " + registration.getId());
+            registrationId = generatedKeys.getInt(1);
+            registration.setId(registrationId);
+            System.out.println("✅ Inscription ajoutée avec ID: " + registrationId);
         }
+
+        // ========== 2. Générer le QR code avec l'ID réel ==========
+        String qrCodeValue = "REG_ID:" + registrationId;
+        String qrCodePath = QRCodeGenerator.generateQRCode(qrCodeValue, "ticket_" + registrationId);
+
+        registration.setTicketQrCode(qrCodeValue);
+        registration.setQrCodePath(qrCodePath);
+
+        System.out.println("✅ QR Code généré automatiquement avec l'ID: " + registrationId);
+        System.out.println("   Valeur QR: " + qrCodeValue);
+        System.out.println("   Chemin: " + qrCodePath);
+
+        // ========== 3. Mettre à jour l'inscription avec le QR code ==========
+        String updateQrSql = "UPDATE event_registration SET ticket_qr_code = ?, qr_code_path = ? WHERE id = ?";
+        PreparedStatement updatePs = cn.prepareStatement(updateQrSql);
+        updatePs.setString(1, qrCodeValue);
+        updatePs.setString(2, qrCodePath);
+        updatePs.setInt(3, registrationId);
+        updatePs.executeUpdate();
 
         // Incrémenter le compteur d'inscriptions
         String updateCapacitySql = "UPDATE school_event SET current_registrations = current_registrations + 1 WHERE id = ?";
         PreparedStatement updateSt = cn.prepareStatement(updateCapacitySql);
         updateSt.setInt(1, registration.getEvent().getId());
         updateSt.executeUpdate();
+
+        // ========== 4. ENVOI DE L'EMAIL DE CONFIRMATION ==========
+        if (registrationId > 0 && registration.getParent() != null && registration.getParent().getEmail() != null) {
+            try {
+                EmailService emailService = new EmailService();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+                String eventDate = registration.getEvent().getStartDate() != null ?
+                        registration.getEvent().getStartDate().format(formatter) : "Date non spécifiée";
+                String eventLocation = registration.getEvent().getLocation() != null ?
+                        registration.getEvent().getLocation() : "Lieu non spécifié";
+
+                emailService.sendRegistrationConfirmation(
+                        registration.getParent().getEmail(),
+                        registration.getParent().getFullName(),
+                        registration.getChildFullName(),
+                        registration.getEvent().getTitle(),
+                        eventDate,
+                        eventLocation,
+                        qrCodePath,
+                        registrationId
+                );
+                System.out.println("📧 Email de confirmation envoyé à: " + registration.getParent().getEmail());
+            } catch (Exception e) {
+                System.err.println("⚠️ Erreur envoi email confirmation: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
@@ -218,8 +257,8 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
     public void regenerateQRCode(int registrationId) throws SQLException {
         EventRegistration registration = recupererParId(registrationId);
         if (registration != null) {
-            String qrCodeValue = "REG_ID:" + System.currentTimeMillis() + "_" + registration.getChildFullName().hashCode();
-            String qrCodePath = QRCodeGenerator.generateQRCode(qrCodeValue, "ticket_" + registrationId + "_" + System.currentTimeMillis());
+            String qrCodeValue = "REG_ID:" + registrationId;
+            String qrCodePath = QRCodeGenerator.generateQRCode(qrCodeValue, "ticket_" + registrationId);
 
             String sql = "UPDATE event_registration SET ticket_qr_code = ?, qr_code_path = ? WHERE id = ?";
             PreparedStatement ps = cn.prepareStatement(sql);
@@ -259,7 +298,6 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         registration.setReminderSent(rs.getBoolean("reminder_sent"));
         registration.setReminderSentAt(rs.getTimestamp("reminder_sent_at") != null ? rs.getTimestamp("reminder_sent_at").toLocalDateTime() : null);
 
-        // ✅ Charger l'événement associé
         SchoolEvent event = new SchoolEvent();
         event.setId(rs.getInt("event_id"));
         event.setTitle(rs.getString("event_title") != null ? rs.getString("event_title") : "Événement");
@@ -272,17 +310,12 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         }
         event.setLocation(rs.getString("location") != null ? rs.getString("location") : "");
 
-        // ✅ Ajouter la capacité si disponible (optionnel)
         try {
             event.setMaxCapacity(rs.getInt("max_capacity"));
-        } catch (SQLException e) {
-            // Colonne non présente, ignorer
-        }
+        } catch (SQLException e) {}
         try {
             event.setCurrentRegistrations(rs.getInt("current_registrations"));
-        } catch (SQLException e) {
-            // Colonne non présente, ignorer
-        }
+        } catch (SQLException e) {}
 
         registration.setEvent(event);
 
