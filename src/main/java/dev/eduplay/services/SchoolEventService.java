@@ -41,6 +41,15 @@ public class SchoolEventService implements IGeneralService<SchoolEvent> {
         ResultSet rs = ps.getGeneratedKeys();
         if (rs.next()) {
             event.setId(rs.getInt(1));
+            System.out.println("✅ Événement ajouté avec ID: " + event.getId());
+
+            // ✅ NOTIFICATION : informer tous les parents du nouvel événement
+            try {
+                NotificationService notificationService = new NotificationService();
+                notificationService.notifyNewEvent(event);
+            } catch (SQLException e) {
+                System.err.println("⚠️ Erreur lors de l'envoi des notifications: " + e.getMessage());
+            }
         }
     }
 
@@ -138,6 +147,7 @@ public class SchoolEventService implements IGeneralService<SchoolEvent> {
     private void notifyParentsOfEventChange(SchoolEvent oldEvent, SchoolEvent newEvent) throws SQLException {
         EventRegistrationService registrationService = new EventRegistrationService();
         EmailService emailService = new EmailService();
+        NotificationService notificationService = new NotificationService();
 
         List<EventRegistration> registrations = registrationService.recupererParEventId(newEvent.getId());
 
@@ -149,6 +159,19 @@ public class SchoolEventService implements IGeneralService<SchoolEvent> {
         System.out.println("📧 Envoi de notifications à " + registrations.size() + " parents pour modification de l'événement");
 
         for (EventRegistration registration : registrations) {
+            // ✅ Notification in-app
+            try {
+                notificationService.notifyEventModification(
+                        registration.getParent().getId(),
+                        newEvent,
+                        oldDate, newDate,
+                        oldLocation, newLocation
+                );
+            } catch (Exception e) {
+                System.err.println("Erreur notification in-app: " + e.getMessage());
+            }
+
+            // ✅ Email de notification
             if (registration.getParent() != null && registration.getParent().getEmail() != null) {
                 emailService.sendEventModificationNotification(
                         registration.getParent().getEmail(),
