@@ -7,6 +7,7 @@ import dev.eduplay.services.SchoolEventService;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
+import javafx.util.Callback;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -30,8 +31,6 @@ public class AddEventController {
     @FXML private TextField endTimeField;
     @FXML private TextField locationField;
     @FXML private TextField maxCapacityField;
-    @FXML private TextField latitudeField;
-    @FXML private TextField longitudeField;
     @FXML private Label imagePathLabel;
     @FXML private Button cancelBtn;
     @FXML private Button submitBtn;
@@ -54,6 +53,14 @@ public class AddEventController {
         startTimeField.setText("10:00");
         endTimeField.setText("12:00");
 
+        // ✅ EMPÊCHER LA SÉLECTION DE DATES PASSÉES
+        startDatePicker.setDayCellFactory(getDateCellFactory());
+        endDatePicker.setDayCellFactory(getDateCellFactory());
+
+        // ✅ Désactiver la saisie manuelle dans les DatePicker
+        startDatePicker.setEditable(false);
+        endDatePicker.setEditable(false);
+
         // Initialiser les combo boxes
         targetPublicCombo.getItems().addAll("Enfants (3-6 ans)", "Enfants (7-12 ans)", "Adolescents", "Tout public", "Familles", "Parents");
         targetPublicCombo.setValue("Enfants (3-6 ans)");
@@ -62,34 +69,96 @@ public class AddEventController {
         descriptionStyleCombo.setValue("Classique");
 
         setupActions();
-
-        // Ajouter des écouteurs pour la validation en temps réel
         setupValidation();
+    }
+
+    /**
+     * ✅ Crée un factory pour désactiver les dates passées
+     */
+    private Callback<DatePicker, DateCell> getDateCellFactory() {
+        return new Callback<DatePicker, DateCell>() {
+            @Override
+            public DateCell call(DatePicker param) {
+                return new DateCell() {
+                    @Override
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+                        // Désactiver les dates antérieures à aujourd'hui
+                        if (item.isBefore(LocalDate.now())) {
+                            setDisable(true);
+                            setStyle("-fx-background-color: #f0f0f0; -fx-text-fill: #cccccc;");
+                        }
+                    }
+                };
+            }
+        };
     }
 
     private void setupActions() {
         cancelBtn.setOnAction(e -> Router.go("event_list"));
         submitBtn.setOnAction(e -> addEvent());
         generateDescBtn.setOnAction(e -> generateDescription());
-    }
 
-    private void setupValidation() {
-        // Limiter la capacité max à des nombres positifs
-        maxCapacityField.textProperty().addListener((obs, old, newVal) -> {
-            if (newVal != null && !newVal.matches("\\d*")) {
-                maxCapacityField.setText(old);
+        // ✅ Vérifier la cohérence date début / date fin quand date début change
+        startDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null && endDatePicker.getValue() != null) {
+                if (endDatePicker.getValue().isBefore(newVal)) {
+                    endDatePicker.setValue(newVal);
+                }
             }
         });
 
-        // Limiter les heures au format HH:MM
+        // ✅ Vérifier la cohérence date début / date fin quand date fin change
+        endDatePicker.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null && startDatePicker.getValue() != null) {
+                if (newVal.isBefore(startDatePicker.getValue())) {
+                    endDatePicker.setValue(startDatePicker.getValue());
+                    showTemporaryMessage("⚠️ La date de fin ne peut pas être avant la date de début", "error");
+                }
+            }
+        });
+    }
+
+    private void setupValidation() {
+        // ✅ Titre : pas de caractères spéciaux interdits, longueur limitée
+        titleField.textProperty().addListener((obs, old, newVal) -> {
+            if (newVal != null && newVal.length() > 100) {
+                titleField.setText(old);
+                showTemporaryMessage("Le titre ne peut pas dépasser 100 caractères", "error");
+            }
+        });
+
+        // ✅ Description : longueur limitée
+        descriptionArea.textProperty().addListener((obs, old, newVal) -> {
+            if (newVal != null && newVal.length() > 2000) {
+                descriptionArea.setText(old);
+                showTemporaryMessage("La description ne peut pas dépasser 2000 caractères", "error");
+            }
+        });
+
+        // ✅ Capacité : seulement des chiffres, 1-1000
+        maxCapacityField.textProperty().addListener((obs, old, newVal) -> {
+            if (newVal != null && !newVal.isEmpty()) {
+                if (!newVal.matches("\\d*")) {
+                    maxCapacityField.setText(old);
+                    showTemporaryMessage("La capacité doit être un nombre", "error");
+                } else if (!newVal.isEmpty() && Integer.parseInt(newVal) > 1000) {
+                    maxCapacityField.setText(old);
+                    showTemporaryMessage("La capacité ne peut pas dépasser 1000", "error");
+                }
+            }
+        });
+
+        // ✅ Heure début - format HH:MM
         startTimeField.textProperty().addListener((obs, old, newVal) -> {
-            if (newVal != null && !newVal.matches("\\d{0,2}:?\\d{0,2}")) {
+            if (newVal != null && !newVal.isEmpty() && !newVal.matches("^([0-1]?[0-9]|2[0-3]):?[0-5]?[0-9]?$")) {
                 startTimeField.setText(old);
             }
         });
 
+        // ✅ Heure fin - format HH:MM
         endTimeField.textProperty().addListener((obs, old, newVal) -> {
-            if (newVal != null && !newVal.matches("\\d{0,2}:?\\d{0,2}")) {
+            if (newVal != null && !newVal.isEmpty() && !newVal.matches("^([0-1]?[0-9]|2[0-3]):?[0-5]?[0-9]?$")) {
                 endTimeField.setText(old);
             }
         });
@@ -108,11 +177,13 @@ public class AddEventController {
 
         if (title == null || title.trim().isEmpty()) {
             showTemporaryMessage("Veuillez d'abord saisir un titre !", "error");
+            titleField.requestFocus();
             return;
         }
 
         if (location == null || location.trim().isEmpty()) {
             showTemporaryMessage("Veuillez d'abord saisir un lieu !", "error");
+            locationField.requestFocus();
             return;
         }
 
@@ -189,35 +260,54 @@ public class AddEventController {
     private void addEvent() {
         // ==================== VALIDATION DES CHAMPS ====================
 
-        // 1. Validation du titre
-        if (titleField.getText() == null || titleField.getText().trim().isEmpty()) {
+        // 1. Titre - non vide, sans caractères interdits
+        String title = titleField.getText();
+        if (title == null || title.trim().isEmpty()) {
             showAlert("Erreur de saisie", "Le titre est obligatoire");
             titleField.requestFocus();
             return;
         }
+        if (title.length() > 100) {
+            showAlert("Erreur de saisie", "Le titre ne peut pas dépasser 100 caractères");
+            titleField.requestFocus();
+            return;
+        }
 
-        // 2. Validation de la description
-        if (descriptionArea.getText() == null || descriptionArea.getText().trim().isEmpty()) {
+        // 2. Description - non vide
+        String description = descriptionArea.getText();
+        if (description == null || description.trim().isEmpty()) {
             showAlert("Erreur de saisie", "La description est obligatoire");
             descriptionArea.requestFocus();
             return;
         }
+        if (description.length() > 2000) {
+            showAlert("Erreur de saisie", "La description ne peut pas dépasser 2000 caractères");
+            descriptionArea.requestFocus();
+            return;
+        }
 
-        // 3. Validation du lieu
-        if (locationField.getText() == null || locationField.getText().trim().isEmpty()) {
+        // 3. Lieu - non vide
+        String location = locationField.getText();
+        if (location == null || location.trim().isEmpty()) {
             showAlert("Erreur de saisie", "Le lieu est obligatoire");
             locationField.requestFocus();
             return;
         }
 
-        // 4. Validation de la date de début
-        if (startDatePicker.getValue() == null) {
+        // 4. Date de début - non vide et pas dans le passé
+        LocalDate startDate = startDatePicker.getValue();
+        if (startDate == null) {
             showAlert("Erreur de saisie", "La date de début est obligatoire");
             startDatePicker.requestFocus();
             return;
         }
+        if (startDate.isBefore(LocalDate.now())) {
+            showAlert("Erreur de saisie", "La date de début ne peut pas être dans le passé");
+            startDatePicker.requestFocus();
+            return;
+        }
 
-        // 5. Validation de l'heure de début
+        // 5. Heure de début
         String startTime = startTimeField.getText();
         if (startTime == null || startTime.trim().isEmpty()) {
             showAlert("Erreur de saisie", "L'heure de début est obligatoire");
@@ -225,19 +315,25 @@ public class AddEventController {
             return;
         }
         if (!isValidTime(startTime)) {
-            showAlert("Erreur de saisie", "Format d'heure invalide pour le début. Utilisez HH:MM (ex: 14:30)");
+            showAlert("Erreur de saisie", "Format d'heure invalide. Utilisez HH:MM (ex: 14:30)");
             startTimeField.requestFocus();
             return;
         }
 
-        // 6. Validation de la date de fin
-        if (endDatePicker.getValue() == null) {
+        // 6. Date de fin - non vide et pas dans le passé
+        LocalDate endDate = endDatePicker.getValue();
+        if (endDate == null) {
             showAlert("Erreur de saisie", "La date de fin est obligatoire");
             endDatePicker.requestFocus();
             return;
         }
+        if (endDate.isBefore(LocalDate.now())) {
+            showAlert("Erreur de saisie", "La date de fin ne peut pas être dans le passé");
+            endDatePicker.requestFocus();
+            return;
+        }
 
-        // 7. Validation de l'heure de fin
+        // 7. Heure de fin
         String endTime = endTimeField.getText();
         if (endTime == null || endTime.trim().isEmpty()) {
             showAlert("Erreur de saisie", "L'heure de fin est obligatoire");
@@ -245,12 +341,12 @@ public class AddEventController {
             return;
         }
         if (!isValidTime(endTime)) {
-            showAlert("Erreur de saisie", "Format d'heure invalide pour la fin. Utilisez HH:MM (ex: 16:30)");
+            showAlert("Erreur de saisie", "Format d'heure invalide. Utilisez HH:MM (ex: 16:30)");
             endTimeField.requestFocus();
             return;
         }
 
-        // 8. Validation de la capacité
+        // 8. Capacité - nombre valide
         String capacityText = maxCapacityField.getText();
         if (capacityText == null || capacityText.trim().isEmpty()) {
             showAlert("Erreur de saisie", "La capacité maximale est obligatoire");
@@ -283,53 +379,32 @@ public class AddEventController {
         LocalDateTime endDateTime;
 
         try {
-            startDateTime = getDateTime(startDatePicker.getValue(), startTime);
-            endDateTime = getDateTime(endDatePicker.getValue(), endTime);
+            startDateTime = LocalDateTime.of(startDate, LocalTime.parse(startTime));
+            endDateTime = LocalDateTime.of(endDate, LocalTime.parse(endTime));
         } catch (DateTimeParseException e) {
             showAlert("Erreur de saisie", "Format de date/heure invalide");
             return;
         }
 
-        // 9. Validation que la date de fin est postérieure à la date de début
+        // 9. Vérification que la date de fin est après la date de début
         if (endDateTime.isBefore(startDateTime)) {
             showAlert("Erreur de saisie", "La date de fin doit être postérieure à la date de début");
             endDatePicker.requestFocus();
             return;
         }
 
-        // 10. Validation que l'événement n'est pas dans le passé trop lointain
-        if (endDateTime.isBefore(LocalDateTime.now())) {
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-            confirm.setTitle("Confirmation");
-            confirm.setHeaderText("Date dans le passé");
-            confirm.setContentText("Cet événement se termine dans le passé. Voulez-vous continuer ?");
-            if (confirm.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
-                return;
-            }
-        }
-
         // ==================== CRÉATION DE L'ÉVÉNEMENT ====================
 
         try {
             SchoolEvent event = new SchoolEvent();
-            event.setTitle(titleField.getText().trim());
-            event.setDescription(descriptionArea.getText().trim());
+            event.setTitle(title.trim());
+            event.setDescription(description.trim());
             event.setStartDate(startDateTime);
             event.setEndDate(endDateTime);
-            event.setLocation(locationField.getText().trim());
+            event.setLocation(location.trim());
             event.setMaxCapacity(maxCapacity);
 
-            // Gestion des coordonnées (optionnelles)
-            String latText = latitudeField.getText();
-            String lngText = longitudeField.getText();
-            if (latText != null && !latText.trim().isEmpty()) {
-                event.setLatitude(latText.trim());
-            }
-            if (lngText != null && !lngText.trim().isEmpty()) {
-                event.setLongitude(lngText.trim());
-            }
-
-            // Gestion de l'image
+            // Gestion de l'image (optionnelle)
             if (selectedImagePath != null) {
                 event.setImagePath(selectedImagePath);
             }
@@ -353,7 +428,7 @@ public class AddEventController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Choisir une image");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "jpeg", "*.gif", "*.bmp")
+                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp")
         );
 
         File selectedFile = fileChooser.showOpenDialog(null);
@@ -385,11 +460,6 @@ public class AddEventController {
                 showAlert("Erreur", "Impossible de copier l'image: " + e.getMessage());
             }
         }
-    }
-
-    private LocalDateTime getDateTime(LocalDate date, String timeStr) throws DateTimeParseException {
-        LocalTime time = LocalTime.parse(timeStr);
-        return LocalDateTime.of(date, time);
     }
 
     private void showAlert(String title, String message) {
