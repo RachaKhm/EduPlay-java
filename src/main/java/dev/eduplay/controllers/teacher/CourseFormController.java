@@ -1,7 +1,9 @@
 package dev.eduplay.controllers.teacher;
 
+import dev.eduplay.core.AppContext;
 import dev.eduplay.entities.Course;
 import dev.eduplay.services.CourseService;
+import dev.eduplay.services.SmtpEmailService;
 import dev.eduplay.validation.FormInputChecks;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -11,10 +13,12 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
 public class CourseFormController {
+    private static final String FIXED_NOTIFICATION_EMAIL = "nadinezairi60@gmail.com";
 
     @FXML private Label formTitle;
     @FXML private TextField titleField;
@@ -133,6 +137,7 @@ public class CourseFormController {
                 c.setStatus("draft");
                 int id = courseService.ajouter(c);
                 c.setId(id);
+                notifyFixedRecipientAboutNewCourse(c);
             } else {
                 courseService.modifierContenuSansStatut(c);
             }
@@ -154,6 +159,22 @@ public class CourseFormController {
         a.setTitle(title);
         a.setHeaderText(header);
         a.showAndWait();
+    }
+
+    private void notifyFixedRecipientAboutNewCourse(Course course) {
+        try {
+            List<String> recipients = List.of(FIXED_NOTIFICATION_EMAIL);
+
+            String teacherName = AppContext.getCurrentUser() != null
+                    ? AppContext.getCurrentUser().getFullName()
+                    : "Un enseignant";
+
+            SmtpEmailService emailService = new SmtpEmailService(new File("config/smtp.properties"));
+            emailService.sendCourseCreatedEmail(recipients, course.getTitle(), teacherName);
+        } catch (Exception e) {
+            // Course creation must not fail if email delivery fails.
+            warn("Notification email", "Cours créé, mais email non envoyé", e.getMessage());
+        }
     }
 
     private static String nvl(String s) {

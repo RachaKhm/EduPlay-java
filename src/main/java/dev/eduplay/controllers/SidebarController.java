@@ -27,6 +27,8 @@ public class SidebarController {
     @FXML private Button btnParents;
     @FXML private Button btnAdminCourses;
     @FXML private Button btnAdminSeances;
+    @FXML private Button btnAdminCalendar;
+    @FXML private Button btnAdminStats;
 
     // Enseignant
     @FXML private Button btnCourses;
@@ -64,6 +66,8 @@ public class SidebarController {
     @FXML private void showParents()        { Router.go("parents"); }
     @FXML private void showAdminCourses()   { Router.go("admin_courses"); }
     @FXML private void showAdminSeances()   { Router.go("admin_seances"); }
+    @FXML private void showAdminCalendar()  { Router.go("admin_calendar"); }
+    @FXML private void showAdminStats()     { Router.go("admin_stats"); }
     @FXML private void showTeacherCourses() { Router.go("teacher_courses"); }
     @FXML private void showStudents()       { Router.go("teacher_students"); }
     @FXML private void showChildren()       { Router.go("parent_children"); }
@@ -92,7 +96,7 @@ public class SidebarController {
     // ── Affichage des boutons selon le rôle ───
     private void hideAll() {
         for (Button b : new Button[]{
-                btnUsers, btnTeachers, btnParents, btnAdminCourses, btnAdminSeances,
+                btnUsers, btnTeachers, btnParents, btnAdminCourses, btnAdminSeances, btnAdminCalendar, btnAdminStats,
                 btnCourses, btnStudents,
                 btnChildren, btnParentCourses, btnEvents,
                 btnMyCoursesChild, btnGames
@@ -107,6 +111,8 @@ public class SidebarController {
                 show(btnParents);
                 show(btnAdminCourses);
                 show(btnAdminSeances);
+                show(btnAdminCalendar);
+                show(btnAdminStats);
             }
             case "enseignant" -> { show(btnCourses); show(btnStudents); }
             case "parent"     -> { show(btnChildren); show(btnParentCourses); show(btnEvents); }
@@ -126,6 +132,8 @@ public class SidebarController {
             case "users", "teachers", "parents" -> btnUsers;
             case "admin_courses"    -> btnAdminCourses;
             case "admin_seances"    -> btnAdminSeances;
+            case "admin_calendar"   -> btnAdminCalendar;
+            case "admin_stats"      -> btnAdminStats;
             case "teacher_courses"  -> btnCourses;
             case "teacher_students" -> btnStudents;
             case "parent_children"  -> btnChildren;
@@ -146,7 +154,7 @@ public class SidebarController {
     private void collectNavButtons() {
         navButtons.clear();
         for (Button b : new Button[]{
-                btnDashboard, btnUsers, btnTeachers, btnParents, btnAdminCourses, btnAdminSeances,
+                btnDashboard, btnUsers, btnTeachers, btnParents, btnAdminCourses, btnAdminSeances, btnAdminCalendar, btnAdminStats,
                 btnCourses, btnStudents, btnChildren, btnParentCourses, btnEvents,
                 btnMyCoursesChild, btnGames, btnProfile
         }) if (b != null) navButtons.add(b);

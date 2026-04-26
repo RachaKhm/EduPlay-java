@@ -12,6 +12,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -19,7 +20,10 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+import java.awt.Desktop;
+import java.net.URI;
 import java.sql.SQLException;
+import java.io.IOException;
 import java.util.Locale;
 
 public class ChildMyCoursesController {
@@ -121,13 +125,36 @@ public class ChildMyCoursesController {
         Label hint = new Label("Séances & PDF →");
         hint.setStyle("-fx-font-size: 11px; -fx-text-fill: #4A90D9;");
 
-        card.getChildren().addAll(title, desc, meta, hint);
+        Button joinOnlineBtn = new Button("Rejoindre en ligne (Jitsi)");
+        joinOnlineBtn.setStyle("-fx-background-color:#32A852;-fx-text-fill:white;-fx-font-weight:bold;"
+                + "-fx-background-radius:8;-fx-padding:8 12;-fx-cursor:hand;");
+        joinOnlineBtn.setOnAction(e -> {
+            e.consume();
+            openJitsiForCourse(c);
+        });
+
+        card.getChildren().addAll(title, desc, meta, hint, joinOnlineBtn);
         return card;
     }
 
     private void openDetail(Course c) {
         AppContext.setChildBrowsingCourseId(c.getId());
         Router.reload("child_course_detail");
+    }
+
+    private void openJitsiForCourse(Course c) {
+        if (!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            showError("Navigation web non disponible sur cet appareil.");
+            return;
+        }
+        try {
+            int kidId = AppContext.getCurrentUser() != null ? AppContext.getCurrentUser().getId() : 0;
+            String roomName = "EduPlay-Course-" + c.getId() + "-Kid-" + kidId;
+            String url = "https://meet.jit.si/" + roomName;
+            Desktop.getDesktop().browse(URI.create(url));
+        } catch (IOException ex) {
+            showError("Impossible d'ouvrir Jitsi Meet: " + ex.getMessage());
+        }
     }
 
     private static Label pill(String label, String value, String bg, String fg) {

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.eduplay.controllers.admin.AdminStatsController"
+      spacing="12" style="-fx-background-color:#F8F9FA;">
+    <HBox style="-fx-padding: 0 0 6 0;">
+        <VBox spacing="4">
+            <Label text="Statistiques globales"
+                   style="-fx-font-size:22px;-fx-font-weight:bold;-fx-text-fill:#22223A;"/>
+            <Label fx:id="subtitleLabel" text=""
+                   style="-fx-font-size:13px;-fx-text-fill:#9999BB;"/>
+        </VBox>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent;">
+        <content>
+            <VBox spacing="14" style="-fx-padding: 2 2 18 2;">
+                <HBox spacing="12">
+                    <VBox HBox.hgrow="ALWAYS" spacing="6"
+                          style="-fx-background-color:#F0F5FF;-fx-padding:16;-fx-background-radius:10;-fx-border-color:#C9D7FF;-fx-border-radius:10;">
+                        <Label text="Total Cours" style="-fx-font-size:12px;-fx-text-fill:#4060C0;"/>
+                        <Label fx:id="totalCoursesLabel" text="0"
+                               style="-fx-font-size:26px;-fx-font-weight:bold;-fx-text-fill:#4A90D9;"/>
+                    </VBox>
+                    <VBox HBox.hgrow="ALWAYS" spacing="6"
+                          style="-fx-background-color:#F4FFF8;-fx-padding:16;-fx-background-radius:10;-fx-border-color:#BCEAD0;-fx-border-radius:10;">
+                        <Label text="Total Séances" style="-fx-font-size:12px;-fx-text-fill:#2F8A58;"/>
+                        <Label fx:id="totalSeancesLabel" text="0"
+                               style="-fx-font-size:26px;-fx-font-weight:bold;-fx-text-fill:#33A56A;"/>
+                    </VBox>
+                    <VBox HBox.hgrow="ALWAYS" spacing="6"
+                          style="-fx-background-color:#FFF4F7;-fx-padding:16;-fx-background-radius:10;-fx-border-color:#F2C5D1;-fx-border-radius:10;">
+                        <Label text="Total Inscriptions" style="-fx-font-size:12px;-fx-text-fill:#B94C74;"/>
+                        <Label fx:id="totalSubscriptionsLabel" text="0"
+                               style="-fx-font-size:26px;-fx-font-weight:bold;-fx-text-fill:#E94560;"/>
+                    </VBox>
+                    <VBox HBox.hgrow="ALWAYS" spacing="6"
+                          style="-fx-background-color:#FFFDF2;-fx-padding:16;-fx-background-radius:10;-fx-border-color:#F3E7B4;-fx-border-radius:10;">
+                        <Label text="Inscriptions actives" style="-fx-font-size:12px;-fx-text-fill:#9E7B1D;"/>
+                        <Label fx:id="activeSubscriptionsLabel" text="0"
+                               style="-fx-font-size:26px;-fx-font-weight:bold;-fx-text-fill:#C49A2B;"/>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="12">
+                    <VBox HBox.hgrow="ALWAYS"
+                          style="-fx-background-color:white;-fx-padding:12;-fx-background-radius:10;-fx-border-color:#E9EAF2;-fx-border-radius:10;">
+                        <Label text="Répartition des statuts de cours"
+                               style="-fx-font-size:14px;-fx-font-weight:bold;-fx-text-fill:#303455;"/>
+                        <PieChart fx:id="courseStatusPie" prefHeight="320"/>
+                    </VBox>
+                    <VBox HBox.hgrow="ALWAYS"
+                          style="-fx-background-color:white;-fx-padding:12;-fx-background-radius:10;-fx-border-color:#E9EAF2;-fx-border-radius:10;">
+                        <Label text="Inscriptions actives vs inactives"
+                               style="-fx-font-size:14px;-fx-font-weight:bold;-fx-text-fill:#303455;"/>
+                        <PieChart fx:id="subscriptionStatePie" prefHeight="320"/>
+                    </VBox>
+                </HBox>
+
+                <VBox style="-fx-background-color:white;-fx-padding:12;-fx-background-radius:10;-fx-border-color:#E9EAF2;-fx-border-radius:10;">
+                    <Label text="Cours par niveau"
+                           style="-fx-font-size:14px;-fx-font-weight:bold;-fx-text-fill:#303455;"/>
+                    <BarChart fx:id="courseLevelBar" categoryGap="18" barGap="4" prefHeight="320">
+                        <xAxis>
+                            <CategoryAxis label="Niveau"/>
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Nombre de cours"/>
+                        </yAxis>
+                    </BarChart>
+                </VBox>
+
+                <VBox style="-fx-background-color:white;-fx-padding:12;-fx-background-radius:10;-fx-border-color:#E9EAF2;-fx-border-radius:10;">
+                    <Label text="Top cours par nombre d'inscriptions"
+                           style="-fx-font-size:14px;-fx-font-weight:bold;-fx-text-fill:#303455;"/>
+                    <BarChart fx:id="subscriptionsByCourseBar" categoryGap="14" barGap="4" prefHeight="340">
+                        <xAxis>
+                            <CategoryAxis label="Cours"/>
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Inscriptions"/>
+                        </yAxis>
+                    </BarChart>
+                </VBox>
+
+                <VBox style="-fx-background-color:white;-fx-padding:12;-fx-background-radius:10;-fx-border-color:#E9EAF2;-fx-border-radius:10;">
+                    <Label text="Tendance des séances (7 mois)"
+                           style="-fx-font-size:14px;-fx-font-weight:bold;-fx-text-fill:#303455;"/>
+                    <LineChart fx:id="seancesTimelineLine" createSymbols="true" prefHeight="340">
+                        <xAxis>
+                            <CategoryAxis label="Mois"/>
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis label="Nombre de séances"/>
+                        </yAxis>
+                    </LineChart>
+                </VBox>
+            </VBox>
+        </content>
+    </ScrollPane>
+</VBox>

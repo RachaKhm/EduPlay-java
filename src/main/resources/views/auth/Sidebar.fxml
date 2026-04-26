@@ -79,6 +79,18 @@
                 style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
                        -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
                        -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
+        <Button fx:id="btnAdminCalendar" text="  Calendar"
+                onAction="#showAdminCalendar" maxWidth="Infinity"
+                visible="false" managed="false"
+                style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
+                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
+                       -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
+        <Button fx:id="btnAdminStats" text="  Statistiques"
+                onAction="#showAdminStats" maxWidth="Infinity"
+                visible="false" managed="false"
+                style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
+                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
+                       -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
 
         <!-- ENSEIGNANT -->
         <Button fx:id="btnCourses" text="  Mes cours"

@@ -36,6 +36,8 @@ public class Router {
         routes.put("parents",         "/views/admin/UserListView.fxml");
         routes.put("admin_courses",   "/views/admin/AdminCoursesView.fxml");
         routes.put("admin_seances",   "/views/admin/AdminSeancesView.fxml");
+        routes.put("admin_calendar",  "/views/admin/AdminCalendarView.fxml");
+        routes.put("admin_stats",     "/views/admin/AdminStatsView.fxml");
 
         // Enseignant — FXML à créer par le collègue module Cours
         routes.put("teacher_dashboard", "/views/teacher/TeacherDashboardView.fxml");
