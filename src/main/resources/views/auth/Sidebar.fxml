@@ -58,13 +58,23 @@
                 onAction="#showRegistrationList"
                 styleClass="nav-btn"/>
 
-        <!-- NOUVEAU : Bouton Scanner QR Code -->
+        <!-- Bouton Scanner QR Code -->
         <Button fx:id="btnScanner"
                 text="  📷 Scanner QR"
                 onAction="#showScanner"
                 styleClass="nav-btn">
             <tooltip>
                 <Tooltip text="Scanner un QR code pour valider une entrée à un événement"/>
+            </tooltip>
+        </Button>
+
+        <!-- NOUVEAU : Bouton Statistiques -->
+        <Button fx:id="btnStatistics"
+                text="  📊 Statistiques Event"
+                onAction="#showStatistics"
+                styleClass="nav-btn">
+            <tooltip>
+                <Tooltip text="Voir les statistiques des événements et inscriptions"/>
             </tooltip>
         </Button>
 
