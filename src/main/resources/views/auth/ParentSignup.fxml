@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane fitToWidth="true"
+            styleClass="signup-scroll-pane"
+            stylesheets="@../../styles/auth.css"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.ParentSignupController">
+
+    <VBox alignment="CENTER" style="-fx-padding: 40 0;">
+
+        <VBox maxWidth="520" spacing="0"
+              styleClass="signup-card">
+
+            <!-- Titre -->
+            <Label text="Créer un compte parent"
+                   styleClass="signup-title"/>
+            <Label text="Remplissez les informations ci-dessous pour créer votre compte."
+                   styleClass="auth-form-subtitle"/>
+
+            <!-- Nom & Prénom -->
+            <HBox spacing="16">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Nom *" styleClass="auth-label"/>
+                    <TextField fx:id="lastNameField" promptText="Ex: Trabelsi"
+                               styleClass="signup-input-small"/>
+                    <Label fx:id="lastNameError" text="" styleClass="child-error-label" wrapText="true"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Prénom *" styleClass="auth-label"/>
+                    <TextField fx:id="firstNameField" promptText="Ex: Fatma"
+                               styleClass="signup-input-small"/>
+                    <Label fx:id="firstNameError" text="" styleClass="child-error-label" wrapText="true"/>
+                </VBox>
+            </HBox>
+
+            <!-- Email -->
+            <VBox spacing="4" style="-fx-padding: 10 0 0 0;">
+                <Label text="Email *" styleClass="auth-label"/>
+                <TextField fx:id="emailField" promptText="parent@email.com"
+                           styleClass="signup-input-small"/>
+                <Label fx:id="emailError" text="" styleClass="child-error-label" wrapText="true"/>
+            </VBox>
+
+            <!-- Téléphone -->
+            <VBox spacing="4" style="-fx-padding: 10 0 0 0;">
+                <Label text="Téléphone" styleClass="auth-label"/>
+                <TextField fx:id="phoneField" promptText="+216 XX XXX XXX"
+                           styleClass="signup-input-small"/>
+                <Label fx:id="phoneError" text="" styleClass="child-error-label" wrapText="true"/>
+            </VBox>
+
+            <!-- Adresse -->
+            <VBox spacing="4" style="-fx-padding: 10 0 0 0;">
+                <Label text="Adresse" styleClass="auth-label"/>
+                <TextField fx:id="addressField" promptText="Adresse complète"
+                           styleClass="signup-input-small"/>
+            </VBox>
+
+            <Separator style="-fx-padding: 16 0 0 0;"/>
+
+            <!-- Mot de passe -->
+            <VBox spacing="4" style="-fx-padding: 14 0 0 0;">
+                <Label text="Mot de passe *" styleClass="auth-label"/>
+                <Label text="Requis — minimum 6 caractères" styleClass="auth-form-subtitle" style="-fx-padding: 0 0 4 0;"/>
+                <PasswordField fx:id="passwordField" promptText="Mot de passe"
+                               styleClass="signup-input-small"/>
+                <Label fx:id="passwordError" text="" styleClass="child-error-label" wrapText="true"/>
+            </VBox>
+
+            <!-- Confirmer mot de passe -->
+            <VBox spacing="4" style="-fx-padding: 10 0 0 0;">
+                <Label text="Confirmer le mot de passe *" styleClass="auth-label"/>
+                <PasswordField fx:id="confirmPasswordField" promptText="Confirmer mot de passe"
+                               styleClass="signup-input-small"/>
+                <Label fx:id="confirmPasswordError" text="" styleClass="child-error-label" wrapText="true"/>
+            </VBox>
+
+            <!-- Message succès global -->
+            <Label fx:id="successLabel" text="" wrapText="true"
+                   styleClass="signup-success-label"/>
+
+            <!-- Bouton -->
+            <Button text="Créer mon compte" onAction="#handleSignup"
+                    maxWidth="Infinity"
+                    styleClass="auth-primary-button" style="-fx-margin: 20 0 0 0;"/>
+
+            <!-- Lien connexion -->
+            <VBox spacing="4" alignment="CENTER" style="-fx-padding: 16 0 0 0;">
+                <Label text="Vous avez déjà un compte ?"
+                       styleClass="auth-footer-link"/>
+                <Hyperlink text="Se connecter" onAction="#goToLogin"
+                           styleClass="auth-footer-link-active"/>
+            </VBox>
+
+        </VBox>
+    </VBox>
+</ScrollPane>

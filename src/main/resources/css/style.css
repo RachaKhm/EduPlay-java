@@ -1,0 +1,210 @@
+/* ==================== STYLE MODERNE POUR L'APPLICATION ==================== */
+
+/* Importer une police moderne depuis Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+* {
+    -fx-font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* ==================== BACKGROUND PRINCIPAL ==================== */
+.root {
+    -fx-background-color: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* ==================== CARTE PRINCIPALE ==================== */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 20, 0, 0, 10);
+    -fx-padding: 30;
+}
+
+/* ==================== TITRES ==================== */
+.title-label {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: linear-gradient(to right, #667eea, #764ba2);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 2, 0, 0, 1);
+}
+
+.subtitle-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6c757d;
+}
+
+/* ==================== CHAMPS DE SAISIE ==================== */
+.text-field, .text-area, .date-picker, .combo-box {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 10;
+    -fx-border-color: #e9ecef;
+    -fx-border-radius: 10;
+    -fx-border-width: 1.5;
+    -fx-padding: 10 12;
+    -fx-font-size: 13px;
+    -fx-prompt-text-fill: #adb5bd;
+    -fx-transition: all 0.2s ease;
+}
+
+.text-field:focused, .text-area:focused, .date-picker:focused, .combo-box:focused {
+    -fx-border-color: #667eea;
+    -fx-border-width: 2;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.3), 8, 0, 0, 2);
+}
+
+.text-area {
+    -fx-padding: 8;
+}
+
+/* ==================== LABELS DES CHAMPS ==================== */
+.field-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 0 0 5 0;
+}
+
+.required-star {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 14px;
+}
+
+/* ==================== BOUTONS ==================== */
+.btn-primary {
+    -fx-background-color: linear-gradient(to right, #667eea, #764ba2);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 12 24;
+    -fx-background-radius: 25;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.4), 10, 0, 0, 3);
+    -fx-transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    -fx-background-color: linear-gradient(to right, #5a67d8, #6b46c1);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+    -fx-effect: dropshadow(gaussian, rgba(102,126,234,0.6), 15, 0, 0, 5);
+}
+
+.btn-primary:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+.btn-secondary {
+    -fx-background-color: #6c757d;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-padding: 12 24;
+    -fx-background-radius: 25;
+    -fx-cursor: hand;
+    -fx-transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #5a6268;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.btn-browse {
+    -fx-background-color: linear-gradient(to right, #3498db, #2980b9);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-padding: 10 20;
+    -fx-background-radius: 25;
+    -fx-cursor: hand;
+}
+
+.btn-browse:hover {
+    -fx-background-color: linear-gradient(to right, #2980b9, #2471a3);
+}
+
+/* ==================== SÉPARATEUR ==================== */
+.separator .line {
+    -fx-border-color: #e9ecef;
+    -fx-border-width: 1.5;
+}
+
+/* ==================== APERÇU IMAGE ==================== */
+.image-preview {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 12;
+    -fx-border-color: #e9ecef;
+    -fx-border-radius: 12;
+    -fx-border-width: 2;
+    -fx-border-style: dashed;
+}
+
+/* ==================== MESSAGES ==================== */
+.message-success {
+    -fx-text-fill: #27ae60;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-padding: 10 0 0 0;
+}
+
+.message-error {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-padding: 10 0 0 0;
+}
+
+/* ==================== DATE PICKER STYLE ==================== */
+.date-picker .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.date-picker .arrow-button .arrow {
+    -fx-background-color: #667eea;
+}
+
+.date-picker .cell {
+    -fx-background-color: white;
+}
+
+.date-picker .cell:hover {
+    -fx-background-color: #667eea;
+    -fx-text-fill: white;
+}
+
+/* ==================== COMBOBOX STYLE ==================== */
+.combo-box .list-cell {
+    -fx-padding: 8 12;
+    -fx-background-color: white;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #667eea20;
+}
+
+/* ==================== SCROLLPANE ==================== */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #cbd5e0;
+    -fx-background-radius: 10;
+}
+
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #a0aec0;
+}
