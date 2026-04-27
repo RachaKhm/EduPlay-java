@@ -1,146 +1,137 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.geometry.Insets?>
-
-<!--
-    Sidebar.fxml
-    ─────────────────────────────────────────────────────────────
-    Sidebar dynamique commune à tous les rôles.
-    SidebarController.initialize() :
-      1. Affiche le nom + rôle de l'utilisateur connecté
-      2. Masque les boutons non applicables au rôle
-      3. Synchronise le bouton actif via Router.setOnRouteChange()
-
-    Styles : app.css  →  .nav-btn / .nav-btn-active / .sidebar-*
-    ─────────────────────────────────────────────────────────────
--->
-<VBox xmlns="http://javafx.com/javafx/17"
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.Region?>
+<VBox prefWidth="250" spacing="0"
+      style="-fx-background-color: linear-gradient(to bottom, #1A1A2E, #16213E);
+             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 2, 0);"
+      xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="dev.eduplay.controllers.SidebarController"
-      styleClass="sidebar"
-      spacing="0"
-      prefWidth="230">
+      fx:controller="dev.eduplay.controllers.SidebarController">
 
-    <!-- ── Logo ── -->
-    <VBox alignment="CENTER"
-          style="-fx-padding: 28 20 22 20;
-                 -fx-border-color: #2A2A4E; -fx-border-width: 0 0 1 0;">
-        <Label text="EduPlay" styleClass="sidebar-logo-title"/>
-        <Label text="Administration"  styleClass="sidebar-logo-subtitle"/>
+    <!-- Logo -->
+    <VBox alignment="CENTER" style="-fx-padding: 28 20 22 20; -fx-border-color: rgba(255,255,255,0.05); -fx-border-width: 0 0 1 0;">
+        <Label style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: linear-gradient(to right, #E94560, #FF6B6B);" text="EduPlay" />
+        <Label style="-fx-font-size: 11px; -fx-text-fill: #8888AA; -fx-letter-spacing: 2px;" text="Administration" />
     </VBox>
 
-    <!-- ── Navigation ── -->
-    <VBox spacing="2" style="-fx-padding: 14 10 14 10;">
+    <!-- Navigation -->
+    <VBox spacing="4" style="-fx-padding: 20 12 20 12;">
 
         <!-- Commun à tous les rôles -->
-        <Button fx:id="btnDashboard"
-                text="  Tableau de bord"
-                onAction="#showDashboard"
-                styleClass="nav-btn"/>
+        <Button fx:id="btnDashboard" onAction="#showDashboard"
+                style="-fx-background-color: transparent; -fx-text-fill: #BBBBCC; -fx-font-size: 13px;
+                       -fx-padding: 10 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-background-radius: 8;"
+                text="  📊 Tableau de bord" />
 
         <!-- ── ADMIN ── -->
-        <Label text="E-COMMERCE" styleClass="sidebar-section-label" fx:id="sectionAdmin"/>
+        <Label fx:id="sectionAdmin"
+               style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #555577; -fx-padding: 12 0 6 12;"
+               text="━━━━ E-COMMERCE ━━━━" />
 
-        <Button fx:id="btnUsers"
-                text="  Utilisateurs"
-                onAction="#showUsers"
-                styleClass="nav-btn"/>
+        <Button fx:id="btnUsers" onAction="#showUsers"
+                style="-fx-background-color: transparent; -fx-text-fill: #BBBBCC; -fx-font-size: 13px;
+                       -fx-padding: 8 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-background-radius: 8;"
+                text="  👥 Utilisateurs" />
 
-        <Button fx:id="btnTeachers"
-                text="  Enseignants"
-                onAction="#showTeachers"
-                styleClass="nav-btn"/>
+        <Button fx:id="btnTeachers" onAction="#showTeachers"
+                style="-fx-background-color: transparent; -fx-text-fill: #BBBBCC; -fx-font-size: 13px;
+                       -fx-padding: 8 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-background-radius: 8;"
+                text="  👨‍🏫 Enseignants" />
 
-        <Button fx:id="btnParents"
-                text="  Parents"
-                onAction="#showParents"
-                styleClass="nav-btn"/>
+        <Button fx:id="btnParents" onAction="#showParents"
+                style="-fx-background-color: transparent; -fx-text-fill: #BBBBCC; -fx-font-size: 13px;
+                       -fx-padding: 8 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-background-radius: 8;"
+                text="  👪 Parents" />
 
         <!-- ── ENSEIGNANT ── -->
-        <Label text="COURS" styleClass="sidebar-section-label" fx:id="sectionTeacher"/>
+        <Label fx:id="sectionTeacher"
+               style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #555577; -fx-padding: 12 0 6 12;"
+               text="━━━━ COURS ━━━━" />
 
-        <Button fx:id="btnCourses"
-                text="  Mes cours"
-                onAction="#showCourses"
-                styleClass="nav-btn"/>
+        <Button fx:id="btnCourses" onAction="#showCourses"
+                style="-fx-background-color: transparent; -fx-text-fill: #BBBBCC; -fx-font-size: 13px;
+                       -fx-padding: 8 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-background-radius: 8;"
+                text="  📚 Mes cours" />
 
-        <Button fx:id="btnStudents"
-                text="  Mes élèves"
-                onAction="#showStudents"
-                styleClass="nav-btn"/>
+        <Button fx:id="btnStudents" onAction="#showStudents"
+                style="-fx-background-color: transparent; -fx-text-fill: #BBBBCC; -fx-font-size: 13px;
+                       -fx-padding: 8 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-background-radius: 8;"
+                text="  🎓 Mes élèves" />
+        <Button fx:id="btnGames" onAction="#showGames"
+                style="-fx-background-color: transparent; -fx-text-fill: #BBBBCC; -fx-font-size: 13px;
+                       -fx-padding: 8 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-background-radius: 8;"
+                text="  🎮 Jeux" />
+        <Button fx:id="btnLevel" onAction="#showLevels"
+                style="-fx-background-color: transparent; -fx-text-fill: #BBBBCC; -fx-font-size: 13px;
+                       -fx-padding: 8 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-background-radius: 8;"
+                text="   Niveau" />
 
         <!-- ── PARENT ── -->
-        <Label text="FAMILLE" styleClass="sidebar-section-label" fx:id="sectionParent"/>
+        <Label fx:id="sectionParent"
+               style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #555577; -fx-padding: 12 0 6 12;"
+               text="━━━━ FAMILLE ━━━━" />
 
-        <Button fx:id="btnChildren"
-                text="  Mes enfants"
-                onAction="#showChildren"
-                styleClass="nav-btn"/>
+        <Button fx:id="btnChildren" onAction="#showChildren"
+                style="-fx-background-color: transparent; -fx-text-fill: #BBBBCC; -fx-font-size: 13px;
+                       -fx-padding: 8 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-background-radius: 8;"
+                text="  👶 Mes enfants" />
 
-        <Button fx:id="btnEvents"
-                text="  Événements"
-                onAction="#showEvents"
-                styleClass="nav-btn"/>
+        <Button fx:id="btnEvents" onAction="#showEvents"
+                style="-fx-background-color: transparent; -fx-text-fill: #BBBBCC; -fx-font-size: 13px;
+                       -fx-padding: 8 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-background-radius: 8;"
+                text="  📅 Événements" />
 
         <!-- ── ENFANT ── -->
-        <Label text="APPRENTISSAGE" styleClass="sidebar-section-label" fx:id="sectionChild"/>
+        <Label fx:id="sectionChild"
+               style="-fx-font-size: 10px; -fx-font-weight: bold; -fx-text-fill: #555577; -fx-padding: 12 0 6 12;"
+               text="━━━━ APPRENTISSAGE ━━━━" />
 
-        <Button fx:id="btnMyCoursesChild"
-                text="  Mes cours"
-                onAction="#showMyCoursesChild"
-                styleClass="nav-btn"/>
+        <Button fx:id="btnMyCoursesChild" onAction="#showMyCoursesChild"
+                style="-fx-background-color: transparent; -fx-text-fill: #BBBBCC; -fx-font-size: 13px;
+                       -fx-padding: 8 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-background-radius: 8;"
+                text="  📖 Mes cours" />
+        <Button fx:id="Games_children" onAction="#showGamesFront"
+                style="-fx-background-color: transparent; -fx-text-fill: #BBBBCC; -fx-font-size: 13px;
+                       -fx-padding: 8 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-background-radius: 8;"
+                text="  🎮 mes Jeux" />
 
-        <Button fx:id="btnGames"
-                text="  Jeux"
-                onAction="#showGames"
-                styleClass="nav-btn"/>
 
-        <!-- Séparateur + Profil (commun) -->
-        <VBox style="-fx-padding: 8 0 0 0;
-                     -fx-border-color: #2A2A4E; -fx-border-width: 1 0 0 0;">
-            <Button fx:id="btnProfile"
-                    text="  Mon profil"
-                    onAction="#showProfile"
-                    styleClass="nav-btn"/>
+        <!-- Séparateur + Profil -->
+        <VBox style="-fx-padding: 8 0 0 0; -fx-border-color: rgba(255,255,255,0.05); -fx-border-width: 1 0 0 0;">
+            <Button fx:id="btnProfile" onAction="#showProfile"
+                    style="-fx-background-color: transparent; -fx-text-fill: #BBBBCC; -fx-font-size: 13px;
+                           -fx-padding: 10 12; -fx-alignment: CENTER_LEFT; -fx-cursor: hand; -fx-background-radius: 8;"
+                    text="  👤 Mon profil" />
         </VBox>
 
     </VBox>
 
-    <!-- ── Spacer ── -->
-    <Region VBox.vgrow="ALWAYS"/>
+    <!-- Spacer -->
+    <Region VBox.vgrow="ALWAYS" />
 
-    <!-- ── Utilisateur connecté + Déconnexion ── -->
-    <VBox style="-fx-padding: 14 16;
-                 -fx-border-color: #2A2A4E; -fx-border-width: 1 0 0 0;"
-          spacing="10">
+    <!-- Footer avec déconnexion -->
+    <VBox spacing="12" style="-fx-padding: 16 16 20 16; -fx-border-color: rgba(255,255,255,0.05); -fx-border-width: 1 0 0 0;">
 
         <!-- Infos utilisateur -->
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <!-- Avatar initiales -->
-            <VBox alignment="CENTER"
-                  style="-fx-background-color: -ep-accent;
-                         -fx-background-radius: 50;
-                         -fx-min-width: 36; -fx-min-height: 36;
-                         -fx-max-width: 36; -fx-max-height: 36;">
-                <Label fx:id="labelUserInitials"
-                       text="U"
-                       style="-fx-font-size: 13px; -fx-font-weight: bold;
-                              -fx-text-fill: white;"/>
+        <HBox alignment="CENTER_LEFT" spacing="12">
+            <VBox alignment="CENTER" style="-fx-background-color: linear-gradient(135deg, #E94560, #FF6B6B);
+                                          -fx-background-radius: 50; -fx-min-width: 40; -fx-min-height: 40;
+                                          -fx-max-width: 40; -fx-max-height: 40;">
+                <Label fx:id="labelUserInitials" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: white;" text="U" />
             </VBox>
-            <VBox spacing="1">
-                <Label fx:id="labelUserName"  text="" styleClass="sidebar-user-name"/>
-                <Label fx:id="labelUserRole"  text="" styleClass="sidebar-user-role"/>
+            <VBox spacing="2">
+                <Label fx:id="labelUserName" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: white;" text="" />
+                <Label fx:id="labelUserRole" style="-fx-font-size: 10px; -fx-text-fill: #E94560; -fx-font-weight: bold;" text="" />
             </VBox>
         </HBox>
 
-        <Button text="  Déconnexion"
-                onAction="#handleLogout"
-                styleClass="sidebar-logout-btn"/>
+        <Button onAction="#handleLogout"
+                style="-fx-background-color: rgba(233, 69, 96, 0.2); -fx-text-fill: #E94560;
+                       -fx-font-size: 12px; -fx-padding: 8 12; -fx-background-radius: 6; -fx-cursor: hand;
+                       -fx-border-color: rgba(233, 69, 96, 0.3); -fx-border-radius: 6; -fx-border-width: 1;"
+                text="  🚪 Déconnexion" />
     </VBox>
 
 </VBox>

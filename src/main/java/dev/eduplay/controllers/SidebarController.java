@@ -56,6 +56,8 @@ public class SidebarController {
     @FXML private Label  sectionTeacher;
     @FXML private Button btnCourses;
     @FXML private Button btnStudents;
+    @FXML private Button btnLevel;
+    @FXML private Button BtnGames;
 
     /* ── Boutons Parent ────────────────────────────────────── */
 
@@ -68,6 +70,7 @@ public class SidebarController {
     @FXML private Label  sectionChild;
     @FXML private Button btnMyCoursesChild;
     @FXML private Button btnGames;
+    @FXML private Button Games_children;
 
     /* ── Tous les boutons de navigation (pour reset actif) ─── */
 
@@ -116,7 +119,10 @@ public class SidebarController {
     @FXML private void showChildren()       { Router.go("parent_children"); }
     @FXML private void showEvents()         { Router.go("parent_events"); }
     @FXML private void showMyCoursesChild() { Router.go("child_courses"); }
-    @FXML private void showGames()          { Router.go("child_games"); }
+    @FXML private void showLevels()          { Router.go("levels_list"); }
+    @FXML private void showGames() { Router.go("games_list"); }
+    @FXML private void showGamesFront() { Router.go("child_games"); }
+
 
     @FXML
     private void handleLogout() {
@@ -195,6 +201,9 @@ public class SidebarController {
         setVisible(sectionTeacher, false);
         setVisible(btnCourses,     false);
         setVisible(btnStudents,    false);
+        setVisible(btnLevel,    false);
+        setVisible(btnGames,    false);
+
 
         // Sections parent
         setVisible(sectionParent, false);
@@ -205,6 +214,7 @@ public class SidebarController {
         setVisible(sectionChild,      false);
         setVisible(btnMyCoursesChild, false);
         setVisible(btnGames,          false);
+        setVisible(Games_children,          false);
     }
 
     /**
@@ -224,16 +234,20 @@ public class SidebarController {
                 setVisible(sectionTeacher, true);
                 setVisible(btnCourses,     true);
                 setVisible(btnStudents,    true);
+                setVisible(btnGames,          true);
+                setVisible(btnLevel,    true);
+
             }
             case "parent" -> {
                 setVisible(sectionParent, true);
                 setVisible(btnChildren,   true);
                 setVisible(btnEvents,     true);
+
             }
             case "enfant" -> {
                 setVisible(sectionChild,      true);
-                setVisible(btnMyCoursesChild, true);
-                setVisible(btnGames,          true);
+                setVisible(Games_children,          true);
+
             }
         }
     }
@@ -283,4 +297,6 @@ public class SidebarController {
         if (s == null || s.isBlank()) return "";
         return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
+
+
 }
