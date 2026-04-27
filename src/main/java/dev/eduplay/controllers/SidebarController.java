@@ -27,6 +27,31 @@ public class SidebarController {
     @FXML private Label labelUserRole;
     @FXML private Label labelUserInitials;
 
+    /* ── Boutons communs ───────────────────────────────────── */
+
+    @FXML private Button btnDashboard;
+    @FXML private Button btnProfile;
+
+    /* ── Boutons Admin ─────────────────────────────────────── */
+
+    @FXML private Label  sectionAdmin;
+    @FXML private Button btnUsers;
+    @FXML private Button btnTeachers;
+    @FXML private Button btnParents;
+
+    /* ── Boutons Enseignant ────────────────────────────────── */
+
+    @FXML private Label  sectionTeacher;
+    @FXML private Button btnCourses;
+    @FXML private Button btnStudents;
+    @FXML private Button btnLevel;
+    @FXML private Button BtnGames;
+
+    /* ── Boutons Parent ────────────────────────────────────── */
+
+    @FXML private Label  sectionParent;
+    @FXML private Button btnChildren;
+    @FXML private Button btnEvents;
     @FXML private HBox btnDashboard;
     @FXML private HBox btnProfile;
 
@@ -36,6 +61,10 @@ public class SidebarController {
     @FXML private HBox btnLibrary;
     @FXML private HBox btnResource;
 
+    @FXML private Label  sectionChild;
+    @FXML private Button btnMyCoursesChild;
+    @FXML private Button btnGames;
+    @FXML private Button Games_children;
     @FXML private HBox sectionTeacherBox;
     @FXML private Label sectionTeacher;
     @FXML private HBox btnCourses;
@@ -95,6 +124,10 @@ public class SidebarController {
     @FXML private void showChildren() { Router.go("parent_children"); }
     @FXML private void showEvents() { Router.go("parent_events"); }
     @FXML private void showMyCoursesChild() { Router.go("child_courses"); }
+    @FXML private void showLevels()          { Router.go("levels_list"); }
+    @FXML private void showGames() { Router.go("games_list"); }
+    @FXML private void showGamesFront() { Router.go("child_games"); }
+
     @FXML private void showGames() { Router.go("child_games"); }
 
     @FXML
@@ -179,6 +212,30 @@ public class SidebarController {
     /* ROLE VISIBILITY */
 
     private void hideAllRoleSections() {
+        // Sections admin
+        setVisible(sectionAdmin, false);
+        setVisible(btnUsers,     false);
+        setVisible(btnTeachers,  false);
+        setVisible(btnParents,   false);
+
+        // Sections enseignant
+        setVisible(sectionTeacher, false);
+        setVisible(btnCourses,     false);
+        setVisible(btnStudents,    false);
+        setVisible(btnLevel,    false);
+        setVisible(btnGames,    false);
+
+
+        // Sections parent
+        setVisible(sectionParent, false);
+        setVisible(btnChildren,   false);
+        setVisible(btnEvents,     false);
+
+        // Sections enfant
+        setVisible(sectionChild,      false);
+        setVisible(btnMyCoursesChild, false);
+        setVisible(btnGames,          false);
+        setVisible(Games_children,          false);
         setVisible(sectionAdminBox, false);
         setVisible(btnUsers, false);
         setVisible(btnLibrary, false);
@@ -207,6 +264,23 @@ public class SidebarController {
                 setVisible(btnResource, true);
             }
             case "enseignant" -> {
+                setVisible(sectionTeacher, true);
+                setVisible(btnCourses,     true);
+                setVisible(btnStudents,    true);
+                setVisible(btnGames,          true);
+                setVisible(btnLevel,    true);
+
+            }
+            case "parent" -> {
+                setVisible(sectionParent, true);
+                setVisible(btnChildren,   true);
+                setVisible(btnEvents,     true);
+
+            }
+            case "enfant" -> {
+                setVisible(sectionChild,      true);
+                setVisible(Games_children,          true);
+
                 setVisible(sectionTeacherBox, true);
                 setVisible(btnCourses, true);
                 setVisible(btnStudents, true);
@@ -258,4 +332,6 @@ public class SidebarController {
         String[] parts = fullName.split(" ");
         return (parts[0].charAt(0) + "" + parts[parts.length - 1].charAt(0)).toUpperCase();
     }
+
+
 }

@@ -1,28 +1,32 @@
-package entities;
+package dev.eduplay.entities;
 
-public class Game   {
+public class Game {
     private int id;
-    private int id_level;
+    private Level level;
     private String name;
     private String type;
     private String description;
     private String image;
 
-    public Game(int id, int id_level, String name, String type, String description, String image) {
+    public Game(int id, Level level, String name, String type, String description, String image) {
         this.id = id;
-        this.id_level = id_level;
+        this.level = level;
         this.name = name;
         this.type = type;
         this.description = description;
         this.image = image;
     }
 
-    public Game(int id_level, String name, String type, String description, String image) {
-        this.id_level = id_level;
+    public Game(Level level, String name, String type, String description, String image) {
+        this.level = level;
         this.name = name;
         this.type = type;
         this.description = description;
         this.image = image;
+    }
+
+    public Game() {
+
     }
 
     public int getId() {
@@ -33,12 +37,12 @@ public class Game   {
         this.id = id;
     }
 
-    public int getId_level() {
-        return id_level;
+    public Level getId_level() {
+        return level;
     }
 
-    public void setId_level(int id_level) {
-        this.id_level = id_level;
+    public void setLevel(Level level) {
+        this.level = level;
     }
 
     public String getName() {
@@ -79,7 +83,7 @@ public class Game   {
     public String toString() {
         return "Game{" +
                 "id=" + id +
-                ", id_level=" + id_level +
+                ", id_level=" + level +
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 ", description='" + description + '\'' +

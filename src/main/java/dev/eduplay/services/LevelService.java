@@ -3,10 +3,13 @@ package dev.eduplay.services;
 import dev.eduplay.tools.MyDataBase;
 import entities.Level;
 
+import dev.eduplay.entities.Level;
+import dev.eduplay.tools.MyDataBase;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+
 public class LevelService {
 
     private Connection cnx;

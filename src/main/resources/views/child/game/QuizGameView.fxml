@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.QuizGameController"
+            style="-fx-background-color: linear-gradient(to bottom, #1A1A2E, #16213E);">
+
+    <top>
+        <HBox alignment="CENTER" spacing="20" style="-fx-padding: 20;">
+            <Label text="❓ Quiz Game" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <Label fx:id="scoreLabel" text="Score: 0" style="-fx-font-size: 18px; -fx-text-fill: #E94560; -fx-font-weight: bold;"/>
+            <Label fx:id="questionCounter" text="Question 1/5" style="-fx-font-size: 14px; -fx-text-fill: #AAAAAA;"/>
+            <Button text="Quitter" onAction="#closeGame" style="-fx-background-color: #E94560; -fx-text-fill: white; -fx-padding: 5 20; -fx-background-radius: 20;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox spacing="25" alignment="CENTER" style="-fx-padding: 30;">
+            <Label fx:id="questionLabel" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white; -fx-wrap-text: true; -fx-alignment: center; -fx-padding: 20;"/>
+            <VBox spacing="12" alignment="CENTER">
+                <Button fx:id="option1" prefWidth="400" style="-fx-background-color: #2E9E6E; -fx-text-fill: white; -fx-font-size: 15px; -fx-padding: 12; -fx-background-radius: 10;"/>
+                <Button fx:id="option2" prefWidth="400" style="-fx-background-color: #3498DB; -fx-text-fill: white; -fx-font-size: 15px; -fx-padding: 12; -fx-background-radius: 10;"/>
+                <Button fx:id="option3" prefWidth="400" style="-fx-background-color: #F39C12; -fx-text-fill: white; -fx-font-size: 15px; -fx-padding: 12; -fx-background-radius: 10;"/>
+                <Button fx:id="option4" prefWidth="400" style="-fx-background-color: #9B59B6; -fx-text-fill: white; -fx-font-size: 15px; -fx-padding: 12; -fx-background-radius: 10;"/>
+            </VBox>
+        </VBox>
+    </center>
+
+</BorderPane>

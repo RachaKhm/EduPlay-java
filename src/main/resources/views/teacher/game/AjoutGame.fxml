@@ -1,14 +1,161 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Line?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="$CONTROLLER_NAME$"
-            prefHeight="400.0" prefWidth="600.0" >
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.GameController"
+            prefWidth="580"
+            style="-fx-background-color: #F8F9FA;">
 
-</AnchorPane>
+    <!-- HEADER -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="12"
+              style="-fx-background-color: #1A1A2E; -fx-padding: 18 24;">
+            <VBox spacing="3">
+                <Label fx:id="formTitle" text="Nouveau jeu"
+                       style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label text="Gestion des jeux éducatifs — EduPlay"
+                       style="-fx-font-size: 11px; -fx-text-fill: #555577;"/>
+            </VBox>
+            <HBox HBox.hgrow="ALWAYS"/>
+            <Button text="✕" onAction="#closeForm"
+                    style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
+                           -fx-font-size: 16px; -fx-cursor: hand; -fx-border-width: 0;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane fitToWidth="true"
+                    style="-fx-background-color: transparent; -fx-background: transparent;">
+            <VBox spacing="0" style="-fx-padding: 24 32 24 32; -fx-background-color: #F8F9FA;">
+
+                <!-- Indicateur étape -->
+                <HBox spacing="0" style="-fx-padding: 0 0 24 0;">
+                    <VBox alignment="CENTER" prefWidth="80" spacing="6">
+                        <StackPane>
+                            <Circle fx:id="step1Circle" radius="14"
+                                    fill="#E94560"/>
+                            <Label text="1"
+                                   style="-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        </StackPane>
+                        <Label text="Informations"
+                               style="-fx-font-size: 10px; -fx-text-fill: #E94560; -fx-font-weight: bold;"/>
+                    </VBox>
+                    <Line fx:id="stepLine1" startX="0" endX="60" startY="0" endY="0"
+                          style="-fx-stroke: #DDDDE8;" translateY="14"/>
+                    <VBox alignment="CENTER" prefWidth="80" spacing="6">
+                        <StackPane>
+                            <Circle radius="14" fill="#DDDDE8"/>
+                            <Label text="2"
+                                   style="-fx-text-fill: #9999BB; -fx-font-size: 12px; -fx-font-weight: bold;"/>
+                        </StackPane>
+                        <Label text="Contenu"
+                               style="-fx-font-size: 10px; -fx-text-fill: #9999BB;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Section 1 : Informations générales -->
+                <Label text="Informations générales"
+                       style="-fx-font-size: 11px; -fx-font-weight: bold;
+                              -fx-text-fill: #9999BB; -fx-padding: 0 0 12 0;"/>
+
+                <VBox spacing="6">
+                    <Label text="Nom du jeu *"
+                           style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                    <TextField fx:id="nameField" promptText="ex: Quiz Mathématique, Puzzle Animalier..."
+                               style="-fx-background-color: white; -fx-border-color: #DDDDE8;
+                                      -fx-border-width: 1; -fx-background-radius: 6;
+                                      -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                </VBox>
+                <!-- Feedback -->
+                <Label fx:id="feedbackname" text="" wrapText="true"
+                       style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
+
+                <VBox spacing="6" style="-fx-padding: 14 0 0 0;">
+                    <Label text="Description"
+                           style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                    <TextArea fx:id="descriptionField" promptText="Description du jeu"
+                              prefRowCount="3" wrapText="true"
+                              style="-fx-background-color: white; -fx-border-color: #DDDDE8;
+                                     -fx-border-width: 1; -fx-background-radius: 6;
+                                     -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                </VBox>
+                <!-- Feedback -->
+                <Label fx:id="feedbackdesc" text="" wrapText="true"
+                       style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
+
+
+                <Separator style="-fx-padding: 20 0 0 0;"/>
+
+                <!-- Section 2 : Paramètres du jeu -->
+                <Label text="Paramètres du jeu"
+                       style="-fx-font-size: 11px; -fx-font-weight: bold;
+                              -fx-text-fill: #9999BB; -fx-padding: 18 0 12 0;"/>
+
+                <HBox spacing="16">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Type de jeu *"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <ComboBox fx:id="typeCombo" maxWidth="Infinity"
+                                  promptText="Sélectionner le type"
+                                  style="-fx-font-size: 13px;"/>
+                    </VBox>
+                </HBox>
+                <!-- Feedback -->
+                <Label fx:id="feedbacktype" text="" wrapText="true"
+                       style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
+
+
+                <HBox spacing="16">
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <Label text="Niveau *"
+                               style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                        <ComboBox fx:id="levelCombo" maxWidth="Infinity"
+                                  promptText="Sélectionner le niveau"
+                                  style="-fx-font-size: 13px;"/>
+                    </VBox>
+                </HBox>
+                <!-- Feedback -->
+                <Label fx:id="feedbackid" text="" wrapText="true"
+                       style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
+
+                <VBox spacing="6" style="-fx-padding: 14 0 0 0;">
+                    <Label text="Image URL"
+                           style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
+                    <TextField fx:id="imageField" promptText="URL de l'image du jeu"
+                               style="-fx-background-color: white; -fx-border-color: #DDDDE8;
+                                      -fx-border-width: 1; -fx-background-radius: 6;
+                                      -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
+                    <Label text="Format: .png, .jpg, .gif"
+                           style="-fx-font-size: 10px; -fx-text-fill: #9999BB; -fx-padding: 4 0 0 12;"/>
+                    <!-- Feedback -->
+                    <Label fx:id="feedbackimg" text="" wrapText="true"
+                           style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
+                </VBox>
+
+                <!-- Feedback -->
+                <Label fx:id="feedbackimage" text="" wrapText="true"
+                       style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
+
+                <!-- Boutons -->
+                <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 24 0 0 0;">
+                    <Button text="Annuler" onAction="#showGames"
+                            style="-fx-background-color: white; -fx-border-color: #DDDDE8;
+                                   -fx-border-width: 1; -fx-border-radius: 6;
+                                   -fx-background-radius: 6; -fx-text-fill: #555577;
+                                   -fx-font-size: 13px; -fx-padding: 9 20; -fx-cursor: hand;"/>
+                    <Button text="Créer le jeu" onAction="#saveGame"
+                            style="-fx-background-color: #E94560; -fx-text-fill: white;
+                                   -fx-font-size: 13px; -fx-font-weight: bold;
+                                   -fx-padding: 9 24; -fx-background-radius: 6; -fx-cursor: hand;"/>
+                </HBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

@@ -22,9 +22,7 @@
                        style="-fx-font-size: 11px; -fx-text-fill: #555577;"/>
             </VBox>
             <HBox HBox.hgrow="ALWAYS"/>
-            <Button text="✕" onAction="#closeForm"
-                    style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
-                           -fx-font-size: 16px; -fx-cursor: hand; -fx-border-width: 0;"/>
+
         </HBox>
     </top>
 
@@ -75,7 +73,6 @@
                 <Label fx:id="feedbackname" text="" wrapText="true"
                        style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
 
-
                 <VBox spacing="6" style="-fx-padding: 14 0 0 0;">
                     <Label text="Description"
                            style="-fx-font-size: 12px; -fx-text-fill: #555577; -fx-font-weight: bold;"/>
@@ -88,7 +85,6 @@
                 <!-- Feedback -->
                 <Label fx:id="feedbackdesc" text="" wrapText="true"
                        style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
-
 
                 <Separator style="-fx-padding: 20 0 0 0;"/>
 
@@ -141,18 +137,15 @@
                        style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
 
 
-                <!-- Feedback -->
-                <Label fx:id="feedbackLabel" text="" wrapText="true"
-                       style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
 
                 <!-- Boutons -->
                 <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 24 0 0 0;">
-                    <Button text="Annuler" onAction="#showLevels"
+                    <Button text="Annuler" onAction="#closeForm"
                             style="-fx-background-color: white; -fx-border-color: #DDDDE8;
                                    -fx-border-width: 1; -fx-border-radius: 6;
                                    -fx-background-radius: 6; -fx-text-fill: #555577;
                                    -fx-font-size: 13px; -fx-padding: 9 20; -fx-cursor: hand;"/>
-                    <Button text="Créer le niveau" onAction="#saveLevel"
+                    <Button text="Modifier le niveau" onAction="#saveLevel"
                             style="-fx-background-color: #E94560; -fx-text-fill: white;
                                    -fx-font-size: 13px; -fx-font-weight: bold;
                                    -fx-padding: 9 24; -fx-background-radius: 6; -fx-cursor: hand;"/>

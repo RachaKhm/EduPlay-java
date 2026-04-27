@@ -44,6 +44,10 @@ public class Router {
         routes.put("teacher_dashboard", "/views/teacher/TeacherDashboardView.fxml");
         routes.put("teacher_courses",   "/views/teacher/CoursesView.fxml");
         routes.put("teacher_students",  "/views/teacher/StudentsView.fxml");
+        routes.put("levels_list", "/views/teacher/level/ListLevel.fxml");
+        routes.put("Ajout_level", "/views/teacher/level/AjoutLevel.fxml");
+        routes.put("games_list", "/views/teacher/game/ListGame.fxml");
+        routes.put("Ajout_game", "/views/teacher/game/AjoutGame.fxml");
 
         // Parent
         routes.put("parent_dashboard", "/views/parent/ParentDashboardView.fxml");
@@ -53,7 +57,8 @@ public class Router {
         // Enfant
         routes.put("child_dashboard",  "/views/child/ChildDashboardView.fxml");
         routes.put("child_courses",    "/views/child/MyCoursesView.fxml");
-        routes.put("child_games",      "/views/child/GamesView.fxml");
+        routes.put("child_games", "/views/child/game/ChildGamesView.fxml");
+
 
         // Routes pour Events
         routes.put("event_list",        "/views/event/event_list.fxml");
@@ -292,5 +297,8 @@ public class Router {
     public static void reload(String route) { viewCache.remove(route); currentRoute = ""; go(route); }
     public static String getCurrentRoute() { return currentRoute; }
     public static void setOnRouteChange(Consumer<String> l) { onRouteChange = l; }
+    public static void clearCache()                         { viewCache.clear(); currentRoute = ""; }
+
+
     public static void clearCache() { viewCache.clear(); currentRoute = ""; routeParams.clear(); }
 }

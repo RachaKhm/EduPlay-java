@@ -1,10 +1,13 @@
 package dev.eduplay.services;
 
-import java.sql.*;
-import java.util.*;
+import dev.eduplay.entities.Game;
 
-import entities.Game;
+import dev.eduplay.entities.Level;
 import dev.eduplay.tools.MyDataBase;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameService {
     private Connection cnx;
@@ -19,7 +22,7 @@ public class GameService {
         PreparedStatement ps = null;
         try {
             ps = cnx.prepareStatement(sql);
-            ps.setInt(1,game.getId_level());
+            ps.setInt(1,game.getId_level().getId());
             ps.setString(2,game.getName());
             ps.setString(3,game.getType());
             ps.setString(4,game.getDescription());
@@ -48,21 +51,47 @@ public class GameService {
         ps.setString(2, game.getType());
         ps.setString(3, game.getDescription());
         ps.setString(4, game.getImage());
-        ps.setInt(5, game.getId_level());
+        ps.setInt(5, game.getId_level().getId());
         ps.setInt(6, game.getId());
 
         ps.executeUpdate();
         IO.println("update avec succées");
     }
 
+    // Dans GameService.java
     public List<Game> getAll() throws SQLException {
         List<Game> games = new ArrayList<>();
-        String sql ="select * from game ";
-        Statement st = cnx.createStatement();
-        ResultSet rs = st.executeQuery(sql);
-        while (rs.next()) {
-            Game g= new Game(rs.getInt(1),rs.getString(2),rs.getString(3),rs.getString(4),rs.getString(5) );
-            games.add(g);
+        String sql = "SELECT g.*, l.id as level_id, l.name as level_name, " +
+                "l.description as level_desc, l.difficulty, " +
+                "l.min_age, l.max_age, l.pedag_goal " +
+                "FROM game g " +
+                "INNER JOIN level l ON g.id_level_id = l.id";
+
+        try (Statement st = cnx.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+
+            while (rs.next()) {
+                // Créer l'objet Level complet
+                Level level = new Level();
+                level.setId(rs.getInt("level_id"));
+                level.setName(rs.getString("level_name"));
+                level.setDescription(rs.getString("level_desc"));
+                level.setDifficulty(rs.getInt("difficulty"));
+                level.setMinAge(rs.getInt("min_age"));
+                level.setMaxAge(rs.getInt("max_age"));
+                level.setPedagGoal(rs.getString("pedag_goal"));
+
+                // Créer le Game avec l'objet Level
+                Game game = new Game();
+                game.setId(rs.getInt("id"));
+                game.setLevel(level);
+                game.setName(rs.getString("name"));
+                game.setType(rs.getString("type"));
+                game.setDescription(rs.getString("description"));
+                game.setImage(rs.getString("image"));
+
+                games.add(game);
+            }
         }
 
         return games;
