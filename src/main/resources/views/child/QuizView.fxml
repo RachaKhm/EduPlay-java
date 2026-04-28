@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane style="-fx-background-color: linear-gradient(to bottom right, #FEF3C7, #FDE68A);" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.eduplay.controllers.QuizController" prefWidth="900" prefHeight="700">
+    <top>
+        <HBox alignment="CENTER_RIGHT" style="-fx-padding: 20;">
+            <Button text="❌ Quitter le Quiz" onAction="#closeQuiz" style="-fx-background-color: #EF4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-font-family: 'Comic Sans MS'; -fx-background-radius: 12; -fx-padding: 10 20; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 3);" />
+        </HBox>
+    </top>
+    
+    <center>
+        <VBox alignment="CENTER" spacing="30" style="-fx-padding: 20;">
+            <Label fx:id="lblTitle" text="Génération du Quiz en cours..." style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-font-family: 'Comic Sans MS'; -fx-text-fill: #B45309; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 3, 0, 0, 2);" textAlignment="CENTER" wrapText="true" />
+            
+            <ProgressIndicator fx:id="loader" visible="true" managed="true" prefWidth="60" prefHeight="60" style="-fx-progress-color: #D97706;" />
+            
+            <VBox fx:id="quizContainer" spacing="30" alignment="CENTER" style="-fx-background-color: white; -fx-padding: 40; -fx-background-radius: 24; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 20, 0, 0, 10); -fx-border-color: #FCD34D; -fx-border-width: 4; -fx-border-radius: 20;" visible="false" managed="false" maxWidth="700">
+                <Label fx:id="lblQuestionCount" text="Question 1 / 10" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'Comic Sans MS'; -fx-text-fill: #9CA3AF;" />
+                <Label fx:id="lblQuestion" text="Question ?" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-font-family: 'Comic Sans MS'; -fx-text-fill: #1E293B;" wrapText="true" textAlignment="CENTER" />
+                <VBox fx:id="optionsBox" spacing="20" alignment="CENTER" prefWidth="600" />
+            </VBox>
+            
+            <VBox fx:id="resultContainer" spacing="30" alignment="CENTER" visible="false" managed="false" style="-fx-background-color: white; -fx-padding: 50; -fx-background-radius: 24; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 20, 0, 0, 10); -fx-border-color: #10B981; -fx-border-width: 4; -fx-border-radius: 20;">
+                <Label text="🎉 INCROYABLE ! 🎉" style="-fx-font-size: 48px; -fx-font-weight: bold; -fx-font-family: 'Comic Sans MS'; -fx-text-fill: #10B981;" />
+                <Label fx:id="lblScore" text="Ton score: 0 / 10" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-font-family: 'Comic Sans MS'; -fx-text-fill: #D97706;" />
+                <Button text="Retour à la bibliothèque" onAction="#closeQuiz" style="-fx-background-color: #3B82F6; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 22px; -fx-font-family: 'Comic Sans MS'; -fx-background-radius: 16; -fx-padding: 15 40; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 3);" />
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>
