@@ -311,6 +311,7 @@ public class Router {
         return data;
     }
 
+    public static StackPane getContainer() { return container; }
     public static String getCurrentRoute()                   { return currentRoute; }
     public static void setOnRouteChange(Consumer<String> l) { onRouteChange = l; }
     public static void clearCache() { viewCache.clear(); currentRoute = ""; routeParams.clear(); }

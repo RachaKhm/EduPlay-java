@@ -157,7 +157,7 @@ public class ResourceIndexController {
 
     @FXML
     private void showBookRequests() {
-        Router.go("admin_book_requests");
+        Router.go("book_requests_index");
     }
 
     @FXML

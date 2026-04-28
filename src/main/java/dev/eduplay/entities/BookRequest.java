@@ -10,6 +10,10 @@ public class BookRequest {
     private boolean isAvailable;
     private boolean isNotified;
     private Integer resourceId; // ID de la ressource une fois liée (nullable)
+    
+    // UI Fields (populated via JOIN)
+    private String enfantName;
+    private String enfantRole;
 
     public BookRequest() {
         this.requestedAt = LocalDateTime.now();
@@ -47,4 +51,10 @@ public class BookRequest {
     
     public Integer getResourceId() { return resourceId; }
     public void setResourceId(Integer resourceId) { this.resourceId = resourceId; }
+
+    public String getEnfantName() { return enfantName; }
+    public void setEnfantName(String enfantName) { this.enfantName = enfantName; }
+
+    public String getEnfantRole() { return enfantRole; }
+    public void setEnfantRole(String enfantRole) { this.enfantRole = enfantRole; }
 }

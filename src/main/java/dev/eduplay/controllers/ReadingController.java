@@ -39,9 +39,12 @@ public class ReadingController {
 
     private TTSService ttsService;
     private GroqService groqService;
+    private Popup translationPopup;
+    
+    private Text lastClickedSourceNode;
+    private String lastClickedWord;
     private List<String> pages;
     private int currentPageIndex = 0;
-    private Popup translationPopup;
     private String currentTitle;
     private boolean isProgrammaticChange = false;
 
@@ -73,6 +76,12 @@ public class ReadingController {
         if (comboLanguage != null) {
             comboLanguage.getItems().addAll("Anglais", "Français", "Arabe", "Espagnol", "Allemand");
             comboLanguage.getSelectionModel().selectFirst();
+            
+            comboLanguage.valueProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal != null && lastClickedWord != null && lastClickedSourceNode != null) {
+                    translateAndShow(lastClickedWord, lastClickedSourceNode, newVal);
+                }
+            });
         }
 
         translationPopup = new Popup();
@@ -132,30 +141,56 @@ public class ReadingController {
             translationPopup.hide();
         }
 
-        // Trouver le début du mot
+        // Skip if user clicked on whitespace or punctuation
+        char clicked = fullText.charAt(charIndex);
+        if (!isWordChar(clicked)) return;
+
+        // Trouver le début du mot (gère les lettres accentuées : é à ù ê...)
         int start = charIndex;
-        while (start > 0 && Character.isLetterOrDigit(fullText.charAt(start - 1))) {
+        while (start > 0 && isWordChar(fullText.charAt(start - 1))) {
             start--;
         }
-        
+
         // Trouver la fin du mot
         int end = charIndex;
-        while (end < fullText.length() - 1 && Character.isLetterOrDigit(fullText.charAt(end + 1))) {
+        while (end < fullText.length() - 1 && isWordChar(fullText.charAt(end + 1))) {
             end++;
         }
-        
+
         String word = fullText.substring(start, end + 1).trim();
         if (word.isEmpty()) return;
 
+        this.lastClickedWord = word;
+        this.lastClickedSourceNode = sourceNode;
+
         String targetLanguage = comboLanguage != null ? comboLanguage.getValue() : "Anglais";
-        
-        // Afficher un "Chargement..."
+
+        translateAndShow(word, sourceNode, targetLanguage);
+    }
+
+    /**
+     * Returns true if the character should be considered part of a word.
+     * Uses Character.isLetter() which correctly handles Unicode/accented chars (é, à, ù, ê, etc.)
+     * and also includes digits and apostrophes (for contractions like "l'arbre").
+     */
+    private boolean isWordChar(char c) {
+        return Character.isLetter(c) || Character.isDigit(c) || c == '\'' || c == '\u2019';
+    }
+    
+    // Unique ID for each translation request — prevents stale results from showing
+    private volatile long currentTranslationId = 0;
+
+    private void translateAndShow(String word, Text sourceNode, String targetLanguage) {
+        // Afficher "..." pendant le chargement
         showTranslationPopup(sourceNode, word, "...");
+
+        final long requestId = ++currentTranslationId;
 
         Thread t = new Thread(() -> {
             String translated = groqService.translateWord(word, targetLanguage);
             Platform.runLater(() -> {
-                if (translationPopup.isShowing()) {
+                // Ignorer si une nouvelle requête a été lancée entre-temps
+                if (requestId == currentTranslationId) {
                     showTranslationPopup(sourceNode, word, translated);
                 }
             });

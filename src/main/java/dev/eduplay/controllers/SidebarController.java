@@ -2,6 +2,8 @@ package dev.eduplay.controllers;
 
 import dev.eduplay.core.AppContext;
 import dev.eduplay.core.Router;
+import dev.eduplay.entities.BookRequest;
+import dev.eduplay.services.BookRequestService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -9,42 +11,27 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import javafx.animation.Timeline;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.util.Duration;
+import javafx.application.Platform;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * SidebarController
- * ─────────────────────────────────────────────────────────────
- * Gère la sidebar dynamique commune à tous les rôles.
- *
- * Logique de rendu :
- *   1. Affiche les initiales, nom et rôle de l'utilisateur
- *   2. Masque les boutons/sections non applicables au rôle
- *   3. Synchronise le bouton actif avec Router.setOnRouteChange()
- *
- * Styles actif/inactif : définis dans app.css
- *   .nav-btn        → état par défaut
- *   .nav-btn-active → bouton de la route courante
- * ─────────────────────────────────────────────────────────────
- */
 public class SidebarController {
-
-    /* ── Labels utilisateur ────────────────────────────────── */
 
     @FXML private Label labelUserName;
     @FXML private Label labelUserRole;
     @FXML private Label labelUserInitials;
 
-    /* ── Boutons communs ───────────────────────────────────── */
-
     @FXML private Button btnDashboard;
     @FXML private Button btnProfile;
-
-    /* ── Boutons Admin ─────────────────────────────────────── */
 
     @FXML private Label  sectionAdmin;
     @FXML private Button btnUsers;
@@ -57,34 +44,23 @@ public class SidebarController {
     @FXML private Button btnEventList;
     @FXML private Button btnRegistrationList;
 
-    /* ── Boutons Enseignant ────────────────────────────────── */
-
     @FXML private Label  sectionTeacher;
     @FXML private Button btnCourses;
     @FXML private Button btnStudents;
 
-    /* ── Boutons Parent ────────────────────────────────────── */
-
     @FXML private Label  sectionParent;
     @FXML private Button btnChildren;
     @FXML private Button btnEvents;
-
-    /* ── Boutons Enfant ────────────────────────────────────── */
 
     @FXML private Label  sectionChild;
     @FXML private Button btnMyCoursesChild;
     @FXML private Button btnGames;
     @FXML private Button btnChildLibrary;
 
-    /* ── Tous les boutons de navigation (pour reset actif) ─── */
-
     private List<Button> allNavButtons;
-
-    /* ── Initialisation ────────────────────────────────────── */
 
     @FXML
     public void initialize() {
-        // Collecte de tous les boutons nav
         allNavButtons = Arrays.asList(
                 btnDashboard,
                 btnUsers, btnTeachers, btnParents, btnLibrary, btnResource, btnStatistics,
@@ -94,7 +70,6 @@ public class SidebarController {
                 btnProfile
         );
 
-        // Affichage utilisateur connecté
         String fullName = AppContext.getFullName();
         String role     = AppContext.getRole();
 
@@ -102,16 +77,46 @@ public class SidebarController {
         setIfNotNull(labelUserRole, capitalize(role));
         setIfNotNull(labelUserInitials, buildInitials(fullName));
 
-        // Masquer tout, puis afficher uniquement les sections du rôle
         hideAllRoleSections();
         showSectionsForRole(role);
 
-        // Synchroniser le bouton actif avec la route courante
         Router.setOnRouteChange(this::syncActiveButton);
         syncActiveButton(Router.getCurrentRoute());
+
+        if ("enfant".equals(role)) {
+            startNotificationCheck();
+        }
     }
 
-    /* ── Actions de navigation ─────────────────────────────── */
+    private void startNotificationCheck() {
+        BookRequestService brService = new BookRequestService();
+        Timeline timeline = new Timeline(
+            new KeyFrame(Duration.seconds(30), e -> {
+                int childId = AppContext.getUserId();
+                List<BookRequest> unread = brService.getNotificationsNonLues(childId);
+                for (BookRequest req : unread) {
+                    showSystemNotification(req);
+                    brService.marquerCommeNotifie(req.getId());
+                }
+            })
+        );
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+    }
+
+    private void showSystemNotification(BookRequest req) {
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Bonne nouvelle ! 📚");
+            alert.setHeaderText("Un livre que tu as demandé est disponible !");
+            alert.setContentText("Le livre « " + req.getBookTitle() + " » a été ajouté à la bibliothèque.\nTu peux maintenant aller le lire ! ✨");
+            
+            DialogPane dialogPane = alert.getDialogPane();
+            dialogPane.setStyle("-fx-background-color: #F0F9FF; -fx-font-family: 'Segoe UI';");
+            
+            alert.show();
+        });
+    }
 
     @FXML private void showDashboard()      { Router.go(AppContext.getDefaultRoute()); }
     @FXML private void showProfile()        { Router.go("profile"); }
@@ -143,47 +148,30 @@ public class SidebarController {
         });
     }
 
-    /* ── Synchronisation bouton actif ──────────────────────── */
-
-    /**
-     * Retire la classe active de tous les boutons,
-     * puis l'applique au bouton correspondant à la route.
-     * Utilise les classes CSS de app.css (.nav-btn / .nav-btn-active).
-     */
     public void syncActiveButton(String route) {
-        String activeStyle = "-fx-background-color: #EFF6FF; -fx-border-color: #DBEAFE; -fx-border-width: 1; -fx-border-radius: 12; -fx-background-radius: 12; -fx-text-fill: #2563EB; -fx-font-size: 14px; -fx-font-weight: bold; -fx-alignment: CENTER_LEFT; -fx-padding: 12 16; -fx-cursor: hand;";
         String inactiveStyle = "-fx-background-color: transparent; -fx-text-fill: #374151; -fx-font-size: 14px; -fx-alignment: CENTER_LEFT; -fx-padding: 12 16; -fx-background-radius: 12; -fx-cursor: hand;";
 
         allNavButtons.stream()
                 .filter(b -> b != null && b.isVisible())
                 .forEach(b -> b.setStyle(inactiveStyle));
 
-        // Identifier le bouton de la route active
-        Button active = switch (route) {
-            case "admin_dashboard",
-                 "teacher_dashboard",
-                 "parent_dashboard",
-                 "child_dashboard"   -> btnDashboard;
-            case "users",
-                 "teachers",
-                 "parents"           -> btnUsers;
-            case "teacher_courses"   -> btnCourses;
-            case "teacher_students"  -> btnStudents;
-            case "parent_children"   -> btnChildren;
-            case "parent_events"     -> btnEvents;
-            case "child_courses"     -> btnMyCoursesChild;
-            case "child_games"       -> btnGames;
-            case "library_index"        -> btnLibrary;
-            case "admin_resource_index" -> btnResource;
-            case "statistics_index"     -> btnStatistics;
-            case "child_library"     -> btnChildLibrary;
-            case "profile"           -> btnProfile;
-            case "event_list"        -> btnEventList;
-            case "registration_list" -> btnRegistrationList;
-            default                  -> btnDashboard;
-        };
+        Button active = btnDashboard;
+        if ("users".equals(route) || "teachers".equals(route) || "parents".equals(route)) active = btnUsers;
+        else if ("teacher_courses".equals(route)) active = btnCourses;
+        else if ("teacher_students".equals(route)) active = btnStudents;
+        else if ("parent_children".equals(route)) active = btnChildren;
+        else if ("parent_events".equals(route)) active = btnEvents;
+        else if ("child_courses".equals(route)) active = btnMyCoursesChild;
+        else if ("child_games".equals(route)) active = btnGames;
+        else if ("library_index".equals(route)) active = btnLibrary;
+        else if ("admin_resource_index".equals(route)) active = btnResource;
+        else if ("statistics_index".equals(route)) active = btnStatistics;
+        else if ("child_library".equals(route)) active = btnChildLibrary;
+        else if ("profile".equals(route)) active = btnProfile;
+        else if ("event_list".equals(route)) active = btnEventList;
+        else if ("registration_list".equals(route)) active = btnRegistrationList;
+        else if (route.contains("dashboard")) active = btnDashboard;
 
-        // Appliquer la classe active
         if (active != null && active.isVisible()) {
             active.getStyleClass().remove("nav-btn");
             if (!active.getStyleClass().contains("nav-btn-active")) {
@@ -192,14 +180,7 @@ public class SidebarController {
         }
     }
 
-    /* ── Visibilité sections par rôle ──────────────────────── */
-
-    /**
-     * Masque toutes les sections et boutons spécifiques aux rôles.
-     * Appelé en premier dans initialize(), avant showSectionsForRole().
-     */
     private void hideAllRoleSections() {
-        // Sections admin
         setVisible(sectionAdmin, false);
         setVisible(btnUsers,     false);
         setVisible(btnTeachers,  false);
@@ -207,29 +188,18 @@ public class SidebarController {
         setVisible(btnLibrary,   false);
         setVisible(btnResource,  false);
         setVisible(btnStatistics, false);
-
-        // Sections enseignant
         setVisible(sectionTeacher, false);
         setVisible(btnCourses,     false);
         setVisible(btnStudents,    false);
-
-        // Sections parent
         setVisible(sectionParent, false);
         setVisible(btnChildren,   false);
         setVisible(btnEvents,     false);
-
-        // Sections enfant
         setVisible(sectionChild,      false);
         setVisible(btnMyCoursesChild, false);
         setVisible(btnGames,          false);
         setVisible(btnChildLibrary,   false);
     }
 
-    /**
-     * Affiche uniquement les sections correspondant au rôle.
-     *
-     * @param role admin | enseignant | parent | enfant
-     */
     private void showSectionsForRole(String role) {
         switch (role) {
             case "admin" -> {
@@ -260,28 +230,18 @@ public class SidebarController {
         }
     }
 
-    /* ── Navigation Login ──────────────────────────────────── */
-
     private void navigateToLogin() {
         try {
-            Parent root = new FXMLLoader(
-                    getClass().getResource("/views/auth/LoginView.fxml")).load();
+            Parent root = new FXMLLoader(getClass().getResource("/views/auth/LoginView.fxml")).load();
             Stage stage = (Stage) btnDashboard.getScene().getWindow();
             stage.setScene(new Scene(root, 860, 540));
             stage.setTitle("EduPlay — Connexion");
             stage.centerOnScreen();
         } catch (IOException e) {
-            new Alert(Alert.AlertType.ERROR,
-                    "Erreur navigation : " + e.getMessage()).showAndWait();
+            new Alert(Alert.AlertType.ERROR, "Erreur navigation : " + e.getMessage()).showAndWait();
         }
     }
 
-    /* ── Utilitaires ───────────────────────────────────────── */
-
-    /**
-     * Affiche ou masque un nœud en gérant aussi managed
-     * (pour ne pas occuper d'espace quand invisible).
-     */
     private void setVisible(javafx.scene.Node node, boolean visible) {
         if (node != null) {
             node.setVisible(visible);
@@ -293,7 +253,6 @@ public class SidebarController {
         if (label != null) label.setText(text);
     }
 
-    /** Génère les initiales depuis le nom complet (ex: "John Doe" → "JD"). */
     private String buildInitials(String fullName) {
         if (fullName == null || fullName.isBlank()) return "?";
         String[] parts = fullName.trim().split("\\s+");

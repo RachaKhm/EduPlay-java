@@ -221,21 +221,25 @@ public class LibraryIndexController {
     }
 
     private String getHeaderGradient(String level) {
-        return switch (level == null ? "" : level.toLowerCase()) {
-            case "beginner","debutant" -> "-fx-background-color: linear-gradient(to right,#d1fae5,#6ee7b7); -fx-background-radius: 14 14 0 0;";
-            case "intermediate","intermediaire" -> "-fx-background-color: linear-gradient(to right,#fef3c7,#fcd34d); -fx-background-radius: 14 14 0 0;";
-            case "advanced","avance" -> "-fx-background-color: linear-gradient(to right,#fee2e2,#fca5a5); -fx-background-radius: 14 14 0 0;";
-            default -> "-fx-background-color: linear-gradient(to right,#e0e7ff,#a5b4fc); -fx-background-radius: 14 14 0 0;";
-        };
+        String lv = (level == null ? "" : level.toLowerCase());
+        if (lv.equals("beginner") || lv.equals("debutant")) 
+            return "-fx-background-color: linear-gradient(to right,#d1fae5,#6ee7b7); -fx-background-radius: 14 14 0 0;";
+        if (lv.equals("intermediate") || lv.equals("intermediaire")) 
+            return "-fx-background-color: linear-gradient(to right,#fef3c7,#fcd34d); -fx-background-radius: 14 14 0 0;";
+        if (lv.equals("advanced") || lv.equals("avance")) 
+            return "-fx-background-color: linear-gradient(to right,#fee2e2,#fca5a5); -fx-background-radius: 14 14 0 0;";
+        return "-fx-background-color: linear-gradient(to right,#e0e7ff,#a5b4fc); -fx-background-radius: 14 14 0 0;";
     }
 
     private String getLevelBadgeStyle(String level) {
         String base = "-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: white; -fx-background-radius: 20; -fx-padding: 4 12;";
-        return switch (level == null ? "" : level.toLowerCase()) {
-            case "beginner","debutant" -> base + "-fx-background-color: linear-gradient(to right,#10b981,#059669);";
-            case "intermediate","intermediaire" -> base + "-fx-background-color: linear-gradient(to right,#f59e0b,#d97706);";
-            case "advanced","avance" -> base + "-fx-background-color: linear-gradient(to right,#ef4444,#dc2626);";
-            default -> base + "-fx-background-color: linear-gradient(to right,#6366f1,#4f46e5);";
-        };
+        String lv = (level == null ? "" : level.toLowerCase());
+        if (lv.equals("beginner") || lv.equals("debutant")) 
+            return base + "-fx-background-color: linear-gradient(to right,#10b981,#059669);";
+        if (lv.equals("intermediate") || lv.equals("intermediaire")) 
+            return base + "-fx-background-color: linear-gradient(to right,#f59e0b,#d97706);";
+        if (lv.equals("advanced") || lv.equals("avance")) 
+            return base + "-fx-background-color: linear-gradient(to right,#ef4444,#dc2626);";
+        return base + "-fx-background-color: linear-gradient(to right,#6366f1,#4f46e5);";
     }
 }

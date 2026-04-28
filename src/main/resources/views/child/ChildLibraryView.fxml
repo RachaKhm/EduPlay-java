@@ -36,9 +36,9 @@
                     <Label text="Explorez Votre Bibliothèque" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #111418;"/>
                     <Label text="Découvrez des histoires incroyables, résolvez des énigmes mathématiques et explorez les merveilles de l'univers !" style="-fx-font-size: 16px; -fx-text-fill: #64748B; -fx-wrap-text: true; -fx-text-alignment: center;" maxWidth="600"/>
                     
-                    <VBox style="-fx-padding: 10 0 0 0;" maxWidth="600" alignment="CENTER">
-                        <TextField fx:id="searchField" promptText="🔍 Que voulez-vous apprendre aujourd'hui ?" style="-fx-background-color: white; -fx-font-size: 16px; -fx-padding: 16 24; -fx-background-radius: 16; -fx-border-color: #E2E8F0; -fx-border-radius: 16; -fx-border-width: 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4); -fx-pref-width: 600;"/>
-                    </VBox>
+                    <HBox maxWidth="600" spacing="12" alignment="CENTER">
+                        <TextField fx:id="searchField" promptText="🔍 Que voulez-vous apprendre aujourd'hui ?" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-font-size: 16px; -fx-padding: 16 24; -fx-background-radius: 16; -fx-border-color: #E2E8F0; -fx-border-radius: 16; -fx-border-width: 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);"/>
+                    </HBox>
                 </VBox>
                 
                 <!-- Grille -->

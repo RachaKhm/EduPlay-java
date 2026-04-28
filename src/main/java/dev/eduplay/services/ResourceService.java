@@ -11,10 +11,10 @@ public class ResourceService {
 
     Connection cnx = MyDataBase.getInstance().getCnx();
 
-    public void ajouter(Resource b) {
+    public int ajouter(Resource b) {
         String sql = "INSERT INTO resource (library_id_id, title, author, summary, cover_image, pdf_file, type, min_age, max_age, language) VALUES (?,?,?,?,?,?,?,?,?,?)";
         try {
-            PreparedStatement ps = cnx.prepareStatement(sql);
+            PreparedStatement ps = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setInt(1, b.getLibraryId());
             ps.setString(2, b.getTitle());
             ps.setString(3, b.getAuthor());
@@ -26,6 +26,12 @@ public class ResourceService {
             ps.setInt(9, b.getMaxAge());
             ps.setString(10, b.getLanguage());
             ps.executeUpdate();
+            
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            return 0;
         } catch (SQLException e) { 
             System.out.println(e.getMessage()); 
             throw new RuntimeException("Erreur d'insertion en BDD : " + e.getMessage()); 

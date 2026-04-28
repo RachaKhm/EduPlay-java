@@ -17,6 +17,7 @@ public class AppContext {
 
     public static String getRole()     { return currentUser != null ? currentUser.getType() : "unknown"; }
     public static String getFullName() { return currentUser != null ? currentUser.getFullName() : ""; }
+    public static int getUserId()      { return currentUser != null ? currentUser.getId() : 0; }
 
     private static boolean is(String role) {
         return currentUser != null && role.equals(currentUser.getType());
@@ -25,12 +26,11 @@ public class AppContext {
     // Route d'accueil différente selon le rôle
     public static String getDefaultRoute() {
         if (currentUser == null) return "admin_dashboard";
-        return switch (currentUser.getType()) {
-            case "admin"      -> "admin_dashboard";
-            case "enseignant" -> "teacher_dashboard";
-            case "parent"     -> "parent_dashboard";
-            case "enfant"     -> "child_dashboard";
-            default           -> "admin_dashboard";
-        };
+        String type = currentUser.getType();
+        if ("admin".equals(type)) return "admin_dashboard";
+        if ("enseignant".equals(type)) return "teacher_dashboard";
+        if ("parent".equals(type)) return "parent_dashboard";
+        if ("enfant".equals(type)) return "child_dashboard";
+        return "admin_dashboard";
     }
 }

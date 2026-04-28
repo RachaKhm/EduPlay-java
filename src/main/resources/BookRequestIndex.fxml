@@ -32,13 +32,11 @@
 
             <TableView fx:id="tablePending" VBox.vgrow="ALWAYS" prefHeight="250" style="-fx-background-color: white; -fx-border-color: #FFEDD5; -fx-border-radius: 8;">
                 <columns>
-                    <TableColumn fx:id="colBookTitle" text="Titre demandé" prefWidth="250">
-                        <cellValueFactory><PropertyValueFactory property="bookTitle"/></cellValueFactory>
-                    </TableColumn>
-                    <TableColumn fx:id="colDate" text="Date demande" prefWidth="150">
-                        <cellValueFactory><PropertyValueFactory property="requestedAt"/></cellValueFactory>
-                    </TableColumn>
-                    <TableColumn fx:id="colAction" text="Action" prefWidth="200"/>
+                    <TableColumn fx:id="colBookTitle" text="Titre demandé" prefWidth="200" />
+                    <TableColumn fx:id="colEnfant" text="Enfant" prefWidth="180" />
+                    <TableColumn fx:id="colRole" text="Rôle" prefWidth="100" />
+                    <TableColumn fx:id="colDate" text="Date demande" prefWidth="150" />
+                    <TableColumn fx:id="colAction" text="Action" prefWidth="180"/>
                 </columns>
             </TableView>
         </VBox>
@@ -54,15 +52,10 @@
 
             <TableView fx:id="tableAll" VBox.vgrow="ALWAYS" prefHeight="300" style="-fx-background-color: white; -fx-border-color: #F3F4F6; -fx-border-radius: 8;">
                 <columns>
-                    <TableColumn fx:id="colAllBookTitle" text="Titre" prefWidth="250">
-                        <cellValueFactory><PropertyValueFactory property="bookTitle"/></cellValueFactory>
-                    </TableColumn>
-                    <TableColumn fx:id="colAllDate" text="Date demande" prefWidth="150">
-                        <cellValueFactory><PropertyValueFactory property="requestedAt"/></cellValueFactory>
-                    </TableColumn>
-                    <TableColumn fx:id="colAllStatus" text="Statut" prefWidth="150">
-                        <cellValueFactory><PropertyValueFactory property="notified"/></cellValueFactory>
-                    </TableColumn>
+                    <TableColumn fx:id="colAllBookTitle" text="Titre" prefWidth="200" />
+                    <TableColumn fx:id="colAllEnfant" text="Enfant" prefWidth="180" />
+                    <TableColumn fx:id="colAllDate" text="Date demande" prefWidth="150" />
+                    <TableColumn fx:id="colAllStatus" text="Statut" prefWidth="150" />
                 </columns>
             </TableView>
         </VBox>

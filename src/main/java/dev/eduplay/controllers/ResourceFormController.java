@@ -38,6 +38,7 @@ public class ResourceFormController {
     private final ResourceService resourceService = new ResourceService();
     private final LibraryService libraryService = new LibraryService();
     private final CohereService cohereService = new CohereService();
+    private final dev.eduplay.services.BookRequestService bookRequestService = new dev.eduplay.services.BookRequestService();
     private Resource currentResource;
 
     @FXML private Label lblAiStatus;
@@ -343,7 +344,9 @@ public class ResourceFormController {
 
         try {
             if (currentResource.getId() == 0) {
-                resourceService.ajouter(currentResource);
+                int newId = resourceService.ajouter(currentResource);
+                // Mark matching requests as available
+                bookRequestService.marquerDisponibleParTitre(currentResource.getTitle(), newId);
             } else {
                 resourceService.modifier(currentResource);
             }

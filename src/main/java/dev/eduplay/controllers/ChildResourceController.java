@@ -1,27 +1,35 @@
 package dev.eduplay.controllers;
 
+import dev.eduplay.core.AppContext;
 import dev.eduplay.core.Router;
+import dev.eduplay.entities.BookRequest;
 import dev.eduplay.entities.Library;
 import dev.eduplay.entities.Resource;
+import dev.eduplay.services.BookRequestService;
 import dev.eduplay.services.ResourceService;
-import javafx.fxml.FXML;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ScrollPane;
-
-import dev.eduplay.controllers.QuizController;
-import dev.eduplay.controllers.ReadingController;
 import dev.eduplay.tools.ImageLoader;
 import dev.eduplay.services.GroqService;
+import javafx.animation.FadeTransition;
+import javafx.animation.TranslateTransition;
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
 
+import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChildResourceController {
@@ -40,6 +48,12 @@ public class ChildResourceController {
     @FXML private Button btnVoiceSearch;
     @FXML private Label lblVoiceStatus;
     
+    // Notifications & Requests
+    @FXML private Label lblWelcomeRequest;
+    @FXML private Label lblChildName;
+    @FXML private TextField txtRequestTitle;
+    @FXML private VBox notificationContainer;
+    
     @FXML private VBox chatWindow;
     @FXML private ScrollPane chatScrollPane;
     @FXML private VBox chatMessagesContainer;
@@ -48,6 +62,7 @@ public class ChildResourceController {
     
     private Library currentLibrary;
     private final ResourceService resourceService = new ResourceService();
+    private final BookRequestService bookRequestService = new BookRequestService();
     private GroqService groqService;
     private List<Resource> currentResources;
 
@@ -56,23 +71,141 @@ public class ChildResourceController {
         groqService = new GroqService();
         addChatMessage("Salut ! Quel âge as-tu et quel genre d'histoires aimes-tu ? Je peux te recommander des super livres !", false);
 
+        String fullName = AppContext.getFullName();
+        if (lblChildName != null) lblChildName.setText(fullName);
+        if (lblWelcomeRequest != null) lblWelcomeRequest.setText("Bonjour " + fullName + " ! Demande ton livre ici 👇");
+
         Object transit = Router.getTransitData();
         if (transit instanceof Library) {
             this.currentLibrary = (Library) transit;
             loadLibraryData();
             loadResources();
+            loadNotifications();
         } else {
-            lblLibraryNameNav.setText("Erreur : Bibliothèque introuvable.");
+            if (lblLibraryNameNav != null) lblLibraryNameNav.setText("Erreur : Bibliothèque introuvable.");
+        }
+    }
+
+    private void loadNotifications() {
+        if (notificationContainer == null) return;
+        notificationContainer.getChildren().clear();
+        
+        List<BookRequest> list = bookRequestService.getNotificationsNonLues(AppContext.getUserId());
+        if (list.isEmpty()) {
+            Label empty = new Label("Aucune nouvelle notification.");
+            empty.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 13px; -fx-padding: 15; -fx-font-style: italic;");
+            notificationContainer.getChildren().add(empty);
+            return;
+        }
+
+        for (BookRequest br : list) {
+            HBox item = new HBox(12);
+            item.setAlignment(Pos.CENTER_LEFT);
+            item.setStyle("-fx-background-color: white; -fx-padding: 12 16; -fx-background-radius: 12; -fx-border-color: #F1F5F9; -fx-border-width: 1; -fx-border-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.02), 5, 0, 0, 2);");
+            
+            StackPane iconBox = new StackPane(new Label("📚"));
+            iconBox.setStyle("-fx-background-color: #F0FDF4; -fx-padding: 8; -fx-background-radius: 10;");
+            
+            VBox info = new VBox(2);
+            Label title = new Label(br.getBookTitle());
+            title.setStyle("-fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-font-size: 14px;");
+            
+            String dateStr = (br.getRequestedAt() != null) ? br.getRequestedAt().format(DateTimeFormatter.ofPattern("dd/MM")) : "N/A";
+            Label sub = new Label("Disponible depuis le " + dateStr + " ✨");
+            sub.setStyle("-fx-font-size: 11px; -fx-text-fill: #16A34A; -fx-font-weight: bold;");
+            info.getChildren().addAll(title, sub);
+            
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+            
+            Button btnRead = new Button("Lire");
+            btnRead.setStyle("-fx-background-color: #22C55E; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 6 20; -fx-cursor: hand;");
+            btnRead.setOnAction(e -> {
+                bookRequestService.marquerCommeNotifie(br.getId());
+                loadNotifications();
+                showPremiumPopup("Bonne lecture !", "Le livre « " + br.getBookTitle() + " » t'attend ! 📖", "#10B981");
+            });
+            
+            item.getChildren().addAll(iconBox, info, spacer, btnRead);
+            notificationContainer.getChildren().add(item);
+        }
+    }
+
+    @FXML
+    private void handleQuickRequest() {
+        String title = txtRequestTitle.getText().trim();
+        if (title.isEmpty()) return;
+
+        BookRequest br = new BookRequest();
+        br.setBookTitle(title);
+        br.setEnfantId(AppContext.getUserId());
+        br.setRequestedAt(LocalDateTime.now());
+        br.setAvailable(false);
+        br.setNotified(false);
+
+        bookRequestService.ajouter(br);
+        txtRequestTitle.clear();
+        
+        showPremiumPopup("Demande envoyée !", "On te préviendra dès que le livre sera prêt ! 🚀", "#F97316");
+    }
+
+    private void showPremiumPopup(String title, String message, String colorHex) {
+        VBox popup = new VBox(12);
+        popup.setAlignment(Pos.CENTER);
+        popup.setMaxSize(350, 180);
+        popup.setStyle("-fx-background-color: white; -fx-background-radius: 20; -fx-padding: 24; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 30, 0, 0, 10); -fx-border-color: " + colorHex + "; -fx-border-width: 2; -fx-border-radius: 20;");
+        
+        Label icon = new Label("✨");
+        icon.setStyle("-fx-font-size: 32px;");
+        
+        Label lblTitle = new Label(title);
+        lblTitle.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1E293B;");
+        
+        Label lblMsg = new Label(message);
+        lblMsg.setStyle("-fx-text-fill: #64748B; -fx-font-size: 14px; -fx-text-alignment: center;");
+        lblMsg.setWrapText(true);
+        
+        popup.getChildren().addAll(icon, lblTitle, lblMsg);
+        
+        StackPane.setAlignment(popup, Pos.CENTER);
+        if (Router.getContainer() != null) {
+            StackPane root = Router.getContainer();
+            root.getChildren().add(popup);
+            
+            // Animation
+            popup.setOpacity(0);
+            popup.setTranslateY(20);
+            
+            FadeTransition fadeIn = new FadeTransition(Duration.millis(300), popup);
+            fadeIn.setToValue(1);
+            
+            TranslateTransition moveUp = new TranslateTransition(Duration.millis(300), popup);
+            moveUp.setToY(0);
+            
+            fadeIn.play();
+            moveUp.play();
+            
+            // Auto close after 3s
+            new Thread(() -> {
+                try { Thread.sleep(3000); } catch (Exception e) {}
+                Platform.runLater(() -> {
+                    FadeTransition fadeOut = new FadeTransition(Duration.millis(300), popup);
+                    fadeOut.setToValue(0);
+                    fadeOut.setOnFinished(e -> root.getChildren().remove(popup));
+                    fadeOut.play();
+                });
+            }).start();
         }
     }
 
     private void loadLibraryData() {
-        lblLibraryNameNav.setText(currentLibrary.getName());
-        lblLibraryName.setText(currentLibrary.getName());
-        lblTheme.setText("💡 " + currentLibrary.getTheme());
-        lblAge.setText("👶 " + currentLibrary.getMinAge() + "-" + currentLibrary.getMaxAge() + " ans");
-        lblLevel.setText("🎓 " + currentLibrary.getLevel());
-        lblLibraryDesc.setText(currentLibrary.getDescription() != null ? currentLibrary.getDescription() : "");
+        if (currentLibrary == null) return;
+        if (lblLibraryNameNav != null) lblLibraryNameNav.setText(currentLibrary.getName());
+        if (lblLibraryName != null) lblLibraryName.setText(currentLibrary.getName());
+        if (lblTheme != null) lblTheme.setText("💡 " + currentLibrary.getTheme());
+        if (lblAge != null) lblAge.setText("👶 " + currentLibrary.getMinAge() + "-" + currentLibrary.getMaxAge() + " ans");
+        if (lblLevel != null) lblLevel.setText("🎓 " + currentLibrary.getLevel());
+        if (lblLibraryDesc != null) lblLibraryDesc.setText(currentLibrary.getDescription() != null ? currentLibrary.getDescription() : "");
         
         if (libraryImageContainer != null) {
             libraryImageContainer.getChildren().clear();
@@ -80,9 +213,7 @@ public class ChildResourceController {
                 javafx.scene.image.Image image = ImageLoader.load(currentLibrary.getCoverImage());
                 if (image != null) {
                     javafx.scene.image.ImageView img = new javafx.scene.image.ImageView(image);
-                    img.setFitWidth(200);
-                    img.setFitHeight(260);
-                    img.setStyle("-fx-background-radius: 16;");
+                    img.setFitWidth(200); img.setFitHeight(260); img.setStyle("-fx-background-radius: 16;");
                     libraryImageContainer.getChildren().add(img);
                 }
             } else {
@@ -94,432 +225,244 @@ public class ChildResourceController {
     }
 
     private void loadResources() {
+        if (currentLibrary == null) return;
         currentResources = resourceService.afficherParLibrairie(currentLibrary.getId());
         
         int count = currentResources.size();
-        lblResourceCount.setText(count + " livres");
-        lblResourceCountAlt.setText(count + " livres");
+        if (lblResourceCount != null) lblResourceCount.setText(count + " livres");
+        if (lblResourceCountAlt != null) lblResourceCountAlt.setText(count + " livres");
         
-        // Injecter le contexte au chatbot
         if (groqService != null && currentResources != null) {
             StringBuilder context = new StringBuilder();
             for (Resource r : currentResources) {
-                context.append("- ").append(r.getTitle());
-                if (r.getAuthor() != null && !r.getAuthor().trim().isEmpty()) {
-                    context.append(" (par ").append(r.getAuthor()).append(")");
-                }
-                context.append(". Âge recommandé: ").append(r.getMinAge()).append(" à ").append(r.getMaxAge()).append(" ans. ");
+                context.append("- TITRE: ").append(r.getTitle());
+                context.append(" | AUTEUR: ").append(r.getAuthor() != null ? r.getAuthor() : "Inconnu");
+                context.append(" | ÂGE: ").append(r.getMinAge()).append(" à ").append(r.getMaxAge()).append(" ans");
+                context.append(" | TYPE: ").append(r.getType());
                 if (r.getSummary() != null && !r.getSummary().trim().isEmpty()) {
-                    context.append("Résumé: ").append(r.getSummary());
+                    String sum = r.getSummary().length() > 100 ? r.getSummary().substring(0, 97) + "..." : r.getSummary();
+                    context.append(" | RÉSUMÉ: ").append(sum);
                 }
                 context.append("\\n");
-            }
-            if (context.length() == 0) {
-                context.append("Aucun livre dans cette bibliothèque pour le moment.");
             }
             groqService.setLibraryContext(context.toString());
         }
         
-        resourceContainer.getChildren().clear();
-        
-        if (currentResources.isEmpty()) {
-            Label empty = new Label("Aucune ressource disponible pour cette bibliothèque.");
-            empty.setStyle("-fx-font-size: 16px; -fx-text-fill: #64748B; -fx-padding: 20;");
-            resourceContainer.getChildren().add(empty);
-            return;
-        }
+        if (resourceContainer != null) {
+            resourceContainer.getChildren().clear();
+            if (currentResources.isEmpty()) {
+                Label empty = new Label("Aucune ressource disponible.");
+                empty.setStyle("-fx-font-size: 16px; -fx-text-fill: #64748B; -fx-padding: 20;");
+                resourceContainer.getChildren().add(empty);
+                return;
+            }
 
-        for (Resource res : currentResources) {
-            resourceContainer.getChildren().add(createResourceCard(res));
+            for (Resource res : currentResources) {
+                resourceContainer.getChildren().add(createResourceCard(res));
+            }
         }
     }
 
     private VBox createResourceCard(Resource res) {
         VBox card = new VBox(12);
-        card.setStyle("-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);");
+        card.setStyle("-fx-background-color: white; -fx-border-color: #F1F5F9; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);");
         card.setPrefWidth(280);
         
-        // Header (Type badge + Date)
         HBox header = new HBox();
         header.setAlignment(Pos.CENTER_LEFT);
-        
         Label typeBadge = new Label(res.getType() != null ? res.getType() : "Livre");
         typeBadge.setStyle("-fx-background-color: #DBEAFE; -fx-text-fill: #1D4ED8; -fx-font-size: 10px; -fx-font-weight: bold; -fx-padding: 3 8; -fx-background-radius: 12;");
-        
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        
         Label language = new Label(res.getLanguage() != null ? res.getLanguage() : "FR");
-        language.setStyle("-fx-text-fill: #9CA3AF; -fx-font-size: 11px; -fx-font-weight: bold;");
-        
+        language.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 11px;");
         header.getChildren().addAll(typeBadge, spacer, language);
         
-        // Text info
         Label title = new Label(res.getTitle());
-        title.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #1E293B;");
+        title.setStyle("-fx-font-weight: bold; -fx-font-size: 16px; -fx-text-fill: #0F172A;");
         title.setWrapText(true);
         
         Label author = new Label(res.getAuthor() != null ? "Par " + res.getAuthor() : "");
         author.setStyle("-fx-text-fill: #64748B; -fx-font-size: 12px;");
+
+        Label ageRange = new Label("👶 " + res.getMinAge() + "-" + res.getMaxAge() + " ans");
+        ageRange.setStyle("-fx-background-color: #FEF3C7; -fx-text-fill: #92400E; -fx-font-size: 11px; -fx-font-weight: bold; -fx-padding: 3 8; -fx-background-radius: 8;");
         
-        // Image Placeholder (or real image)
         StackPane imgBox = new StackPane();
         imgBox.setPrefHeight(180);
-        imgBox.setStyle("-fx-background-color: linear-gradient(to bottom right, #EFF6FF, #F5F3FF); -fx-background-radius: 8;");
+        imgBox.setStyle("-fx-background-color: #F8FAFC; -fx-background-radius: 8;");
         if (res.getCoverImage() != null && !res.getCoverImage().trim().isEmpty()) {
             javafx.scene.image.Image image = ImageLoader.load(res.getCoverImage());
             if (image != null) {
                 javafx.scene.image.ImageView img = new javafx.scene.image.ImageView(image);
-                img.setFitWidth(246);
-                img.setFitHeight(180);
-                img.setStyle("-fx-background-radius: 8;");
+                img.setFitWidth(246); img.setFitHeight(180); img.setStyle("-fx-background-radius: 8;");
                 imgBox.getChildren().add(img);
             }
         } else {
-            Label placeholder = new Label("📚");
-            placeholder.setStyle("-fx-font-size: 48px;");
-            imgBox.getChildren().add(placeholder);
+            Label p = new Label("📚"); p.setStyle("-fx-font-size: 48px;"); imgBox.getChildren().add(p);
         }
         
-        // Summary
         Label summary = new Label(res.getSummary() != null ? res.getSummary() : "");
         summary.setStyle("-fx-text-fill: #64748B; -fx-font-size: 13px;");
-        summary.setPrefHeight(60);
-        summary.setWrapText(true);
+        summary.setPrefHeight(60); summary.setWrapText(true);
         
-        // Action Buttons
-        HBox actions = new HBox(12);
-        
+        // Buttons
         Button btnRead = new Button("👀 Lire");
-        if (res.getPdfFile() == null || res.getPdfFile().trim().isEmpty()) {
-            btnRead.setText("Pas de PDF");
-            btnRead.setDisable(true);
-            btnRead.setStyle("-fx-background-color: #9CA3AF; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 16;");
-        } else {
-            btnRead.setStyle("-fx-background-color: #3B82F6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 16;");
-            btnRead.setOnAction(e -> openPdf(res));
-        }
-        HBox.setHgrow(btnRead, Priority.ALWAYS);
-        btnRead.setMaxWidth(Double.MAX_VALUE);
-        
+        btnRead.setStyle("-fx-background-color: #3B82F6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand; -fx-padding: 10 16;");
+        btnRead.setOnAction(e -> openPdf(res));
+        HBox.setHgrow(btnRead, Priority.ALWAYS); btnRead.setMaxWidth(2000);
+
         Button btnListen = new Button("🎧 Écouter");
-        if (res.getPdfFile() == null || res.getPdfFile().trim().isEmpty()) {
-            btnListen.setDisable(true);
-            btnListen.setStyle("-fx-background-color: #9CA3AF; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 16;");
-        } else {
-            btnListen.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 16;");
-            btnListen.setOnAction(e -> listenToPdf(res));
-        }
-        HBox.setHgrow(btnListen, Priority.ALWAYS);
-        btnListen.setMaxWidth(Double.MAX_VALUE);
-        
+        btnListen.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand; -fx-padding: 10 16;");
+        btnListen.setOnAction(e -> listenToPdf(res));
+        HBox.setHgrow(btnListen, Priority.ALWAYS); btnListen.setMaxWidth(2000);
+
         Button btnQuiz = new Button("🧠 Quiz");
-        if (res.getPdfFile() == null || res.getPdfFile().trim().isEmpty()) {
-            btnQuiz.setDisable(true);
-            btnQuiz.setStyle("-fx-background-color: #9CA3AF; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 16;");
-        } else {
-            btnQuiz.setStyle("-fx-background-color: #8B5CF6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-cursor: hand; -fx-padding: 8 16;");
-            btnQuiz.setOnAction(e -> startQuizFromCard(res));
-        }
-        HBox.setHgrow(btnQuiz, Priority.ALWAYS);
-        btnQuiz.setMaxWidth(Double.MAX_VALUE);
+        btnQuiz.setStyle("-fx-background-color: #8B5CF6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-cursor: hand; -fx-padding: 10 16;");
+        btnQuiz.setOnAction(e -> startQuizFromCard(res));
+        btnQuiz.setMaxWidth(2000);
+        VBox.setVgrow(btnQuiz, Priority.ALWAYS);
+
+        HBox row1 = new HBox(12);
+        row1.getChildren().addAll(btnRead, btnListen);
         
-        actions.getChildren().addAll(btnRead, btnListen, btnQuiz);
+        VBox actions = new VBox(12);
+        actions.getChildren().addAll(row1, btnQuiz);
         
-        card.getChildren().addAll(header, title, author, imgBox, summary, actions);
-        
+        card.getChildren().addAll(header, title, author, ageRange, imgBox, summary, actions);
         return card;
     }
 
     private void openPdf(Resource res) {
         if (res.getPdfFile() != null && !res.getPdfFile().trim().isEmpty()) {
-            java.io.File pdfFile = new java.io.File(res.getPdfFile());
+            File pdfFile = new File(res.getPdfFile());
             if (pdfFile.exists()) {
-                try {
-                    java.awt.Desktop.getDesktop().open(pdfFile);
-                } catch (Exception e) {
-                    javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
-                    alert.setTitle("Erreur");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Impossible d'ouvrir le document PDF : " + e.getMessage());
-                    alert.showAndWait();
-                }
-            } else {
-                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
-                alert.setTitle("Fichier introuvable");
-                alert.setHeaderText(null);
-                alert.setContentText("Le livre numérique (PDF) n'a pas été trouvé sur le disque.");
-                alert.showAndWait();
+                try { java.awt.Desktop.getDesktop().open(pdfFile); } catch (Exception e) {}
             }
         }
     }
 
     private void listenToPdf(Resource res) {
         if (res.getPdfFile() != null && !res.getPdfFile().trim().isEmpty()) {
-            java.io.File pdfFile = new java.io.File(res.getPdfFile());
+            File pdfFile = new File(res.getPdfFile());
             if (pdfFile.exists()) {
                 try {
-                    // Extraire le texte page par page
-                    org.apache.pdfbox.pdmodel.PDDocument document = org.apache.pdfbox.pdmodel.PDDocument.load(pdfFile);
-                    org.apache.pdfbox.text.PDFTextStripper stripper = new org.apache.pdfbox.text.PDFTextStripper();
-                    java.util.List<String> pagesText = new java.util.ArrayList<>();
-                    
-                    int totalPages = document.getNumberOfPages();
-                    for (int i = 1; i <= totalPages; i++) {
-                        stripper.setStartPage(i);
-                        stripper.setEndPage(i);
+                    PDDocument document = PDDocument.load(pdfFile);
+                    PDFTextStripper stripper = new PDFTextStripper();
+                    List<String> pagesText = new ArrayList<>();
+                    for (int i = 1; i <= document.getNumberOfPages(); i++) {
+                        stripper.setStartPage(i); stripper.setEndPage(i);
                         String pageText = stripper.getText(document);
-                        if (pageText != null && !pageText.trim().isEmpty()) {
-                            pagesText.add(pageText.trim());
-                        }
+                        if (pageText != null && !pageText.trim().isEmpty()) pagesText.add(pageText.trim());
                     }
                     document.close();
 
-                    if (pagesText.isEmpty()) {
-                        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
-                        alert.setTitle("Texte introuvable");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Le PDF ne contient pas de texte lisible.");
-                        alert.showAndWait();
-                        return;
-                    }
-
-                    // Ouvrir la vue de lecture
-                    javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/views/child/ReadingView.fxml"));
-                    javafx.scene.Parent root = loader.load();
-                    
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/child/ReadingView.fxml"));
+                    Parent root = loader.load();
                     ReadingController controller = loader.getController();
                     controller.initData(res.getTitle(), pagesText);
-
-                    javafx.stage.Stage stage = new javafx.stage.Stage();
+                    Stage stage = new Stage();
                     stage.setTitle("Lecture - " + res.getTitle());
-                    stage.setScene(new javafx.scene.Scene(root, 800, 600));
+                    stage.setScene(new Scene(root, 800, 600));
                     stage.show();
-
-                } catch (Exception e) {
-                    javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
-                    alert.setTitle("Erreur");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Erreur lors de la lecture du PDF : " + e.getMessage());
-                    alert.showAndWait();
-                }
-            } else {
-                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
-                alert.setTitle("Fichier introuvable");
-                alert.setHeaderText(null);
-                alert.setContentText("Le livre numérique (PDF) n'a pas été trouvé sur le disque.");
-                alert.showAndWait();
+                } catch (Exception e) {}
             }
         }
     }
 
     private void startQuizFromCard(Resource res) {
         if (res.getPdfFile() != null && !res.getPdfFile().trim().isEmpty()) {
-            java.io.File pdfFile = new java.io.File(res.getPdfFile());
+            File pdfFile = new File(res.getPdfFile());
             if (pdfFile.exists()) {
                 try {
-                    org.apache.pdfbox.pdmodel.PDDocument document = org.apache.pdfbox.pdmodel.PDDocument.load(pdfFile);
-                    org.apache.pdfbox.text.PDFTextStripper stripper = new org.apache.pdfbox.text.PDFTextStripper();
+                    PDDocument document = PDDocument.load(pdfFile);
+                    PDFTextStripper stripper = new PDFTextStripper();
                     String fullText = stripper.getText(document);
                     document.close();
-
-                    if (fullText == null || fullText.trim().isEmpty()) {
-                        javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.INFORMATION);
-                        alert.setTitle("Texte introuvable");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Le PDF ne contient pas de texte pour générer le quiz.");
-                        alert.showAndWait();
-                        return;
-                    }
-
-                    javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/views/child/QuizView.fxml"));
-                    javafx.scene.Parent root = loader.load();
-                    
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/child/QuizView.fxml"));
+                    Parent root = loader.load();
                     QuizController controller = loader.getController();
                     controller.initData(res.getTitle(), fullText);
-
-                    javafx.stage.Stage stage = new javafx.stage.Stage();
+                    Stage stage = new Stage();
                     stage.setTitle("Quiz - " + res.getTitle());
-                    stage.setScene(new javafx.scene.Scene(root, 800, 600));
+                    stage.setScene(new Scene(root, 800, 600));
                     stage.show();
-
-                } catch (Exception e) {
-                    javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR);
-                    alert.setTitle("Erreur");
-                    alert.setHeaderText(null);
-                    alert.setContentText("Erreur lors de la lecture du PDF : " + e.getMessage());
-                    alert.showAndWait();
-                }
-            } else {
-                javafx.scene.control.Alert alert = new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.WARNING);
-                alert.setTitle("Fichier introuvable");
-                alert.setHeaderText(null);
-                alert.setContentText("Le livre numérique (PDF) n'a pas été trouvé sur le disque.");
-                alert.showAndWait();
+                } catch (Exception e) {}
             }
         }
     }
 
     @FXML
-    private void goBackToLibraries() {
-        Router.go("child_library");
-    }
+    private void goBackToLibraries() { Router.go("child_library"); }
 
     @FXML
     private void handleVoiceSearch() {
         lblVoiceStatus.setText("Préparation du micro...");
         btnVoiceSearch.setDisable(true);
-
-        Thread t = new Thread(() -> {
+        new Thread(() -> {
             try {
                 String pythonPath = "C:\\Users\\user\\anaconda3\\python.exe";
                 String scriptPath = "src/main/resources/tools/voice_search.py";
-                
                 ProcessBuilder pb = new ProcessBuilder(pythonPath, scriptPath);
-                pb.redirectErrorStream(false);
                 Process process = pb.start();
-
                 java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getInputStream()));
-                java.io.BufferedReader errorReader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getErrorStream()));
-                
-                // Read stderr to catch the "READY" signal
-                new Thread(() -> {
-                    try {
-                        String line;
-                        while ((line = errorReader.readLine()) != null) {
-                            if (line.contains("READY")) {
-                                javafx.application.Platform.runLater(() -> lblVoiceStatus.setText("🎤 Allez-y, je vous écoute !"));
-                            }
-                        }
-                    } catch (Exception ignored) {}
-                }).start();
-
-                String result = "";
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    result += line;
-                }
+                String result = reader.readLine();
                 process.waitFor();
-                
-                String finalResult = result.trim();
-                javafx.application.Platform.runLater(() -> {
+                Platform.runLater(() -> {
                     btnVoiceSearch.setDisable(false);
-                    if (finalResult.equals("TIMEOUT")) {
-                        lblVoiceStatus.setText("Temps écoulé. Réessayez.");
-                    } else if (finalResult.equals("INCONNU")) {
-                        lblVoiceStatus.setText("Je n'ai pas compris. Répétez ?");
-                    } else if (finalResult.equals("ERREUR") || finalResult.isEmpty()) {
-                        lblVoiceStatus.setText("Dis le nom d'un livre pour le trouver ! (Erreur micro)");
+                    if (result != null && !result.trim().isEmpty()) {
+                        lblVoiceStatus.setText("Résultat : " + result);
+                        filterByVoice(result);
                     } else {
-                        lblVoiceStatus.setText("Résultat : " + finalResult);
-                        filterByVoice(finalResult);
+                        lblVoiceStatus.setText("Je n'ai pas compris.");
                     }
                 });
-
             } catch (Exception e) {
-                javafx.application.Platform.runLater(() -> {
-                    btnVoiceSearch.setDisable(false);
-                    lblVoiceStatus.setText("Erreur système.");
-                });
+                Platform.runLater(() -> { btnVoiceSearch.setDisable(false); lblVoiceStatus.setText("Erreur micro."); });
             }
-        });
-        t.setDaemon(true);
-        t.start();
+        }).start();
     }
 
     private void filterByVoice(String text) {
         String query = text.toLowerCase();
-        resourceContainer.getChildren().clear();
-        int count = 0;
-        
-        for (Resource res : currentResources) {
-            boolean match = false;
-            // On vérifie si un mot de la requête est dans le titre ou si le titre est dans la requête
-            if (res.getTitle() != null) {
-                String title = res.getTitle().toLowerCase();
-                if (title.contains(query) || query.contains(title)) {
-                    match = true;
-                } else {
-                    // Match mots simples
-                    for (String word : query.split("\\s+")) {
-                        if (word.length() > 3 && title.contains(word)) {
-                            match = true;
-                            break;
-                        }
-                    }
+        if (resourceContainer != null) {
+            resourceContainer.getChildren().clear();
+            for (Resource res : currentResources) {
+                if (res.getTitle().toLowerCase().contains(query)) {
+                    resourceContainer.getChildren().add(createResourceCard(res));
                 }
             }
-            if (match) {
-                resourceContainer.getChildren().add(createResourceCard(res));
-                count++;
-            }
-        }
-        
-        lblResourceCount.setText(count + " livre" + (count > 1 ? "s" : ""));
-        lblResourceCountAlt.setText(count + " livre" + (count > 1 ? "s" : ""));
-        
-        if (count == 0) {
-            Label empty = new Label("Aucun livre ne correspond à la recherche vocale : \"" + text + "\"");
-            empty.setStyle("-fx-font-size: 16px; -fx-text-fill: #64748B; -fx-padding: 20;");
-            resourceContainer.getChildren().add(empty);
         }
     }
 
     @FXML
     private void toggleChat() {
-        boolean isVisible = chatWindow.isVisible();
-        chatWindow.setVisible(!isVisible);
-        chatWindow.setManaged(!isVisible);
-        
-        if (!isVisible) {
-            // Scroll to bottom when opening
-            javafx.application.Platform.runLater(() -> {
-                chatScrollPane.setVvalue(1.0);
-                txtChatMessage.requestFocus();
-            });
+        if (chatWindow != null) {
+            boolean v = chatWindow.isVisible();
+            chatWindow.setVisible(!v); chatWindow.setManaged(!v);
+            if (!v) Platform.runLater(() -> txtChatMessage.requestFocus());
         }
     }
 
     @FXML
     private void sendChatMessage() {
-        String text = txtChatMessage.getText().trim();
-        if (text.isEmpty()) return;
-
-        txtChatMessage.clear();
-        addChatMessage(text, true);
-
-        // Appel asynchrone
-        Thread t = new Thread(() -> {
-            String response = groqService.sendMessage(text);
-            javafx.application.Platform.runLater(() -> {
-                addChatMessage(response, false);
-            });
-        });
-        t.setDaemon(true);
-        t.start();
+        String t = txtChatMessage.getText().trim();
+        if (t.isEmpty()) return;
+        txtChatMessage.clear(); addChatMessage(t, true);
+        new Thread(() -> {
+            String r = groqService.sendMessage(t);
+            Platform.runLater(() -> addChatMessage(r, false));
+        }).start();
     }
 
     private void addChatMessage(String text, boolean isUser) {
-        Label msgLabel = new Label(text);
-        msgLabel.setWrapText(true);
-        msgLabel.setMaxWidth(250);
-        msgLabel.setStyle("-fx-padding: 10; -fx-background-radius: 12; -fx-font-size: 14px; " + 
+        if (chatMessagesContainer == null) return;
+        Label msg = new Label(text); msg.setWrapText(true); msg.setMaxWidth(250);
+        msg.setStyle("-fx-padding: 12 16; -fx-background-radius: 15; -fx-font-size: 14px; " + 
                           (isUser ? "-fx-background-color: #8B5CF6; -fx-text-fill: white;" 
-                                  : "-fx-background-color: #F1F5F9; -fx-text-fill: #334155;"));
-
-        HBox row = new HBox();
-        row.getChildren().add(msgLabel);
-        if (isUser) {
-            row.setAlignment(Pos.CENTER_RIGHT);
-        } else {
-            row.setAlignment(Pos.CENTER_LEFT);
-        }
-
+                                  : "-fx-background-color: #F1F5F9; -fx-text-fill: #1E293B;"));
+        HBox row = new HBox(msg); row.setAlignment(isUser ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
         chatMessagesContainer.getChildren().add(row);
-        
-        // Auto-scroll to bottom
-        javafx.application.Platform.runLater(() -> {
-            chatScrollPane.setVvalue(1.0);
-        });
+        if (chatScrollPane != null) Platform.runLater(() -> chatScrollPane.setVvalue(1.0));
     }
 }

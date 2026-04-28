@@ -10,10 +10,17 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Alert;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import dev.eduplay.entities.BookRequest;
+import dev.eduplay.services.BookRequestService;
+import dev.eduplay.core.AppContext;
+import java.time.LocalDateTime;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,6 +50,34 @@ public class ChildLibraryController {
         }
     }
 
+    @FXML
+    private void handleRequestBook() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Demander un livre");
+        dialog.setHeaderText("Quel livre aimerais-tu lire ?");
+        dialog.setContentText("Titre du livre :");
+
+        dialog.showAndWait().ifPresent(title -> {
+            if (title.trim().isEmpty()) return;
+
+            BookRequestService brService = new BookRequestService();
+            BookRequest br = new BookRequest();
+            br.setBookTitle(title.trim());
+            br.setEnfantId(AppContext.getUserId());
+            br.setRequestedAt(LocalDateTime.now());
+            br.setAvailable(false);
+            br.setNotified(false);
+
+            brService.ajouter(br);
+
+            Alert success = new Alert(Alert.AlertType.INFORMATION);
+            success.setTitle("Demande envoyée !");
+            success.setHeaderText(null);
+            success.setContentText("Ta demande pour « " + title + " » a été envoyée à l'administrateur. \nOn te préviendra quand il sera disponible ! 😊");
+            success.show();
+        });
+    }
+
     private void afficherThemes() {
         if (themeFilterContainer == null) return;
         themeFilterContainer.getChildren().clear();
@@ -66,7 +101,6 @@ public class ChildLibraryController {
     
     private void updateThemeFilter(String theme, Label clickedBtn) {
         currentTheme = theme;
-        // update UI classes
         themeFilterContainer.getChildren().forEach(n -> {
             if (n instanceof Label) {
                 ((Label) n).setStyle("-fx-background-color: #F1F5F9; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-padding: 8 20; -fx-background-radius: 20; -fx-cursor: hand;");
@@ -91,8 +125,6 @@ public class ChildLibraryController {
         if (recentContainer == null) return;
         recentContainer.getChildren().clear();
         
-        // Take last 3 items, assuming the list is ordered by creation time.
-        // If not, we just take the first 3 for now.
         List<Library> recents = allLibraries.stream()
                 .limit(3)
                 .collect(Collectors.toList());
@@ -112,7 +144,7 @@ public class ChildLibraryController {
                 if (image != null) {
                     ImageView img = new ImageView(image);
                     img.setFitWidth(48); img.setFitHeight(48);
-                    javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(24, 24, 24);
+                    Circle clip = new Circle(24, 24, 24);
                     img.setClip(clip);
                     imgBox.getChildren().add(img);
                 }
