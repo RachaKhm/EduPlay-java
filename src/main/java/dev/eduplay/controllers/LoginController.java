@@ -11,9 +11,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import dev.eduplay.utils.GoogleAuthHelper;
+import com.google.api.services.oauth2.model.Userinfo;
 import java.util.Set;
+import java.util.UUID;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class LoginController {
 
@@ -34,15 +39,27 @@ public class LoginController {
     @FXML private TextField otpField;
     @FXML private Label otpInfoLabel;
     @FXML private Label otpErrorLabel;
+    
+    // ── Vue Confirmation Google (Overlay) ─────────────────────────────────
+    @FXML private VBox googleConfirmBox;
+    @FXML private Label googleEmailLabel;
+    @FXML private TextField googleFirstNameField;
+    @FXML private TextField googleLastNameField;
 
     private final UserService userService = new UserService();
     private User pendingUser;
+    private Userinfo pendingGoogleUser;
 
     @FXML
     public void initialize() {
-        // OTP caché au départ
+        // Cache les overlays au départ
         otpBox.setVisible(false);
         otpBox.setManaged(false);
+        
+        if (googleConfirmBox != null) {
+            googleConfirmBox.setVisible(false);
+            googleConfirmBox.setManaged(false);
+        }
     }
 
     // ─── LOGIN ────────────────────────────────────────────────────────────
@@ -143,6 +160,121 @@ public class LoginController {
         navigateTo("/views/face-login.fxml", "/views/auth/face-login.fxml");
     }
 
+    @FXML
+    private void handleGoogleLogin() {
+        showLoginError("Ouverture de la page de connexion Google...");
+
+        new Thread(() -> {
+            try {
+                Userinfo userinfo = GoogleAuthHelper.getUserInfo();
+                String email = userinfo.getEmail();
+
+                if (email == null || email.isEmpty()) {
+                    javafx.application.Platform.runLater(() -> 
+                        showLoginError("Impossible de récupérer l'email Google.")
+                    );
+                    return;
+                }
+
+                javafx.application.Platform.runLater(() -> {
+                    User googleUser = userService.findByEmail(email);
+
+                    if (googleUser != null) {
+                        finalizeLogin(googleUser);
+                    } else {
+                        // Afficher la boîte de confirmation et pré-remplir les champs
+                        pendingGoogleUser = userinfo;
+                        googleEmailLabel.setText(email);
+                        
+                        // Pré-remplissage intelligent
+                        String firstName = userinfo.getGivenName();
+                        String lastName = userinfo.getFamilyName();
+                        
+                        if (firstName == null || firstName.isEmpty()) {
+                            firstName = userinfo.getName() != null ? userinfo.getName().split(" ")[0] : "";
+                        }
+                        if (lastName == null || lastName.isEmpty()) {
+                             String full = userinfo.getName();
+                             if (full != null && full.contains(" ")) {
+                                 lastName = full.substring(full.indexOf(" ") + 1);
+                             } else {
+                                 lastName = "";
+                             }
+                        }
+                        
+                        googleFirstNameField.setText(firstName);
+                        googleLastNameField.setText(lastName);
+                        
+                        googleConfirmBox.setVisible(true);
+                        googleConfirmBox.setManaged(true);
+                        loginBox.setDisable(true);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                javafx.application.Platform.runLater(() -> 
+                    showLoginError("Erreur d'authentification Google : " + e.getMessage())
+                );
+            }
+        }).start();
+    }
+
+    @FXML
+    private void confirmGoogleSignup() {
+        if (pendingGoogleUser == null) return;
+        
+        String email = pendingGoogleUser.getEmail();
+        
+        // Vérification de sécurité supplémentaire : l'email ne doit pas déjà exister
+        if (userService.findByEmail(email) != null) {
+            showLoginError("Ce compte Google est déjà associé à un utilisateur EduPlay.");
+            cancelGoogleSignup();
+            return;
+        }
+
+        User newUser = new User();
+        newUser.setEmail(email);
+        
+        // Utiliser les données saisies/modifiées par l'utilisateur
+        String firstName = googleFirstNameField.getText().trim();
+        String lastName = googleLastNameField.getText().trim();
+        
+        if (firstName.isEmpty() || lastName.isEmpty()) {
+            showLoginError("Veuillez remplir votre nom et prénom.");
+            return;
+        }
+
+        newUser.setFirstName(firstName);
+        newUser.setLastName(lastName);
+        newUser.setType("parent");
+        newUser.setUsername(email.split("@")[0] + "_" + (int)(Math.random() * 1000));
+        newUser.setActive(true);
+        
+        // Générer un mot de passe aléatoire sécurisé (car requis par la DB)
+        String randomPassword = UUID.randomUUID().toString();
+        newUser.setPassword(BCrypt.hashpw(randomPassword, BCrypt.gensalt())); 
+
+        userService.ajouter(newUser);
+        
+        User createdUser = userService.findByEmail(email);
+        if (createdUser != null) {
+            googleConfirmBox.setVisible(false);
+            googleConfirmBox.setManaged(false);
+            loginBox.setDisable(false);
+            finalizeLogin(createdUser);
+        } else {
+            showLoginError("Erreur lors de la création du compte.");
+        }
+    }
+
+    @FXML
+    private void cancelGoogleSignup() {
+        googleConfirmBox.setVisible(false);
+        googleConfirmBox.setManaged(false);
+        loginBox.setDisable(false);
+        pendingGoogleUser = null;
+    }
+
     // ─── FINALISATION LOGIN ───────────────────────────────────────────────
 
     private void finalizeLogin(User user) {
@@ -187,7 +319,7 @@ public class LoginController {
 
     @FXML
     private void goToSignup() {
-        navigateTo("/views/auth/SignupView.fxml", "/views/SignupView.fxml");
+        navigateTo("/views/auth/ParentSignup.fxml", "/views/auth/SignupView.fxml", "/views/SignupView.fxml");
     }
 
     @FXML

@@ -150,6 +150,18 @@ public class UserService implements IGeneralService<User> {
         }
         return null;
     }
+
+    public User findByEmail(String email) {
+        String query = "SELECT * FROM user WHERE email = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(query)) {
+            ps.setString(1, email.trim());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return extractUserFromResultSet(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     public User authenticate(String identifier, String password) {
         User user = findByLogin(identifier);
         if (user == null) return null;

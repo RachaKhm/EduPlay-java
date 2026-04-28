@@ -209,7 +209,7 @@ public class UserFormController {
         if (editingUser == null) {
             // Création : obligatoire
             if (pw == null || pw.isBlank() || pw.length() < 6) {
-                passwordError.setText("Minimum 6 caractères requis.");
+                passwordError.setText("Minimum 8 caractères requis.");
                 valid = false;
             }
             if (pw != null && !pw.equals(confirmPw)) {
@@ -219,7 +219,7 @@ public class UserFormController {
         } else if (pw != null && !pw.isBlank()) {
             // Édition : valider seulement si rempli
             if (pw.length() < 6) {
-                passwordError.setText("Minimum 6 caractères requis.");
+                passwordError.setText("Minimum 8 caractères requis.");
                 valid = false;
             }
             if (!pw.equals(confirmPw)) {

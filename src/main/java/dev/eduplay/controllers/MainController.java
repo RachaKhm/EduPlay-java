@@ -34,7 +34,7 @@ public class MainController {
     @FXML private Label     pillName;
     @FXML private Label     pillRole;
     @FXML private HBox      btnProfile;
-    @FXML private StackPane faceEnrollBtn;
+    @FXML private Button    faceEnrollBtn;
 
     private final UserService userService = new UserService();
 
