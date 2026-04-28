@@ -3,8 +3,10 @@ package dev.eduplay.controllers;
 import dev.eduplay.core.Router;
 import dev.eduplay.entities.Library;
 import dev.eduplay.entities.Resource;
+import dev.eduplay.services.CohereService;
 import dev.eduplay.services.LibraryService;
 import dev.eduplay.services.ResourceService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
@@ -35,7 +37,10 @@ public class ResourceFormController {
 
     private final ResourceService resourceService = new ResourceService();
     private final LibraryService libraryService = new LibraryService();
+    private final CohereService cohereService = new CohereService();
     private Resource currentResource;
+
+    @FXML private Label lblAiStatus;
 
     // Error Labels
     @FXML private Label lblErrorTitle;
@@ -152,7 +157,50 @@ public class ResourceFormController {
             selectedPdfPath = file.getAbsolutePath();
             lblPdfName.setText(file.getName());
             hideError(lblErrorPdf);
+
+            // Lancer l'analyse IA en arrière-plan
+            analyzeAgeWithCohere(file.getAbsolutePath());
         }
+    }
+
+    /**
+     * Analyse le PDF avec l'API Cohere de façon asynchrone.
+     * Une fois l'analyse terminée, remplit txtMinAge et txtMaxAge.
+     */
+    private void analyzeAgeWithCohere(String pdfPath) {
+        // Afficher l'indicateur de chargement
+        if (lblAiStatus != null) {
+            lblAiStatus.setText("🤖 Analyse IA en cours...");
+            lblAiStatus.setStyle("-fx-text-fill: #6366F1; -fx-font-size: 12px; -fx-font-weight: bold;");
+            lblAiStatus.setVisible(true);
+            lblAiStatus.setManaged(true);
+        }
+
+        Thread aiThread = new Thread(() -> {
+            int[] ageRange = cohereService.analyzeAgeRange(pdfPath);
+
+            Platform.runLater(() -> {
+                if (ageRange != null) {
+                    txtMinAge.setText(String.valueOf(ageRange[0]));
+                    txtMaxAge.setText(String.valueOf(ageRange[1]));
+                    hideError(lblErrorMinAge);
+                    hideError(lblErrorMaxAge);
+                    if (lblAiStatus != null) {
+                        lblAiStatus.setText("✅ Tranche d'âge détectée : " + ageRange[0] + " – " + ageRange[1] + " ans");
+                        lblAiStatus.setStyle("-fx-text-fill: #10B981; -fx-font-size: 12px; -fx-font-weight: bold;");
+                    }
+                } else {
+                    if (lblAiStatus != null) {
+                        lblAiStatus.setText("⚠️ Impossible de détecter la tranche d'âge automatiquement.");
+                        lblAiStatus.setStyle("-fx-text-fill: #F59E0B; -fx-font-size: 12px;");
+                    }
+                }
+            });
+        });
+
+        aiThread.setDaemon(true);
+        aiThread.setName("cohere-ai-thread");
+        aiThread.start();
     }
 
     private void showError(Label label, String msg) {

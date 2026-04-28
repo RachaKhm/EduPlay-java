@@ -1,6 +1,6 @@
-package services;
+package dev.eduplay.services;
 
-import tools.MyDatabase;
+import dev.eduplay.tools.MyDataBase;
 import entities.Level;
 
 
@@ -12,8 +12,7 @@ public class LevelService {
     private Connection cnx;
 
     public LevelService() throws SQLException {
-        cnx = MyDatabase.getInstance().getConnection();
-    }
+        Connection cnx = MyDataBase.getInstance().getCnx();    }
 
     public void add(Level level) throws SQLException {
         String sql ="insert into level (name, description, difficulty, min_age, max_age, pedag_goal, created_at, updated_at) values (?, ?, ?, ?, ?, ?, NOW(), NOW())";

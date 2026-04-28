@@ -13,7 +13,7 @@
         <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: linear-gradient(to right, #6366F1, #9333EA); -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);">
             <VBox HBox.hgrow="ALWAYS" spacing="12">
                 <Label fx:id="lblTitle" text="Titre de la ressource" style="-fx-text-fill: white; -fx-font-size: 36px; -fx-font-weight: bold;"/>
-                <Label fx:id="lblAuthor" text="par Auteur" style="-fx-text-fill: #E0E7FF; -fx-font-size: 18px;"/>
+                <Label fx:id="lblAuthor" text="par Auteur" style="-fx-text-fill: #E0E7FF; -fxont-size: 18px;"/>
                 
                 <HBox spacing="12">
                     <Label fx:id="lblType" text="Type" style="-fx-background-color: white; -fx-text-fill: #6366F1; -fx-font-weight: bold; -fx-padding: 6 16; -fx-background-radius: 20;"/>

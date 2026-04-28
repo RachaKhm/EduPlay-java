@@ -106,6 +106,9 @@
                     <Button fx:id="btnPdf" text="Parcourir le PDF..." onAction="#handleChoosePdf" style="-fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-text-fill: #475569; -fx-padding: 10 20; -fx-background-radius: 8; -fx-border-radius: 8; -fx-cursor: hand;"/>
                     <Label fx:id="lblPdfName" text="Aucun fichier sélectionné" style="-fx-text-fill: #94A3B8; -fx-font-size: 12px;"/>
                     <Label fx:id="lblErrorPdf" text="⚠️ Erreur" visible="false" managed="false" style="-fx-text-fill: #EF4444; -fx-font-size: 11px;"/>
+                    <!-- Statut analyse IA Cohere -->
+                    <Label fx:id="lblAiStatus" text="" visible="false" managed="false"
+                           style="-fx-text-fill: #6366F1; -fx-font-size: 12px; -fx-font-weight: bold; -fx-background-color: #EEF2FF; -fx-background-radius: 8; -fx-padding: 6 10;"/>
                 </VBox>
             </HBox>
             

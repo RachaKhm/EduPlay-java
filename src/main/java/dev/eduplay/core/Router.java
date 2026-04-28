@@ -281,7 +281,8 @@ public class Router {
             if (onRouteChange != null) onRouteChange.accept(route);
 
         } catch (IOException e) {
-            System.err.println("[Router] Erreur '" + route + "' : " + e.getMessage());
+            System.err.println("[Router] Erreur '" + route + "' : ");
+            e.printStackTrace();
             container.getChildren().setAll(makePlaceholder(route));
         }
     }

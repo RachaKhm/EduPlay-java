@@ -1,16 +1,16 @@
-package services;
+package dev.eduplay.services;
 import java.sql.*;
 import java.util.*;
 
 import entities.Game;
-import tools.MyDatabase;
+import dev.eduplay.tools.MyDataBase;
 
 public class GameService {
     private Connection cnx;
 
 
     public GameService() throws SQLException {
-        cnx=MyDatabase.getInstance().getConnection();
+        Connection cnx = MyDataBase.getInstance().getCnx();
     }
 
     public void add(Game game)  {
