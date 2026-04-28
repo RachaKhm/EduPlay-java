@@ -43,6 +43,7 @@ public class Router {
         routes.put("users",           "/views/admin/UserListView.fxml");
         routes.put("teachers",        "/views/admin/UserListView.fxml");
         routes.put("parents",         "/views/admin/UserListView.fxml");
+        routes.put("statistics",      "/views/admin/StatisticsView.fxml");  // ← AJOUTER CETTE LIGNE
 
         // ==================== ENSEIGNANT ====================
         routes.put("teacher_dashboard", "/views/teacher/TeacherDashboardView.fxml");
@@ -128,7 +129,8 @@ public class Router {
                     route.equals("add_resource") ||
                     route.equals("edit_resource") ||
                     route.equals("add_event") ||
-                    route.equals("scanner");
+                    route.equals("scanner") ||
+                    route.equals("statistics");  // ← AJOUTER statistics comme route dynamique
 
             if (isDynamicRoute) {
                 viewCache.remove(route);
