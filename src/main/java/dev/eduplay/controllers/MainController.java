@@ -225,12 +225,16 @@ public class MainController {
 
                 } catch (Exception ex) {
                     Platform.runLater(() -> {
-                        if (ex.getMessage() != null && ex.getMessage().contains("Connection refused")) {
-                            setStatus(statusLabel, "Serveur Python non démarré.\npython face-service/app.py", "red");
-                        } else if (ex.getMessage() != null && ex.getMessage().contains("Face could not be detected")) {
+                        String msg = ex.getMessage() != null ? ex.getMessage() : ex.getClass().getSimpleName();
+                        if (msg.contains("Connection refused") || msg.contains("ConnectException")) {
+                            setStatus(statusLabel,
+                                "⚠️ Serveur facial non démarré.\n" +
+                                "Ouvrez un terminal et lancez :\n" +
+                                "python face-service/app.py", "red");
+                        } else if (msg.contains("Face could not be detected") || msg.contains("No face")) {
                             setStatus(statusLabel, "Aucun visage détecté. Rapprochez-vous de la caméra.", "red");
                         } else {
-                            setStatus(statusLabel, "Erreur : " + ex.getMessage(), "red");
+                            setStatus(statusLabel, "Erreur : " + msg, "red");
                         }
                         captureBtn.setDisable(false);
                     });

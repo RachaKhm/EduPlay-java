@@ -39,7 +39,15 @@ public class CourseService {
             st.executeUpdate();
             try (ResultSet keys = st.getGeneratedKeys()) {
                 if (keys.next()) {
-                    return keys.getInt(1);
+                    int courseId = keys.getInt(1);
+                    // Notification email
+                    try {
+                        String teacherName = dev.eduplay.core.AppContext.getFullName();
+                        EmailService.sendCourseCreationNotification(teacherName, c.getTitle());
+                    } catch (Exception e) {
+                        System.err.println("Failed to send course notification: " + e.getMessage());
+                    }
+                    return courseId;
                 }
             }
         }

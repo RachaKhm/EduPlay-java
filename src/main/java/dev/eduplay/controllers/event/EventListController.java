@@ -36,6 +36,7 @@ public class EventListController {
     @FXML private Button refreshBtn;
 
     private SchoolEventService service;
+    private dev.eduplay.services.EventRegistrationService registrationService;
     private ObservableList<SchoolEvent> originalEvents;
     private ObservableList<SchoolEvent> filteredEvents;
     private ObservableList<SchoolEvent> currentPageEvents;
@@ -52,6 +53,7 @@ public class EventListController {
         System.out.println("=== EventListController initialisé ===");
 
         service = new SchoolEventService();
+        registrationService = new dev.eduplay.services.EventRegistrationService();
         originalEvents = FXCollections.observableArrayList();
         filteredEvents = FXCollections.observableArrayList();
         currentPageEvents = FXCollections.observableArrayList();
@@ -115,7 +117,8 @@ public class EventListController {
             private final Button ressourcesBtn = new Button("Ressources");
             private final Button modifierBtn = new Button("Modifier");
             private final Button supprimerBtn = new Button("Supprimer");
-            private final HBox container = new HBox(8, voirBtn, ressourcesBtn, modifierBtn, supprimerBtn);
+            private final Button inscrireBtn = new Button("S'inscrire");
+            private final HBox container = new HBox(8);
 
             {
                 String btnStyle = "-fx-padding: 6 12; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;";
@@ -123,6 +126,7 @@ public class EventListController {
                 ressourcesBtn.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white;" + btnStyle);
                 modifierBtn.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white;" + btnStyle);
                 supprimerBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white;" + btnStyle);
+                inscrireBtn.setStyle("-fx-background-color: #10b981; -fx-text-fill: white;" + btnStyle);
                 container.setAlignment(javafx.geometry.Pos.CENTER);
             }
 
@@ -134,22 +138,20 @@ public class EventListController {
                 } else {
                     SchoolEvent event = getTableView().getItems().get(getIndex());
 
-                    voirBtn.setOnAction(e -> {
-                        System.out.println("Voir événement ID: " + event.getId());
-                        Router.go("event_detail", event.getId());
-                    });
-
-                    ressourcesBtn.setOnAction(e -> {
-                        System.out.println("Ressources événement ID: " + event.getId());
-                        Router.go("event_resource", event.getId(), event.getTitle());
-                    });
-
-                    modifierBtn.setOnAction(e -> {
-                        System.out.println("Modifier événement ID: " + event.getId());
-                        Router.go("edit_event", event);
-                    });
-
+                    voirBtn.setOnAction(e -> Router.go("event_detail", event.getId()));
+                    ressourcesBtn.setOnAction(e -> Router.go("event_resource", event.getId(), event.getTitle()));
+                    modifierBtn.setOnAction(e -> Router.go("edit_event", event));
                     supprimerBtn.setOnAction(e -> supprimerEvent(event));
+                    inscrireBtn.setOnAction(e -> Router.go("registration_detail", event.getId())); // Or custom registration view
+
+                    container.getChildren().clear();
+                    container.getChildren().addAll(voirBtn, ressourcesBtn);
+
+                    if (dev.eduplay.core.AppContext.isAdmin()) {
+                        container.getChildren().addAll(modifierBtn, supprimerBtn);
+                    } else if (dev.eduplay.core.AppContext.isParent()) {
+                        container.getChildren().add(inscrireBtn);
+                    }
 
                     setGraphic(container);
                 }
@@ -194,8 +196,25 @@ public class EventListController {
     private void loadEvents() {
         try {
             cleanExpiredEvents();
-            List<SchoolEvent> events = service.recuperer();
-            originalEvents.setAll(events);
+            List<SchoolEvent> allEvents = service.recuperer();
+            
+            // Filter for children: only show events they are registered for
+            if (dev.eduplay.core.AppContext.isChild()) {
+                String myName = dev.eduplay.core.AppContext.getFullName();
+                List<dev.eduplay.entities.EventRegistration> myRegs = registrationService.recuperer().stream()
+                        .filter(r -> myName.equalsIgnoreCase(r.getChildFullName()))
+                        .collect(Collectors.toList());
+                
+                List<Integer> registeredEventIds = myRegs.stream()
+                        .map(r -> r.getEvent().getId())
+                        .collect(Collectors.toList());
+                
+                allEvents = allEvents.stream()
+                        .filter(e -> registeredEventIds.contains(e.getId()))
+                        .collect(Collectors.toList());
+            }
+
+            originalEvents.setAll(allEvents);
             applyFiltersAndSort();
         } catch (SQLException e) {
             showAlert("Erreur", "Impossible de charger les événements: " + e.getMessage());

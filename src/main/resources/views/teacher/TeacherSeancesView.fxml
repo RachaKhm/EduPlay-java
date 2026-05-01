@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.eduplay.controllers.teacher.TeacherSeancesController"
+      spacing="0" style="-fx-background-color: #F8FAFC;">
+
+    <!-- Header -->
+    <VBox style="-fx-background-color: linear-gradient(to right, #6366F1, #8B5CF6); -fx-padding: 24 28 20 28;">
+        <HBox alignment="CENTER_LEFT" spacing="16">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Mes Séances"
+                       style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label fx:id="subtitleLabel" text="Planifiez vos sessions de cours"
+                       style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+            </VBox>
+            <Button fx:id="addBtn" text="+ Ajouter une séance"
+                    style="-fx-background-color: white; -fx-text-fill: #6366F1; -fx-font-weight: bold;
+                           -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
+        </HBox>
+    </VBox>
+
+    <!-- Content -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+        <VBox fx:id="seancesContainer" spacing="14" style="-fx-padding: 20;">
+            <Label text="Chargement..." style="-fx-text-fill: #94A3B8; -fx-font-size: 14px;"/>
+        </VBox>
+    </ScrollPane>
+
+</VBox>

@@ -31,21 +31,20 @@
         <!-- ═══ CARTES STATISTIQUES ═══ -->
         <GridPane hgap="16" vgap="16">
             <columnConstraints>
-                <ColumnConstraints percentWidth="25"/>
-                <ColumnConstraints percentWidth="25"/>
-                <ColumnConstraints percentWidth="25"/>
-                <ColumnConstraints percentWidth="25"/>
+                <ColumnConstraints percentWidth="33.33"/>
+                <ColumnConstraints percentWidth="33.33"/>
+                <ColumnConstraints percentWidth="33.33"/>
             </columnConstraints>
 
             <!-- Total utilisateurs -->
-            <VBox GridPane.columnIndex="0" spacing="6" styleClass="stat-card">
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" spacing="6" styleClass="stat-card">
                 <Label text="Total utilisateurs" styleClass="stat-label"/>
                 <Label fx:id="totalUsersLabel" text="—" styleClass="stat-value"/>
                 <Label text="sur la plateforme"  styleClass="stat-sublabel"/>
             </VBox>
 
             <!-- Enseignants -->
-            <VBox GridPane.columnIndex="1" spacing="6"
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" spacing="6"
                   styleClass="admin-stat-card-teachers">
                 <Label text="Enseignants"
                        styleClass="admin-stat-label-teachers"/>
@@ -56,7 +55,7 @@
             </VBox>
 
             <!-- Parents -->
-            <VBox GridPane.columnIndex="2" spacing="6"
+            <VBox GridPane.columnIndex="2" GridPane.rowIndex="0" spacing="6"
                   styleClass="admin-stat-card-parents">
                 <Label text="Parents"
                        styleClass="admin-stat-label-parents"/>
@@ -67,7 +66,7 @@
             </VBox>
 
             <!-- Enfants -->
-            <VBox GridPane.columnIndex="3" spacing="6"
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="1" spacing="6"
                   styleClass="admin-stat-card-children">
                 <Label text="Enfants"
                        styleClass="admin-stat-label-children"/>
@@ -75,6 +74,28 @@
                        styleClass="admin-stat-value-children"/>
                 <Label text="élèves inscrits"
                        styleClass="admin-stat-label-children" style="-fx-font-size: 11px;"/>
+            </VBox>
+
+            <!-- Cours -->
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="1" spacing="6"
+                  styleClass="stat-card">
+                <Label text="Cours"
+                       styleClass="stat-label"/>
+                <Label fx:id="totalCoursesLabel" text="—"
+                       styleClass="stat-value" style="-fx-text-fill: #8E24AA;"/>
+                <Label text="créés"
+                       styleClass="stat-sublabel"/>
+            </VBox>
+
+            <!-- Séances -->
+            <VBox GridPane.columnIndex="2" GridPane.rowIndex="1" spacing="6"
+                  styleClass="stat-card">
+                <Label text="Séances"
+                       styleClass="stat-label"/>
+                <Label fx:id="totalSeancesLabel" text="—"
+                       styleClass="stat-value" style="-fx-text-fill: #F4511E;"/>
+                <Label text="planifiées"
+                       styleClass="stat-sublabel"/>
             </VBox>
         </GridPane>
 

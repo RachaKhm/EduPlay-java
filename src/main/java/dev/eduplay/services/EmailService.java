@@ -155,6 +155,36 @@ public class EmailService {
         """.formatted(otp);
     }
 
+    // ─── Notification de création de cours ────────────────────────────────
+
+    public static void sendCourseCreationNotification(String teacherName, String courseTitle) {
+        if (!configured) return;
+        try {
+            Session session = buildSession();
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(fromEmail));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse("nadinezairi60@gmail.com"));
+            message.setSubject("EduPlay — Nouveau cours créé");
+            
+            String html = """
+                <div style="font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+                    <h2 style="color: #3B82F6;">Nouveau cours disponible !</h2>
+                    <p>L'enseignant <strong>%s</strong> vient de créer un nouveau cours intitulé :</p>
+                    <p style="font-size: 18px; font-weight: bold; background: #f0f7ff; padding: 10px; border-radius: 5px; color: #1E40AF;">
+                        %s
+                    </p>
+                    <p>Vous pouvez dès maintenant le consulter sur la plateforme EduPlay.</p>
+                </div>
+            """.formatted(teacherName, courseTitle);
+            
+            message.setContent(html, "text/html; charset=utf-8");
+            Transport.send(message);
+            System.out.println("[EmailService] Notification de cours envoyée à nadinezairi60@gmail.com");
+        } catch (Exception e) {
+            System.err.println("[EmailService] Échec envoi notification cours: " + e.getMessage());
+        }
+    }
+
     // ─── Utilitaires ──────────────────────────────────────────────────────
 
     private static Session buildSession() {

@@ -1,0 +1,217 @@
+/* ==================== AUTHENTICATION UI ==================== */
+
+.auth-stack-pane {
+    -fx-background-color: linear-gradient(to bottom right, #1A1A2E, #16213E);
+}
+
+.auth-branding-panel {
+    -fx-background-color: linear-gradient(to bottom, #3B82F6, #2563EB);
+    -fx-padding: 40px;
+}
+
+.auth-logo-text {
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-font-size: 42px;
+    -fx-font-weight: 900;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 4);
+}
+
+.auth-subtitle {
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-font-size: 16px;
+    -fx-text-fill: rgba(255, 255, 255, 0.85);
+    -fx-font-weight: 600;
+    -fx-padding: 0 0 30 0;
+}
+
+.auth-feature-list {
+    -fx-padding: 20px 0;
+}
+
+.auth-feature-dot {
+    -fx-text-fill: #FFD166;
+    -fx-font-size: 18px;
+}
+
+.auth-feature-text {
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: white;
+    -fx-font-weight: 500;
+}
+
+.auth-form-panel {
+    -fx-background-color: white;
+    -fx-padding: 40px 60px;
+}
+
+.auth-form-title {
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #1A1A2E;
+}
+
+.auth-form-subtitle {
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: #7F8C8D;
+    -fx-padding: 4 0 24 0;
+}
+
+.auth-label {
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #2C3E50;
+    -fx-padding: 0 0 6 0;
+}
+
+.auth-input {
+    -fx-background-color: #F8F9FA;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 12px 14px;
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: #1A1A2E;
+}
+
+.auth-input:focused {
+    -fx-border-color: #3B82F6;
+    -fx-background-color: white;
+}
+
+.otp-input {
+    -fx-font-size: 24px;
+    -fx-alignment: center;
+    -fx-letter-spacing: 12px;
+}
+
+.auth-error-label {
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #EF4444;
+    -fx-padding: 8 0 0 0;
+    -fx-font-weight: 600;
+}
+
+.auth-primary-button {
+    -fx-background-color: #3B82F6;
+    -fx-text-fill: white;
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-padding: 14px;
+    -fx-background-radius: 8px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(59,130,246,0.3), 12, 0, 0, 4);
+}
+
+.auth-primary-button:hover {
+    -fx-background-color: #2563EB;
+}
+
+.auth-primary-button:pressed {
+    -fx-background-color: #1D4ED8;
+}
+
+.auth-secondary-button {
+    -fx-background-color: white;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-text-fill: #475569;
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px;
+    -fx-cursor: hand;
+}
+
+.auth-secondary-button:hover {
+    -fx-background-color: #F8FAFC;
+    -fx-text-fill: #1E293B;
+}
+
+.auth-footer-link {
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-font-size: 13px;
+    -fx-text-fill: #64748B;
+    -fx-underline: false;
+    -fx-border-color: transparent;
+}
+
+.auth-footer-link:hover {
+    -fx-text-fill: #3B82F6;
+}
+
+.auth-footer-link-active {
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-font-size: 14px;
+    -fx-text-fill: #3B82F6;
+    -fx-font-weight: bold;
+    -fx-border-color: transparent;
+}
+
+.auth-version-text {
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-font-size: 11px;
+    -fx-text-fill: #CBD5E1;
+    -fx-padding: 40 0 0 0;
+}
+
+/* ── Signup specific ────────────────────────────────────── */
+.signup-scroll-pane {
+    -fx-background-color: #F8FAFC;
+    -fx-background: #F8FAFC;
+    -fx-border-color: transparent;
+}
+
+.signup-card {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 40;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.06), 16, 0, 0, 6);
+}
+
+.signup-title {
+    -fx-font-family: 'Inter', 'Segoe UI', sans-serif;
+    -fx-font-size: 24px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #1A1A2E;
+    -fx-padding: 0 0 4 0;
+}
+
+.signup-input-small {
+    -fx-background-color: #F8F9FA;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 12;
+    -fx-font-size: 13px;
+    -fx-text-fill: #1A1A2E;
+    -fx-max-width: Infinity;
+}
+
+.signup-input-small:focused {
+    -fx-border-color: #3B82F6;
+    -fx-background-color: white;
+}
+
+.child-error-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #EF4444;
+}
+
+.signup-success-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #2E9E6E;
+    -fx-font-weight: bold;
+    -fx-padding: 12 0 0 0;
+}

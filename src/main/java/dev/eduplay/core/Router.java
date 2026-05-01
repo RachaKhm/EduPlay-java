@@ -39,26 +39,38 @@ public class Router {
         routes.put("users",           "/views/admin/UserListView.fxml");
         routes.put("teachers",        "/views/admin/UserListView.fxml");
         routes.put("parents",         "/views/admin/UserListView.fxml");
+        routes.put("library",         "/views/admin/AdminCoursesView.fxml");
+        routes.put("resource",        "/views/admin/AdminSeancesView.fxml");
+        routes.put("admin_calendar",  "/views/admin/AdminCalendarView.fxml");
+        routes.put("admin_stats",     "/views/admin/AdminStatsView.fxml");
 
         // Enseignant
         routes.put("teacher_dashboard", "/views/teacher/TeacherDashboardView.fxml");
         routes.put("teacher_courses",   "/views/teacher/CoursesView.fxml");
-        routes.put("teacher_students",  "/views/teacher/StudentsView.fxml");
-        routes.put("levels_list", "/views/teacher/level/ListLevel.fxml");
-        routes.put("Ajout_level", "/views/teacher/level/AjoutLevel.fxml");
-        routes.put("games_list", "/views/teacher/game/ListGame.fxml");
-        routes.put("Ajout_game", "/views/teacher/game/AjoutGame.fxml");
+        routes.put("teacher_students",  "/views/teacher/CoursesView.fxml"); // fallback
+        routes.put("levels_list",       "/views/teacher/level/ListLevel.fxml");
+        routes.put("Ajout_level",       "/views/teacher/level/AjoutLevel.fxml");
+        routes.put("Modifier_level",    "/views/teacher/level/ModiferLevel.fxml");
+        routes.put("games_list",        "/views/teacher/game/ListGame.fxml");
+        routes.put("Ajout_game",        "/views/teacher/game/AjoutGame.fxml");
+        routes.put("Modifier_game",     "/views/teacher/game/ModifierGame.fxml");
 
         // Parent
         routes.put("parent_dashboard", "/views/parent/ParentDashboardView.fxml");
         routes.put("parent_children",  "/views/parent/ChildrenView.fxml");
-        routes.put("parent_events",    "/views/parent/EventsView.fxml");
+        routes.put("parent_events",    "/views/event/event_list.fxml");
+        routes.put("parent_courses",   "/views/parent/ParentCoursesView.fxml");
+        routes.put("parent_seances",   "/views/parent/ParentSeancesView.fxml");
 
         // Enfant
         routes.put("child_dashboard",  "/views/child/ChildDashboardView.fxml");
         routes.put("child_courses",    "/views/child/MyCoursesView.fxml");
-        routes.put("child_games", "/views/child/game/ChildGamesView.fxml");
+        routes.put("child_games",      "/views/child/game/ChildGamesView.fxml");
+        routes.put("child_library",    "/views/child/MyCoursesView.fxml");
+        routes.put("child_seances",    "/views/child/ChildSeancesView.fxml");
 
+        // Enseignant extras
+        routes.put("teacher_seances",  "/views/teacher/TeacherSeancesView.fxml");
 
         // Routes pour Events
         routes.put("event_list",        "/views/event/event_list.fxml");
@@ -74,11 +86,11 @@ public class Router {
         routes.put("edit_registration", "/views/registration/edit_registration.fxml");
 
         // Commun
-        routes.put("profile", "/views/shared/ProfileView.fxml");
-        routes.put("forgot-password", "/views/forgot-password.fxml");
-        routes.put("reset-password",  "/views/reset-password.fxml");
-        routes.put("face-login", "/views/face-login.fxml");
-        routes.put("login", "/views/LoginView.fxml");
+        routes.put("profile",          "/views/shared/ProfileView.fxml");
+        routes.put("forgot-password",  "/views/auth/forgot-password.fxml");
+        routes.put("reset-password",   "/views/auth/reset-password.fxml");
+        routes.put("face-login",       "/views/auth/face-login.fxml");
+        routes.put("login",            "/views/auth/LoginView.fxml");
     }
 
     public static void go(String route, Object... params) {
@@ -297,8 +309,5 @@ public class Router {
     public static void reload(String route) { viewCache.remove(route); currentRoute = ""; go(route); }
     public static String getCurrentRoute() { return currentRoute; }
     public static void setOnRouteChange(Consumer<String> l) { onRouteChange = l; }
-    public static void clearCache()                         { viewCache.clear(); currentRoute = ""; }
-
-
     public static void clearCache() { viewCache.clear(); currentRoute = ""; routeParams.clear(); }
 }

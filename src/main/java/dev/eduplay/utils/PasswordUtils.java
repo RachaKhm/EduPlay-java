@@ -13,7 +13,12 @@ public class PasswordUtils {
             hash = "$2a$" + hash.substring(4);
         }
 
-        return BCrypt.checkpw(plain, hash);
+        try {
+            return BCrypt.checkpw(plain, hash);
+        } catch (IllegalArgumentException e) {
+            // Fallback pour les mots de passe en clair dans la base de données (utile pour le dev)
+            return plain.equals(hash);
+        }
     }
 
     public static String hashPassword(String password) {
