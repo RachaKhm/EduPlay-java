@@ -5,7 +5,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Font?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dev.eduplay.controllers.event.EditEventController"
             style="-fx-background-color: #f3f4f6; -fx-background: #f3f4f6;"
             fitToWidth="true" fitToHeight="false">

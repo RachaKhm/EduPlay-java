@@ -3,6 +3,8 @@ package dev.eduplay.controllers;
 import dev.eduplay.core.Router;
 import dev.eduplay.entities.User;
 import dev.eduplay.services.UserService;
+import dev.eduplay.services.CourseService;
+import dev.eduplay.services.SeanceService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -39,6 +41,8 @@ public class DashboardController {
     @FXML private Label totalEnseignantsLabel;
     @FXML private Label totalParentsLabel;
     @FXML private Label totalEnfantsLabel;
+    @FXML private Label totalCoursesLabel;
+    @FXML private Label totalSeancesLabel;
 
     @FXML private TableView<User>             recentUsersTable;
     @FXML private TableColumn<User, String>   recentColName;
@@ -50,6 +54,8 @@ public class DashboardController {
     /* ── Services ──────────────────────────────────────────── */
 
     private final UserService userService = new UserService();
+    private CourseService courseService;
+    private SeanceService seanceService;
 
     /* ── Constantes ────────────────────────────────────────── */
 
@@ -62,6 +68,12 @@ public class DashboardController {
 
     @FXML
     public void initialize() {
+        try {
+            courseService = new CourseService();
+            seanceService = new SeanceService();
+        } catch (Exception e) {
+            System.err.println("Failed to initialize services: " + e.getMessage());
+        }
         setupRecentTable();
         refreshStats();
     }
@@ -76,6 +88,20 @@ public class DashboardController {
         setText(totalEnseignantsLabel, String.valueOf(countByType(all, "enseignant")));
         setText(totalParentsLabel,     String.valueOf(countByType(all, "parent")));
         setText(totalEnfantsLabel,     String.valueOf(countByType(all, "enfant")));
+
+        try {
+            int coursesCount = courseService.afficherTous().size();
+            setText(totalCoursesLabel, String.valueOf(coursesCount));
+        } catch (Exception e) {
+            setText(totalCoursesLabel, "0");
+        }
+
+        try {
+            int seancesCount = seanceService.afficherTous().size();
+            setText(totalSeancesLabel, String.valueOf(seancesCount));
+        } catch (Exception e) {
+            setText(totalSeancesLabel, "0");
+        }
 
         // Remplir le tableau des utilisateurs récents
         List<User> recent = all.stream()

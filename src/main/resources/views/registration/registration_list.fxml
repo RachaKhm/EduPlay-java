@@ -7,7 +7,7 @@
 <?import javafx.collections.FXCollections?>
 
 <?import java.lang.String?>
-<VBox xmlns="http://javafx.com/javafx/26" xmlns:fx="http://javafx.com/fxml/1"
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="dev.eduplay.controllers.event.RegistrationListController"
       spacing="20" alignment="TOP_CENTER"
       style="-fx-background-color: #f3f4f6;">

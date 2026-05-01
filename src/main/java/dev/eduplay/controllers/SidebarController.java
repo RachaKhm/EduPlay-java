@@ -27,59 +27,40 @@ public class SidebarController {
     @FXML private Label labelUserRole;
     @FXML private Label labelUserInitials;
 
-    /* ── Boutons communs ───────────────────────────────────── */
-
-    @FXML private Button btnDashboard;
-    @FXML private Button btnProfile;
-
-    /* ── Boutons Admin ─────────────────────────────────────── */
-
-    @FXML private Label  sectionAdmin;
-    @FXML private Button btnUsers;
-    @FXML private Button btnTeachers;
-    @FXML private Button btnParents;
-
-    /* ── Boutons Enseignant ────────────────────────────────── */
-
-    @FXML private Label  sectionTeacher;
-    @FXML private Button btnCourses;
-    @FXML private Button btnStudents;
-    @FXML private Button btnLevel;
-    @FXML private Button BtnGames;
-
-    /* ── Boutons Parent ────────────────────────────────────── */
-
-    @FXML private Label  sectionParent;
-    @FXML private Button btnChildren;
-    @FXML private Button btnEvents;
     @FXML private HBox btnDashboard;
     @FXML private HBox btnProfile;
 
+    /* ── Sections ── */
     @FXML private HBox sectionAdminBox;
     @FXML private Label sectionAdmin;
     @FXML private HBox btnUsers;
     @FXML private HBox btnLibrary;
     @FXML private HBox btnResource;
 
-    @FXML private Label  sectionChild;
-    @FXML private Button btnMyCoursesChild;
-    @FXML private Button btnGames;
-    @FXML private Button Games_children;
     @FXML private HBox sectionTeacherBox;
     @FXML private Label sectionTeacher;
     @FXML private HBox btnCourses;
     @FXML private HBox btnStudents;
+    @FXML private HBox btnLevel;
+    @FXML private HBox btnGames;
 
     @FXML private HBox sectionParentBox;
     @FXML private Label sectionParent;
     @FXML private HBox btnChildren;
+    @FXML private HBox btnParentSeances;
     @FXML private HBox btnEvents;
 
     @FXML private HBox sectionChildBox;
     @FXML private Label sectionChild;
     @FXML private HBox btnMyCoursesChild;
-    @FXML private HBox btnGames;
     @FXML private HBox btnChildLibrary;
+
+    // Admin extras
+    @FXML private HBox btnCalendar;
+    @FXML private HBox btnStats;
+
+    // Teacher extras
+    @FXML private HBox btnSeances;
 
     private final UserService userService = new UserService();
     private List<HBox> allNavButtons;
@@ -89,10 +70,10 @@ public class SidebarController {
 
         allNavButtons = Arrays.asList(
                 btnDashboard,
-                btnUsers, btnLibrary, btnResource,
-                btnCourses, btnStudents,
-                btnChildren, btnEvents,
-                btnMyCoursesChild, btnGames, btnChildLibrary,
+                btnUsers, btnLibrary, btnResource, btnCalendar, btnStats,
+                btnCourses, btnStudents, btnLevel, btnGames, btnSeances,
+                btnChildren, btnParentSeances, btnEvents,
+                btnMyCoursesChild, btnChildLibrary,
                 btnProfile
         ).stream().filter(Objects::nonNull).collect(Collectors.toList());
 
@@ -112,23 +93,32 @@ public class SidebarController {
 
     /* NAVIGATION */
 
-    @FXML private void showDashboard() { Router.go(AppContext.getDefaultRoute()); }
-    @FXML private void showProfile() { Router.go("profile"); }
-    @FXML private void showUsers() { Router.go("users"); }
-    @FXML private void showLibrary() { Router.go("library"); }
-    @FXML private void showResource() { Router.go("resource"); }
-    @FXML private void showChildLibrary() { Router.go("child_library"); }
+    @FXML private void showDashboard()       { Router.go(AppContext.getDefaultRoute()); }
+    @FXML private void showProfile()         { Router.go("profile"); }
+    @FXML private void showUsers()           { Router.go("users"); }
+    @FXML private void showLibrary()         { Router.go("library"); }
+    @FXML private void showResource()        { Router.go("resource"); }
+    @FXML private void showCalendar()        { Router.go("admin_calendar"); }
+    @FXML private void showStats()           { Router.go("admin_stats"); }
+    @FXML private void showChildLibrary()    { Router.go("child_library"); }
+    @FXML private void showTeacherSeances()  { Router.go("teacher_seances"); }
+    @FXML private void showParentSeances()   { Router.go("parent_seances"); }
 
-    @FXML private void showCourses() { Router.go("teacher_courses"); }
-    @FXML private void showStudents() { Router.go("teacher_students"); }
-    @FXML private void showChildren() { Router.go("parent_children"); }
-    @FXML private void showEvents() { Router.go("parent_events"); }
+    @FXML private void showCourses()     { Router.go("teacher_courses"); }
+    @FXML private void showStudents()    { Router.go("teacher_students"); }
+    @FXML private void showChildren()    { Router.go("parent_children"); }
+    @FXML private void showEvents()      { Router.go("child_seances"); }
     @FXML private void showMyCoursesChild() { Router.go("child_courses"); }
-    @FXML private void showLevels()          { Router.go("levels_list"); }
-    @FXML private void showGames() { Router.go("games_list"); }
+    @FXML private void showLevels()      { Router.go("levels_list"); }
+    @FXML private void showGames() {
+        // Teachers go to game management list; children go to game play list
+        if (AppContext.isTeacher() || AppContext.isAdmin()) {
+            Router.go("games_list");
+        } else {
+            Router.go("child_games");
+        }
+    }
     @FXML private void showGamesFront() { Router.go("child_games"); }
-
-    @FXML private void showGames() { Router.go("child_games"); }
 
     @FXML
     private void handleLogout() {
@@ -188,16 +178,20 @@ public class SidebarController {
             case "users" -> btnUsers;
             case "library" -> btnLibrary;
             case "resource" -> btnResource;
+            case "admin_calendar" -> btnCalendar;
+            case "admin_stats" -> btnStats;
 
             case "teacher_courses" -> btnCourses;
             case "teacher_students" -> btnStudents;
+            case "teacher_seances" -> btnSeances;
 
             case "parent_children" -> btnChildren;
-            case "parent_events" -> btnEvents;
+            case "parent_seances" -> btnParentSeances;
 
             case "child_courses" -> btnMyCoursesChild;
             case "child_games" -> btnGames;
             case "child_library" -> btnChildLibrary;
+            case "child_seances" -> btnEvents;
 
             case "profile" -> btnProfile;
 
@@ -212,89 +206,68 @@ public class SidebarController {
     /* ROLE VISIBILITY */
 
     private void hideAllRoleSections() {
-        // Sections admin
-        setVisible(sectionAdmin, false);
-        setVisible(btnUsers,     false);
-        setVisible(btnTeachers,  false);
-        setVisible(btnParents,   false);
-
-        // Sections enseignant
-        setVisible(sectionTeacher, false);
-        setVisible(btnCourses,     false);
-        setVisible(btnStudents,    false);
-        setVisible(btnLevel,    false);
-        setVisible(btnGames,    false);
-
-
-        // Sections parent
-        setVisible(sectionParent, false);
-        setVisible(btnChildren,   false);
-        setVisible(btnEvents,     false);
-
-        // Sections enfant
-        setVisible(sectionChild,      false);
-        setVisible(btnMyCoursesChild, false);
-        setVisible(btnGames,          false);
-        setVisible(Games_children,          false);
         setVisible(sectionAdminBox, false);
+        setVisible(sectionAdmin, false);
         setVisible(btnUsers, false);
         setVisible(btnLibrary, false);
         setVisible(btnResource, false);
+        setVisible(btnCalendar, false);
+        setVisible(btnStats, false);
 
         setVisible(sectionTeacherBox, false);
+        setVisible(sectionTeacher, false);
         setVisible(btnCourses, false);
         setVisible(btnStudents, false);
+        setVisible(btnLevel, false);
+        setVisible(btnGames, false);
+        setVisible(btnSeances, false);
 
         setVisible(sectionParentBox, false);
+        setVisible(sectionParent, false);
         setVisible(btnChildren, false);
+        setVisible(btnParentSeances, false);
         setVisible(btnEvents, false);
 
         setVisible(sectionChildBox, false);
+        setVisible(sectionChild, false);
         setVisible(btnMyCoursesChild, false);
-        setVisible(btnGames, false);
         setVisible(btnChildLibrary, false);
     }
 
     private void showSectionsForRole(String role) {
+        if (role == null) return;
         switch (role) {
             case "admin" -> {
                 setVisible(sectionAdminBox, true);
+                setVisible(sectionAdmin, true);
                 setVisible(btnUsers, true);
                 setVisible(btnLibrary, true);
                 setVisible(btnResource, true);
+                setVisible(btnCalendar, true);
+                setVisible(btnStats, true);
             }
             case "enseignant" -> {
-                setVisible(sectionTeacher, true);
-                setVisible(btnCourses,     true);
-                setVisible(btnStudents,    true);
-                setVisible(btnGames,          true);
-                setVisible(btnLevel,    true);
-
-            }
-            case "parent" -> {
-                setVisible(sectionParent, true);
-                setVisible(btnChildren,   true);
-                setVisible(btnEvents,     true);
-
-            }
-            case "enfant" -> {
-                setVisible(sectionChild,      true);
-                setVisible(Games_children,          true);
-
                 setVisible(sectionTeacherBox, true);
+                setVisible(sectionTeacher, true);
                 setVisible(btnCourses, true);
                 setVisible(btnStudents, true);
+                setVisible(btnGames, true);
+                setVisible(btnLevel, true);
+                setVisible(btnSeances, true);
             }
             case "parent" -> {
                 setVisible(sectionParentBox, true);
+                setVisible(sectionParent, true);
                 setVisible(btnChildren, true);
-                setVisible(btnEvents, true);
+                setVisible(btnParentSeances, true);
             }
             case "enfant" -> {
                 setVisible(sectionChildBox, true);
+                setVisible(sectionChild, true);
                 setVisible(btnMyCoursesChild, true);
                 setVisible(btnGames, true);
                 setVisible(btnChildLibrary, true);
+                setVisible(btnEvents, true);
             }
         }
     }

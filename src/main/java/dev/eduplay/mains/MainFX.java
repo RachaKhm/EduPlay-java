@@ -26,6 +26,7 @@ public class MainFX extends Application {
 
         Scene scene = new Scene(root, 860, 540);
 
+        // Charger le CSS global (app.css dans resources/styles/)
         try {
             scene.getStylesheets().add(
                     Objects.requireNonNull(
@@ -41,6 +42,7 @@ public class MainFX extends Application {
         primaryStage.setMinHeight(480);
         primaryStage.centerOnScreen();
 
+        // Icône application (optionnel)
         try {
             primaryStage.getIcons().add(
                     new Image(Objects.requireNonNull(

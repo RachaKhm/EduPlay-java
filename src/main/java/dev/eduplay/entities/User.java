@@ -12,6 +12,7 @@ public class User {
     private String username;
     private String password;
     private String type; // admin, enseignant, parent, enfant
+    private Integer parentId; // Integer instead of int to allow null
     private boolean active;
     private LocalDateTime createdAt;
     private String telephone;
@@ -22,7 +23,6 @@ public class User {
     private String lastLoginCountry;
     private String lastLoginCity;
     private LocalDateTime lastLoginAt;
-    private int parentId;
     private String profilePicture; // URL Cloudinary
 
     public User() {
@@ -92,8 +92,8 @@ public class User {
     public LocalDateTime getLastLoginAt() { return lastLoginAt; }
     public void setLastLoginAt(LocalDateTime lastLoginAt) { this.lastLoginAt = lastLoginAt; }
 
-    public int getParentId() { return parentId; }
-    public void setParentId(int parentId) { this.parentId = parentId; }
+    public Integer getParentId() { return parentId; }
+    public void setParentId(Integer parentId) { this.parentId = parentId; }
 
     public String getProfilePicture() { return profilePicture; }
     public void setProfilePicture(String profilePicture) { this.profilePicture = profilePicture; }

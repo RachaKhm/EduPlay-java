@@ -1,8 +1,5 @@
 package dev.eduplay.services;
 
-import dev.eduplay.tools.MyDataBase;
-import entities.Level;
-
 import dev.eduplay.entities.Level;
 import dev.eduplay.tools.MyDataBase;
 
@@ -29,7 +26,7 @@ public class LevelService {
         ps.setString(6,level.getPedagGoal());
 
         ps.executeUpdate();
-        IO.println("ajout avec succées");
+        System.out.println("ajout avec succées");
 
     }
     public void delete(int id) throws SQLException {
@@ -37,7 +34,7 @@ public class LevelService {
         PreparedStatement ps = cnx.prepareStatement(sql);
         ps.setInt(1, id);
         ps.executeUpdate();
-        IO.println("suppression avec succées");
+        System.out.println("suppression avec succées");
 
 
     }
@@ -52,7 +49,7 @@ public class LevelService {
         ps.setString(6,level.getPedagGoal());
         ps.setInt(7, level.getId());
         ps.executeUpdate();
-        IO.println("update avec succées");
+        System.out.println("update avec succées");
     }
 public List<Level> getAll(){
             List<Level> levels= new ArrayList<Level>();

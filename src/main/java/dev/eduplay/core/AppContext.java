@@ -25,7 +25,8 @@ public class AppContext {
     // Route d'accueil différente selon le rôle
     public static String getDefaultRoute() {
         if (currentUser == null) return "admin_dashboard";
-        return switch (currentUser.getType()) {
+        String type = currentUser.getType() != null ? currentUser.getType().toLowerCase().trim() : "";
+        return switch (type) {
             case "admin"      -> "admin_dashboard";
             case "enseignant" -> "teacher_dashboard";
             case "parent"     -> "parent_dashboard";
@@ -33,4 +34,16 @@ public class AppContext {
             default           -> "admin_dashboard";
         };
     }
+
+    // --- Champs rajoutés pour la navigation ---
+    private static Integer childBrowsingCourseId;
+    private static Integer parentBrowsingCourseId;
+
+    public static Integer getChildBrowsingCourseId() { return childBrowsingCourseId; }
+    public static void setChildBrowsingCourseId(int id) { childBrowsingCourseId = id; }
+    public static void clearChildBrowsingCourseId() { childBrowsingCourseId = null; }
+
+    public static Integer getParentBrowsingCourseId() { return parentBrowsingCourseId; }
+    public static void setParentBrowsingCourseId(int id) { parentBrowsingCourseId = id; }
+    public static void clearParentBrowsingCourseId() { parentBrowsingCourseId = null; }
 }

@@ -34,6 +34,11 @@ build/
 
 ### VS Code ###
 .vscode/
+.eduplay/
+config/groq.properties
+config/google-calendar-credentials.json
+config/smtp.properties
+!config/*.example
 
 ### Mac OS ###
 .DS_Store

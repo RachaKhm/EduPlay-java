@@ -81,7 +81,7 @@
                   spacing="12"
                   styleClass="modern-nav-btn">
                 <VBox alignment="CENTER_LEFT">
-                    <Label text="📚 Bibliothèque" styleClass="nav-btn-label"/>
+                    <Label text="📚 Cours" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
@@ -92,7 +92,27 @@
                   spacing="12"
                   styleClass="modern-nav-btn">
                 <VBox alignment="CENTER_LEFT">
-                    <Label text="📂 Ressources" styleClass="nav-btn-label"/>
+                    <Label text="📂 Séances" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="btnCalendar"
+                  onMouseClicked="#showCalendar"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📅 Calendrier" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="btnStats"
+                  onMouseClicked="#showStats"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📊 Statistiques" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
@@ -117,6 +137,14 @@
                 </VBox>
             </HBox>
 
+            <HBox fx:id="btnSeances"
+                  onMouseClicked="#showTeacherSeances"
+                  styleClass="modern-nav-btn">
+                <VBox>
+                    <Label text="🗓️ Mes Séances" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
             <!-- PARENT SECTION -->
             <HBox fx:id="sectionParentBox" styleClass="section-header-box">
                 <Label fx:id="sectionParent" text="FAMILLE" styleClass="section-label"/>
@@ -130,11 +158,11 @@
                 </VBox>
             </HBox>
 
-            <HBox fx:id="btnEvents"
-                  onMouseClicked="#showEvents"
+            <HBox fx:id="btnParentSeances"
+                  onMouseClicked="#showParentSeances"
                   styleClass="modern-nav-btn">
                 <VBox>
-                    <Label text="📅 Événements" styleClass="nav-btn-label"/>
+                    <Label text="📅 Séances" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
@@ -163,9 +191,19 @@
                   onMouseClicked="#showChildLibrary"
                   styleClass="modern-nav-btn">
                 <VBox>
-                    <Label text="📚 Bibliothèque" styleClass="nav-btn-label"/>
+                    <Label text="📚 Cours" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
+
+            <!-- Moved for kid access -->
+            <HBox fx:id="btnEvents"
+                  onMouseClicked="#showEvents"
+                  styleClass="modern-nav-btn">
+                <VBox>
+                    <Label text="📂 Séances" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
 
         </VBox>
     </ScrollPane>

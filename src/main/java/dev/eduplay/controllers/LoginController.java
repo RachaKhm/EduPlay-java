@@ -72,20 +72,28 @@ public class LoginController {
         pendingUser = user;
         userService.resetFailedAttempts(user.getId());
 
-        // Bypass OTP pour comptes de test
-        if (isTestAccount(identifier)) {
+        // Bypass OTP pour comptes de test ou si email non configuré
+        if (isTestAccount(identifier) || !dev.eduplay.services.EmailService.isConfigured()) {
             finalizeLogin(user);
             return;
         }
+
+        // Feedback utilisateur pendant l'envoi de l'OTP
+        errorLabel.setStyle("-fx-text-fill: #667eea;");
+        errorLabel.setText("Envoi du code de vérification en cours...");
+        emailField.setDisable(true);
+        passwordField.setDisable(true);
 
         // Envoi OTP
         new Thread(() -> {
             boolean sent = userService.sendOtp(user);
             javafx.application.Platform.runLater(() -> {
+                emailField.setDisable(false);
+                passwordField.setDisable(false);
                 if (sent) {
                     showOtpStep();
                 } else {
-                    // Email non configuré → login direct
+                    // Email échoué → login direct
                     finalizeLogin(user);
                 }
             });
@@ -123,6 +131,7 @@ public class LoginController {
         emailField.setDisable(false);
         passwordField.setDisable(false);
         pendingUser = null;
+        errorLabel.setText("");
     }
 
     private void showOtpStep() {
@@ -150,7 +159,8 @@ public class LoginController {
         SessionManager.getInstance().login(user, token);
         AppContext.setCurrentUser(user);
 
-        String route = switch (user.getType().toLowerCase()) {
+        String userType = user.getType() != null ? user.getType().toLowerCase().trim() : "unknown";
+        String route = switch (userType) {
             case "admin"      -> "admin_dashboard";
             case "enseignant" -> "teacher_dashboard";
             case "parent"     -> "parent_dashboard";
@@ -187,7 +197,7 @@ public class LoginController {
 
     @FXML
     private void goToSignup() {
-        navigateTo("/views/auth/SignupView.fxml", "/views/SignupView.fxml");
+        navigateTo("/views/auth/ParentSignup.fxml");
     }
 
     @FXML

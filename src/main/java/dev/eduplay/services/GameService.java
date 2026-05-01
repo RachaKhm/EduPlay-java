@@ -12,23 +12,22 @@ import java.util.List;
 public class GameService {
     private Connection cnx;
 
-
     public GameService() throws SQLException {
-        cnx=MyDataBase.getInstance().getCnx();
+        cnx = MyDataBase.getInstance().getCnx();
     }
 
-    public void add(Game game)  {
-        String sql= "insert into game (id_level_id,name,type,description,image) values (?,?,?,?,?)";
+    public void add(Game game) {
+        String sql = "insert into game (id_level_id,name,type,description,image) values (?,?,?,?,?)";
         PreparedStatement ps = null;
         try {
             ps = cnx.prepareStatement(sql);
-            ps.setInt(1,game.getId_level().getId());
-            ps.setString(2,game.getName());
-            ps.setString(3,game.getType());
-            ps.setString(4,game.getDescription());
-            ps.setString(5,game.getImage());
+            ps.setInt(1, game.getId_level().getId());
+            ps.setString(2, game.getName());
+            ps.setString(3, game.getType());
+            ps.setString(4, game.getDescription());
+            ps.setString(5, game.getImage());
             ps.executeUpdate();
-            IO.println("ajout avec succées");
+            System.out.println("ajout avec succées");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -36,15 +35,15 @@ public class GameService {
     }
 
     public void delete(int id) throws SQLException {
-        String sql= "delete from game where id=?";
+        String sql = "delete from game where id=?";
         PreparedStatement ps = cnx.prepareStatement(sql);
-        ps.setInt(1,id);
+        ps.setInt(1, id);
         ps.executeUpdate();
-        IO.println("suppression avec succées");
+        System.out.println("suppression avec succées");
     }
 
     public void update(Game game) throws SQLException {
-        String sql ="update game set name=?,type=?,description=?,image=? ,id_level_id=? where id=?";
+        String sql = "update game set name=?,type=?,description=?,image=? ,id_level_id=? where id=?";
         PreparedStatement ps = cnx.prepareStatement(sql);
 
         ps.setString(1, game.getName());
@@ -55,7 +54,7 @@ public class GameService {
         ps.setInt(6, game.getId());
 
         ps.executeUpdate();
-        IO.println("update avec succées");
+        System.out.println("update avec succées");
     }
 
     // Dans GameService.java
@@ -68,7 +67,7 @@ public class GameService {
                 "INNER JOIN level l ON g.id_level_id = l.id";
 
         try (Statement st = cnx.createStatement();
-             ResultSet rs = st.executeQuery(sql)) {
+                ResultSet rs = st.executeQuery(sql)) {
 
             while (rs.next()) {
                 // Créer l'objet Level complet

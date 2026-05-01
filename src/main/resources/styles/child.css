@@ -1,0 +1,163 @@
+/* ==================== CHILD PANEL STYLESHEET ==================== */
+
+.root {
+    -fx-background-color: #F0FDF4;
+    -fx-font-family: "Segoe UI", "Inter", sans-serif;
+}
+
+/* ── Page Header ──────────────────────────────────────────────── */
+.page-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #064E3B;
+}
+
+.page-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6B7280;
+}
+
+/* ── Cards ────────────────────────────────────────────────────── */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-border-color: #D1FAE5;
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.06), 12, 0, 0, 4);
+    -fx-padding: 20;
+}
+
+/* ── Game Card ────────────────────────────────────────────────── */
+.game-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.08), 16, 0, 0, 6);
+    -fx-cursor: hand;
+    -fx-padding: 0;
+}
+
+.game-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(16,185,129,0.2), 20, 0, 0, 8);
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.game-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #1E293B;
+}
+
+.game-type-badge {
+    -fx-background-color: #ECFDF5;
+    -fx-text-fill: #10B981;
+    -fx-padding: 4 10;
+    -fx-background-radius: 20;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.game-desc {
+    -fx-font-size: 12px;
+    -fx-text-fill: #64748B;
+    -fx-wrap-text: true;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────── */
+.btn-play {
+    -fx-background-color: linear-gradient(to right, #10B981, #059669);
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-padding: 10 24;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+
+.btn-play:hover {
+    -fx-background-color: linear-gradient(to right, #059669, #047857);
+}
+
+.btn-primary {
+    -fx-background-color: #10B981;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+    -fx-padding: 10 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #059669;
+}
+
+/* ── Progress ─────────────────────────────────────────────────── */
+.progress-bar > .track {
+    -fx-background-color: #D1FAE5;
+    -fx-background-radius: 4;
+}
+
+.progress-bar > .bar {
+    -fx-background-color: #10B981;
+    -fx-background-radius: 4;
+}
+
+/* ── Score Badge ──────────────────────────────────────────────── */
+.score-badge {
+    -fx-background-color: #FFF9C4;
+    -fx-text-fill: #B45309;
+    -fx-padding: 6 16;
+    -fx-background-radius: 20;
+    -fx-font-size: 13px;
+    -fx-font-weight: 900;
+}
+
+/* ── Quiz / Game Elements ─────────────────────────────────────── */
+.quiz-option {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 2;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 12 16;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-text-fill: #334155;
+    -fx-font-weight: 600;
+}
+
+.quiz-option:hover {
+    -fx-border-color: #10B981;
+    -fx-background-color: #ECFDF5;
+}
+
+.quiz-option-correct {
+    -fx-background-color: #ECFDF5;
+    -fx-border-color: #10B981;
+    -fx-text-fill: #065F46;
+}
+
+.quiz-option-wrong {
+    -fx-background-color: #FEF2F2;
+    -fx-border-color: #EF4444;
+    -fx-text-fill: #991B1B;
+}
+
+/* ── Course Card ──────────────────────────────────────────────── */
+.course-card {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.04), 8, 0, 0, 3);
+    -fx-cursor: hand;
+}
+
+.course-card:hover {
+    -fx-effect: dropshadow(three-pass-box, rgba(16,185,129,0.15), 12, 0, 0, 5);
+}

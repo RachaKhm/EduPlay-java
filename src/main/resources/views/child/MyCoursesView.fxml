@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.eduplay.controllers.child.ChildMyCoursesController"
+      spacing="16" style="-fx-background-color: #F8F9FA; -fx-padding: 0;">
+
+    <VBox spacing="4" style="-fx-padding: 0 0 8 0;">
+        <Label text="Mes cours"
+               style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #22223A;"/>
+        <Label fx:id="pageSubtitle" text=""
+               style="-fx-font-size: 13px; -fx-text-fill: #9999BB;"/>
+    </VBox>
+
+    <HBox spacing="12" alignment="CENTER_LEFT"
+          style="-fx-background-color: white; -fx-padding: 14; -fx-background-radius: 12;
+                 -fx-border-color: #E9EAF2; -fx-border-radius: 12; -fx-border-width: 1;">
+        <TextField fx:id="searchField" promptText="Rechercher…"
+                   HBox.hgrow="ALWAYS"
+                   style="-fx-background-radius: 10; -fx-border-radius: 10;
+                          -fx-border-color: #E2E3EE; -fx-padding: 10 12;
+                          -fx-background-color: #FBFBFF;"/>
+        <Region HBox.hgrow="NEVER" />
+        <Label fx:id="countLabel" text="0 cours"
+               style="-fx-text-fill:#777799;-fx-font-size:12px;"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+        <content>
+            <FlowPane fx:id="cardsPane" hgap="14" vgap="14" prefWrapLength="900"
+                      style="-fx-padding: 2 2 16 2;"/>
+        </content>
+    </ScrollPane>
+
+</VBox>

@@ -1,33 +1,135 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.layout.HBox?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="dev.eduplay.controllers.ChildDashboardController"
-      spacing="0" 
-      stylesheets="@../../styles/child.css"
-      styleClass="child-container"
-      style="-fx-padding: 24;">
-    <HBox style="-fx-padding: 0 0 32 0;">
-        <VBox spacing="8">
-            <Label text="Mon espace"
-                   styleClass="child-header-title"/>
-            <Label fx:id="subtitleLabel" text="Bienvenue dans ton univers magique !"
-                   styleClass="child-section-label"/>
+      fx:controller="dev.eduplay.controllers.child.ChildDashboardController"
+      spacing="24" style="-fx-background-color: #F8FAFC; -fx-padding: 0;">
+
+    <!-- Gradient Header -->
+    <VBox style="-fx-background-color: linear-gradient(to right, #3B82F6, #8B5CF6); -fx-padding: 30 28 28 28;" spacing="6">
+        <Label fx:id="welcomeLabel" text="👋 Bonjour, Champion !"
+               style="-fx-font-size: 30px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+        <Label text="Prêt à apprendre quelque chose de nouveau aujourd'hui ?"
+               style="-fx-font-size: 15px; -fx-text-fill: rgba(255,255,255,0.85);"/>
+    </VBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+        <VBox spacing="20" style="-fx-padding: 0 24 24 24;">
+
+            <!-- Advice Cards -->
+            <Label text="💡 Conseils du jour"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+
+            <HBox spacing="16">
+                <!-- Card 1 -->
+                <VBox spacing="12" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: #EFF6FF; -fx-padding: 20; -fx-background-radius: 14;
+                             -fx-border-color: #BFDBFE; -fx-border-width: 1; -fx-border-radius: 14;">
+                    <Label text="🧠 Concentration"
+                           style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1D4ED8;"/>
+                    <Text text="Éloigne ton téléphone pendant que tu étudies. 25 minutes de travail, 5 minutes de pause — c'est la technique Pomodoro !"
+                          wrappingWidth="220" style="-fx-fill: #1E40AF; -fx-font-size: 13px;"/>
+                </VBox>
+
+                <!-- Card 2 -->
+                <VBox spacing="12" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: #F0FDF4; -fx-padding: 20; -fx-background-radius: 14;
+                             -fx-border-color: #BBF7D0; -fx-border-width: 1; -fx-border-radius: 14;">
+                    <Label text="🎯 Objectif"
+                           style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #15803D;"/>
+                    <Text text="Essaie de finir au moins une séance aujourd'hui ! Chaque petite victoire compte dans ton apprentissage."
+                          wrappingWidth="220" style="-fx-fill: #064E3B; -fx-font-size: 13px;"/>
+                </VBox>
+
+                <!-- Card 3 -->
+                <VBox spacing="12" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: #FFFBEB; -fx-padding: 20; -fx-background-radius: 14;
+                             -fx-border-color: #FDE68A; -fx-border-width: 1; -fx-border-radius: 14;">
+                    <Label text="💤 Récupération"
+                           style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #B45309;"/>
+                    <Text text="Dors au moins 8 heures ! Le cerveau consolide les apprentissages pendant le sommeil."
+                          wrappingWidth="220" style="-fx-fill: #78350F; -fx-font-size: 13px;"/>
+                </VBox>
+            </HBox>
+
+            <!-- Motivation Section -->
+            <VBox spacing="10"
+                  style="-fx-background-color: linear-gradient(to right, #6366F1, #8B5CF6);
+                         -fx-padding: 22; -fx-background-radius: 14;">
+                <Label text="🚀 Citation du jour"
+                       style="-fx-font-size: 14px; -fx-text-fill: rgba(255,255,255,0.8); -fx-font-weight: bold;"/>
+                <Text text="« L'éducation est l'arme la plus puissante que vous puissiez utiliser pour changer le monde. » — Nelson Mandela"
+                      wrappingWidth="700"
+                      style="-fx-fill: white; -fx-font-size: 16px; -fx-font-style: italic;"/>
+            </VBox>
+
+            <!-- Tips Grid -->
+            <Label text="📚 Méthodes d'apprentissage efficaces"
+                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+
+            <HBox spacing="16">
+                <VBox spacing="8" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-padding: 18; -fx-background-radius: 12;
+                             -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 12;
+                             -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.04), 6, 0, 0, 3);">
+                    <Label text="✍️ Prends des notes"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                    <Text text="Écrire à la main aide à mieux mémoriser qu'en tapant sur un clavier."
+                          wrappingWidth="200" style="-fx-fill: #64748B; -fx-font-size: 12px;"/>
+                </VBox>
+                <VBox spacing="8" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-padding: 18; -fx-background-radius: 12;
+                             -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 12;
+                             -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.04), 6, 0, 0, 3);">
+                    <Label text="🔁 Révise régulièrement"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                    <Text text="Revoir un cours après 1 jour, 1 semaine et 1 mois ancre les connaissances."
+                          wrappingWidth="200" style="-fx-fill: #64748B; -fx-font-size: 12px;"/>
+                </VBox>
+                <VBox spacing="8" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-padding: 18; -fx-background-radius: 12;
+                             -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 12;
+                             -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.04), 6, 0, 0, 3);">
+                    <Label text="❓ Pose des questions"
+                           style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #334155;"/>
+                    <Text text="N'hésite jamais à demander de l'aide. Comprendre vaut mieux que mémoriser."
+                          wrappingWidth="200" style="-fx-fill: #64748B; -fx-font-size: 12px;"/>
+                </VBox>
+            </HBox>
+
+            <!-- Stats Row -->
+            <HBox spacing="16">
+                <VBox spacing="6" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-padding: 18; -fx-background-radius: 12;
+                             -fx-border-color: #DBEAFE; -fx-border-width: 2; -fx-border-radius: 12;
+                             -fx-effect: dropshadow(three-pass-box, rgba(59,130,246,0.08), 8, 0, 0, 4);">
+                    <Label fx:id="totalCoursesLabel" text="—"
+                           style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #3B82F6;"/>
+                    <Label text="Cours suivis" style="-fx-font-size: 13px; -fx-text-fill: #64748B;"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-padding: 18; -fx-background-radius: 12;
+                             -fx-border-color: #D1FAE5; -fx-border-width: 2; -fx-border-radius: 12;
+                             -fx-effect: dropshadow(three-pass-box, rgba(16,185,129,0.08), 8, 0, 0, 4);">
+                    <Label fx:id="totalGamesLabel" text="—"
+                           style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #10B981;"/>
+                    <Label text="Jeux joués" style="-fx-font-size: 13px; -fx-text-fill: #64748B;"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color: white; -fx-padding: 18; -fx-background-radius: 12;
+                             -fx-border-color: #EDE9FE; -fx-border-width: 2; -fx-border-radius: 12;
+                             -fx-effect: dropshadow(three-pass-box, rgba(139,92,246,0.08), 8, 0, 0, 4);">
+                    <Label text="📅" style="-fx-font-size: 32px;"/>
+                    <Label text="Séances à venir" style="-fx-font-size: 13px; -fx-text-fill: #64748B;"/>
+                    <Label text="Voir dans 'Séances'" style="-fx-font-size: 11px; -fx-text-fill: #8B5CF6; -fx-font-weight: bold;"/>
+                </VBox>
+            </HBox>
+
         </VBox>
-    </HBox>
-    <HBox spacing="24">
-        <VBox spacing="10" HBox.hgrow="ALWAYS"
-              styleClass="child-stat-card-courses">
-            <Label text="Mes cours" styleClass="child-stat-label-courses"/>
-            <Label fx:id="totalCoursesLabel" text="—"
-                   styleClass="child-stat-value-courses"/>
-        </VBox>
-        <VBox spacing="10" HBox.hgrow="ALWAYS"
-              styleClass="child-stat-card-games">
-            <Label text="Jeux disponibles" styleClass="child-stat-label-games"/>
-            <Label fx:id="totalGamesLabel" text="—"
-                   styleClass="child-stat-value-games"/>
-        </VBox>
-    </HBox>
+    </ScrollPane>
+
 </VBox>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.eduplay.controllers.child.ChildSeancesController"
+      spacing="0" style="-fx-background-color: #F8FAFC;">
+
+    <!-- Header -->
+    <VBox style="-fx-background-color: linear-gradient(to right, #3B82F6, #6366F1); -fx-padding: 24 28 20 28;">
+        <Label fx:id="titleLabel" text="Mes Séances"
+               style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+        <Label text="Vos prochaines sessions de cours"
+               style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.8);"/>
+    </VBox>
+
+    <!-- Content -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">
+        <VBox fx:id="seancesContainer" spacing="14"
+              style="-fx-padding: 20;">
+            <Label text="Chargement..." style="-fx-text-fill: #94A3B8; -fx-font-size: 14px;"/>
+        </VBox>
+    </ScrollPane>
+
+</VBox>

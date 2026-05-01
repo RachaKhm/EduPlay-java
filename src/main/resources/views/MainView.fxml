@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.MainController"
+            prefWidth="1100" prefHeight="700"
+            style="-fx-background-color: #F8F9FA;">
+
+    <!-- ===== SIDEBAR ===== -->
+    <left>
+        <fx:include source="/views/auth/Sidebar.fxml"/>
+    </left>
+
+    <!-- ===== ZONE DROITE ===== -->
+    <center>
+        <BorderPane>
+
+            <!-- Topbar -->
+            <top>
+                <HBox alignment="CENTER_LEFT"
+                      style="-fx-padding: 14 28;
+                             -fx-background-color: white;
+                             -fx-border-color: #E8E8F0;
+                             -fx-border-width: 0 0 1 0;">
+
+                    <Label fx:id="topbarTitle"
+                           text="Tableau de bord"
+                           style="-fx-font-size: 17px; -fx-font-weight: bold;
+                                  -fx-text-fill: #22223A;"/>
+
+                    <HBox HBox.hgrow="ALWAYS"/>
+
+                    <Label fx:id="topbarUser"
+                           text=""
+                           style="-fx-font-size: 12px; -fx-text-fill: #9999BB;"/>
+                </HBox>
+            </top>
+
+            <!-- Contenu dynamique -->
+            <center>
+                <StackPane fx:id="contentArea"
+                           style="-fx-padding: 24; -fx-background-color: #F8F9FA;"/>
+            </center>
+
+        </BorderPane>
+    </center>
+
+</BorderPane>
