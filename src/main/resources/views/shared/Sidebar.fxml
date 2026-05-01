@@ -129,14 +129,6 @@
                 </VBox>
             </HBox>
 
-            <HBox fx:id="btnStudents"
-                  onMouseClicked="#showStudents"
-                  styleClass="modern-nav-btn">
-                <VBox>
-                    <Label text="🎓 Mes élèves" styleClass="nav-btn-label"/>
-                </VBox>
-            </HBox>
-
             <HBox fx:id="btnSeances"
                   onMouseClicked="#showTeacherSeances"
                   styleClass="modern-nav-btn">

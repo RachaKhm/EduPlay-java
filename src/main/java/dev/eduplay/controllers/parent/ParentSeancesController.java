@@ -9,6 +9,8 @@ import dev.eduplay.services.CourseService;
 import dev.eduplay.services.SeanceService;
 import dev.eduplay.services.SubscriptionService;
 import dev.eduplay.services.UserService;
+import dev.eduplay.services.CourseReviewService;
+import dev.eduplay.entities.CourseReview;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -26,11 +28,22 @@ public class ParentSeancesController {
 
     @FXML private VBox seancesContainer;
     @FXML private Label subtitleLabel;
+    @FXML private TextField searchField;
+
+    private List<Seance> allSeances = new ArrayList<>();
+    private Map<Integer, String> courseTitleById = new HashMap<>();
+    private List<User> children = new ArrayList<>();
+    private SubscriptionService subService;
+    private CourseReviewService reviewService;
+    private int parentId;
 
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("EEE dd MMM yyyy · HH:mm", Locale.FRENCH);
 
     @FXML
     public void initialize() {
+        if (searchField != null) {
+            searchField.textProperty().addListener((obs, oldV, newV) -> filterAndRender());
+        }
         loadSeances();
     }
 
@@ -40,38 +53,24 @@ public class ParentSeancesController {
             SeanceService seanceService = new SeanceService();
             CourseService courseService = new CourseService();
             UserService userService = new UserService();
-            SubscriptionService subService = new SubscriptionService();
+            subService = new SubscriptionService();
+            reviewService = new CourseReviewService();
 
-            int parentId = AppContext.getCurrentUser().getId();
-            List<User> children = userService.getChildrenByParentId(parentId);
+            parentId = AppContext.getCurrentUser().getId();
+            children = userService.getChildrenByParentId(parentId);
 
-            // Build a map of all course IDs
             List<Course> allCourses = courseService.afficherTous();
-            Map<Integer, String> courseTitleById = new HashMap<>();
+            courseTitleById.clear();
             for (Course c : allCourses) courseTitleById.put(c.getId(), c.getTitle());
 
-            List<Seance> allSeances = seanceService.afficherTous();
-
-            if (allSeances.isEmpty()) {
-                Label empty = new Label("Aucune séance disponible actuellement.");
-                empty.setStyle("-fx-font-size: 14px; -fx-text-fill: #94A3B8; -fx-padding: 30;");
-                seancesContainer.getChildren().add(empty);
-                return;
-            }
-
-            if (subtitleLabel != null)
-                subtitleLabel.setText(allSeances.size() + " séance(s) disponible(s) · " + children.size() + " enfant(s)");
-
-            // Sort: upcoming first
+            allSeances = seanceService.afficherTous();
             allSeances.sort((a, b) -> {
                 if (a.getStartTime() == null) return 1;
                 if (b.getStartTime() == null) return -1;
                 return a.getStartTime().compareTo(b.getStartTime());
             });
 
-            for (Seance s : allSeances) {
-                seancesContainer.getChildren().add(buildCard(s, courseTitleById, children, subService, parentId));
-            }
+            filterAndRender();
 
         } catch (SQLException e) {
             Label err = new Label("Erreur : " + e.getMessage());
@@ -80,6 +79,39 @@ public class ParentSeancesController {
         }
     }
 
+    private void filterAndRender() {
+        seancesContainer.getChildren().clear();
+
+        if (allSeances.isEmpty()) {
+            Label empty = new Label("Aucune séance disponible actuellement.");
+            empty.setStyle("-fx-font-size: 14px; -fx-text-fill: #94A3B8; -fx-padding: 30;");
+            seancesContainer.getChildren().add(empty);
+            return;
+        }
+
+        String query = searchField != null ? searchField.getText().trim().toLowerCase() : "";
+
+        List<Seance> filtered = allSeances;
+        if (!query.isEmpty()) {
+            filtered = allSeances.stream()
+                    .filter(s -> s.getTitle() != null && s.getTitle().toLowerCase().contains(query))
+                    .collect(Collectors.toList());
+        }
+
+        if (subtitleLabel != null)
+            subtitleLabel.setText(filtered.size() + " séance(s) disponible(s) · " + children.size() + " enfant(s)");
+
+        if (filtered.isEmpty()) {
+            Label empty = new Label("Aucune séance ne correspond à votre recherche.");
+            empty.setStyle("-fx-font-size: 14px; -fx-text-fill: #94A3B8; -fx-padding: 30;");
+            seancesContainer.getChildren().add(empty);
+            return;
+        }
+
+        for (Seance s : filtered) {
+            seancesContainer.getChildren().add(buildCard(s, courseTitleById, children, subService, parentId));
+        }
+    }
     private VBox buildCard(Seance s, Map<Integer, String> courseTitleById,
                            List<User> children, SubscriptionService subService, int parentId) {
         VBox card = new VBox(10);
@@ -101,6 +133,24 @@ public class ParentSeancesController {
         Label dateLbl = new Label("🗓 " + dateStr);
         dateLbl.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748B;");
 
+        double avgRating = 0.0;
+        try {
+            avgRating = reviewService.getAverageRating(s.getCourseId());
+        } catch (SQLException e) {
+            // Ignorer l'erreur d'affichage de note
+        }
+        
+        HBox topRow = new HBox(10);
+        topRow.setAlignment(Pos.CENTER_LEFT);
+        topRow.getChildren().add(courseLbl);
+        
+        if (avgRating > 0) {
+            Label ratingLbl = new Label(String.format(Locale.US, "%.1f ⭐", avgRating));
+            ratingLbl.setStyle("-fx-font-size: 11px; -fx-text-fill: #F59E0B; -fx-font-weight: bold; " +
+                    "-fx-background-color: #FEF3C7; -fx-padding: 2 8; -fx-background-radius: 999;");
+            topRow.getChildren().add(ratingLbl);
+        }
+
         HBox meta = new HBox(10);
         if (s.getLocation() != null && !s.getLocation().isBlank()) {
             Label loc = new Label("📍 " + s.getLocation());
@@ -110,17 +160,22 @@ public class ParentSeancesController {
 
         // "Inscrire mon enfant" button
         if (!children.isEmpty()) {
-            Button inscrireBtn = new Button("✅ Inscrire mon enfant");
+            Button inscrireBtn = new Button("✅ Inscrire");
             inscrireBtn.setStyle("-fx-background-color: #10B981; -fx-text-fill: white; " +
                     "-fx-font-weight: bold; -fx-background-radius: 7; -fx-padding: 7 16; -fx-cursor: hand;");
             inscrireBtn.setOnAction(e -> showRegisterDialog(s, children, subService, parentId, courseTitleById));
 
+            Button rateBtn = new Button("⭐ Évaluer");
+            rateBtn.setStyle("-fx-background-color: #F59E0B; -fx-text-fill: white; " +
+                    "-fx-font-weight: bold; -fx-background-radius: 7; -fx-padding: 7 16; -fx-cursor: hand;");
+            rateBtn.setOnAction(e -> showRatingDialog(s.getCourseId(), courseTitle));
+
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
-            meta.getChildren().addAll(spacer, inscrireBtn);
+            meta.getChildren().addAll(spacer, rateBtn, inscrireBtn);
         }
 
-        card.getChildren().addAll(courseLbl, titleLbl, dateLbl, meta);
+        card.getChildren().addAll(topRow, titleLbl, dateLbl, meta);
         return card;
     }
 
@@ -176,5 +231,82 @@ public class ParentSeancesController {
                 new Alert(Alert.AlertType.ERROR, "Erreur : " + ex.getMessage(), ButtonType.OK).showAndWait();
             }
         });
+    }
+
+    private void showRatingDialog(int courseId, String courseTitle) {
+        try {
+            CourseReview existing = reviewService.getReviewByUserAndCourse(parentId, courseId);
+            int initialRating = existing != null ? existing.getRating() : 0;
+            String initialComment = existing != null ? existing.getComment() : "";
+
+            Dialog<CourseReview> dialog = new Dialog<>();
+            dialog.setTitle("Évaluer le cours");
+            dialog.setHeaderText("Donnez votre avis sur le cours : " + courseTitle);
+
+            ButtonType submitType = new ButtonType(existing != null ? "Mettre à jour" : "Soumettre", ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().addAll(submitType, ButtonType.CANCEL);
+
+            HBox starsBox = new HBox(5);
+            starsBox.setAlignment(Pos.CENTER);
+            Label[] stars = new Label[5];
+            final int[] selectedRating = {initialRating};
+
+            for (int i = 0; i < 5; i++) {
+                int ratingValue = i + 1;
+                Label star = new Label(ratingValue <= initialRating ? "⭐" : "☆");
+                star.setStyle("-fx-font-size: 32px; -fx-cursor: hand; -fx-text-fill: #F59E0B;");
+                
+                star.setOnMouseClicked(e -> {
+                    selectedRating[0] = ratingValue;
+                    for (int j = 0; j < 5; j++) {
+                        stars[j].setText(j < ratingValue ? "⭐" : "☆");
+                    }
+                });
+                
+                stars[i] = star;
+                starsBox.getChildren().add(star);
+            }
+
+            TextArea commentArea = new TextArea(initialComment != null ? initialComment : "");
+            commentArea.setPromptText("Laissez un commentaire (optionnel)...");
+            commentArea.setPrefRowCount(3);
+            commentArea.setWrapText(true);
+            commentArea.setStyle("-fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8;");
+
+            VBox content = new VBox(15, new Label("Votre note :"), starsBox, new Label("Votre commentaire :"), commentArea);
+            content.setPadding(new Insets(20));
+            content.setPrefWidth(350);
+            dialog.getDialogPane().setContent(content);
+
+            dialog.setResultConverter(btn -> {
+                if (btn == submitType && selectedRating[0] > 0) {
+                    CourseReview review = new CourseReview();
+                    if (existing != null) review.setId(existing.getId());
+                    review.setCourseId(courseId);
+                    review.setUserId(parentId);
+                    review.setRating(selectedRating[0]);
+                    review.setComment(commentArea.getText().trim());
+                    return review;
+                }
+                return null;
+            });
+
+            dialog.showAndWait().ifPresent(review -> {
+                try {
+                    if (review.getId() > 0) {
+                        reviewService.modifier(review);
+                        new Alert(Alert.AlertType.INFORMATION, "✅ Avis mis à jour !", ButtonType.OK).showAndWait();
+                    } else {
+                        reviewService.ajouter(review);
+                        new Alert(Alert.AlertType.INFORMATION, "✅ Merci pour votre avis !", ButtonType.OK).showAndWait();
+                    }
+                } catch (SQLException ex) {
+                    new Alert(Alert.AlertType.ERROR, "Erreur lors de l'enregistrement : " + ex.getMessage(), ButtonType.OK).showAndWait();
+                }
+            });
+
+        } catch (SQLException e) {
+            new Alert(Alert.AlertType.ERROR, "Erreur base de données : " + e.getMessage(), ButtonType.OK).showAndWait();
+        }
     }
 }
