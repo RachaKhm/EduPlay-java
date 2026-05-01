@@ -1,170 +1,205 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
 
-<VBox xmlns="http://javafx.com/javafx/17"
-      xmlns:fx="http://javafx.com/fxml/1"
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="dev.eduplay.controllers.SidebarController"
-      prefWidth="230" spacing="4"
-      style="-fx-background-color: #1A1A2E; -fx-padding: 0;">
+      stylesheets="@../../styles/auth.css"
+      styleClass="sidebar-container"
+      prefWidth="260" spacing="0">
+      
+      <!-- Header avec logo moderne -->
+      <HBox alignment="CENTER_LEFT" spacing="12" styleClass="sidebar-header">
+          <StackPane>
+              <!-- Background Gradient -->
+              <Rectangle width="48" height="48" arcWidth="24" arcHeight="24">
+                  <fill>
+                      <LinearGradient startX="0" startY="0" endX="1" endY="1">
+                          <stops>
+                              <Stop offset="0.0" color="#3B82F6"/>
+                              <Stop offset="1.0" color="#4F46E5"/>
+                          </stops>
+                      </LinearGradient>
+                  </fill>
+              </Rectangle>
+              <Label text="🎓" style="-fx-text-fill: white; -fx-font-size: 24px;"/>
+          </StackPane>
+          <VBox alignment="CENTER_LEFT" spacing="2">
+              <HBox>
+                  <Label text="Edu" styleClass="sidebar-logo-text-edu"/>
+                  <Label text="Play" styleClass="sidebar-logo-text-play"/>
+              </HBox>
+              <Label text="Super Admin" styleClass="sidebar-role-text"/>
+          </VBox>
+      </HBox>
 
-    <!-- Logo -->
-    <VBox alignment="CENTER_LEFT"
-          style="-fx-padding: 22 20 18 20; -fx-border-color: #2A2A4E;
-                 -fx-border-width: 0 0 1 0;">
-        <Label text="EduPlay"
-               style="-fx-text-fill: #E94560; -fx-font-size: 22px; -fx-font-weight: bold;"/>
-        <Label text="Espace de gestion"
-               style="-fx-text-fill: #444466; -fx-font-size: 10px;"/>
-    </VBox>
+      <!-- Navigation Content -->
+      <ScrollPane fitToWidth="true" styleClass="sidebar-scroll-pane" VBox.vgrow="ALWAYS">
+          <VBox spacing="4" styleClass="sidebar-nav-container">
+              
+              <HBox fx:id="btnDashboard" onMouseClicked="#showDashboard" alignment="CENTER_LEFT" spacing="12" styleClass="modern-nav-btn">
+<StackPane styleClass="nav-icon-bg">
+                              <Label text="📊" styleClass="nav-icon-label"/>
+                          </StackPane>
+                          <VBox alignment="CENTER_LEFT">
+                              <Label text="Dashboard" styleClass="nav-title"/>
+                              <Label text="Vue globale" styleClass="nav-subtitle"/>
+                          </VBox>
+              </HBox>
 
-    <!-- Profil utilisateur connecté -->
-    <HBox spacing="12" alignment="CENTER_LEFT"
-          style="-fx-padding: 16 20; -fx-border-color: #2A2A4E;
-                 -fx-border-width: 0 0 1 0; -fx-cursor: hand;"
-          onMouseClicked="#showProfile">
-        <StackPane prefWidth="36" prefHeight="36">
-            <Circle radius="18" fill="#2A1A2E"/>
-            <Circle radius="18" fill="transparent" stroke="#E94560" strokeWidth="1.5"/>
-            <Label text="U"
-                   style="-fx-text-fill: #E94560; -fx-font-size: 13px; -fx-font-weight: bold;"/>
-        </StackPane>
-        <VBox spacing="2">
-            <Label fx:id="labelUserName" text="Utilisateur"
-                   style="-fx-text-fill: #DDDDEE; -fx-font-size: 13px; -fx-font-weight: bold;"/>
-            <Label fx:id="labelUserRole" text="Rôle"
-                   style="-fx-text-fill: #E94560; -fx-font-size: 10px;"/>
-        </VBox>
-    </HBox>
+              <!-- ADMIN SECTION -->
+              <HBox fx:id="sectionAdminBox" alignment="CENTER_LEFT" spacing="8" styleClass="sidebar-section-header">
+                  <Rectangle width="4" height="16" arcWidth="4" arcHeight="4">
+                      <fill>
+                          <LinearGradient startX="0" startY="0" endX="0" endY="1">
+                              <stops>
+                                  <Stop offset="0.0" color="#3B82F6"/>
+                                  <Stop offset="1.0" color="#4F46E5"/>
+                              </stops>
+                          </LinearGradient>
+                      </fill>
+                  </Rectangle>
+                  <Label fx:id="sectionAdmin" text="E-COMMERCE" styleClass="sidebar-section-label"/>
+              </HBox>
 
-    <!-- Navigation -->
-    <VBox spacing="2" style="-fx-padding: 12 10 0 10;" VBox.vgrow="ALWAYS">
+              
+              <HBox fx:id="btnUsers" onMouseClicked="#showUsers" alignment="CENTER_LEFT" spacing="12" styleClass="modern-nav-btn">
+<StackPane styleClass="nav-icon-bg">
+                              <Label text="👥" styleClass="nav-icon-label"/>
+                          </StackPane>
+                          <VBox alignment="CENTER_LEFT">
+                              <Label text="Utilisateurs" styleClass="nav-title"/>
+                          </VBox>
+              </HBox>
+              <HBox fx:id="btnLibrary" onMouseClicked="#showLibrary" alignment="CENTER_LEFT" spacing="12" styleClass="modern-nav-btn">
+<StackPane styleClass="nav-icon-bg">
+                              <Label text="📚" styleClass="nav-icon-label"/>
+                          </StackPane>
+                          <VBox alignment="CENTER_LEFT">
+                              <Label text="Bibliothèque" styleClass="nav-title"/>
+                          </VBox>
+              </HBox>
+              <HBox fx:id="btnResource" onMouseClicked="#showResource" alignment="CENTER_LEFT" spacing="12" styleClass="modern-nav-btn">
+<StackPane styleClass="nav-icon-bg">
+                              <Label text="📂" styleClass="nav-icon-label"/>
+                          </StackPane>
+                          <VBox alignment="CENTER_LEFT">
+                              <Label text="Ressources" styleClass="nav-title"/>
+                          </VBox>
+              </HBox>
 
-        <Label text="NAVIGATION"
-               style="-fx-text-fill: #333355; -fx-font-size: 9px;
-                      -fx-font-weight: bold; -fx-padding: 4 8 6 8;"/>
+              <!-- ENSEIGNANT SECTION -->
+              <HBox fx:id="sectionTeacherBox" alignment="CENTER_LEFT" spacing="8" styleClass="sidebar-section-header">
+                  <Rectangle width="4" height="16" arcWidth="4" arcHeight="4" fill="#10B981"/>
+                  <Label fx:id="sectionTeacher" text="COURS" styleClass="sidebar-section-label"/>
+              </HBox>
+              <HBox fx:id="btnCourses" onMouseClicked="#showCourses" alignment="CENTER_LEFT" spacing="12" styleClass="modern-nav-btn">
+<StackPane styleClass="nav-icon-bg">
+                              <Label text="📖" styleClass="nav-icon-label"/>
+                          </StackPane>
+                          <VBox alignment="CENTER_LEFT">
+                              <Label text="Mes cours" styleClass="nav-title"/>
+                          </VBox>
+              </HBox>
+              <HBox fx:id="btnStudents" onMouseClicked="#showStudents" alignment="CENTER_LEFT" spacing="12" styleClass="modern-nav-btn">
+<StackPane styleClass="nav-icon-bg">
+                              <Label text="🎓" styleClass="nav-icon-label"/>
+                          </StackPane>
+                          <VBox alignment="CENTER_LEFT">
+                              <Label text="Mes élèves" styleClass="nav-title"/>
+                          </VBox>
+              </HBox>
 
-        <!-- Commun tous rôles -->
-        <Button fx:id="btnDashboard" text="  Tableau de bord"
-                onAction="#showDashboard" maxWidth="Infinity"
-                style="-fx-background-color: #E94560; -fx-text-fill: white;
-                       -fx-font-weight: bold; -fx-background-radius: 8;
-                       -fx-alignment: CENTER_LEFT; -fx-padding: 10 16;
-                       -fx-cursor: hand; -fx-border-width: 0;"/>
+              <!-- PARENT SECTION -->
+              <HBox fx:id="sectionParentBox" alignment="CENTER_LEFT" spacing="8" styleClass="sidebar-section-header">
+                  <Rectangle width="4" height="16" arcWidth="4" arcHeight="4" fill="#F59E0B"/>
+                  <Label fx:id="sectionParent" text="FAMILLE" styleClass="sidebar-section-label"/>
+              </HBox>
+              <HBox fx:id="btnChildren" onMouseClicked="#showChildren" alignment="CENTER_LEFT" spacing="12" styleClass="modern-nav-btn">
+<StackPane styleClass="nav-icon-bg">
+                              <Label text="👨‍👧‍👦" styleClass="nav-icon-label"/>
+                          </StackPane>
+                          <VBox alignment="CENTER_LEFT">
+                              <Label text="Mes enfants" styleClass="nav-title"/>
+                          </VBox>
+              </HBox>
+              <HBox fx:id="btnEvents" onMouseClicked="#showEvents" alignment="CENTER_LEFT" spacing="12" styleClass="modern-nav-btn">
+<StackPane styleClass="nav-icon-bg">
+                              <Label text="📅" styleClass="nav-icon-label"/>
+                          </StackPane>
+                          <VBox alignment="CENTER_LEFT">
+                              <Label text="Événements" styleClass="nav-title"/>
+                          </VBox>
+              </HBox>
 
-        <!-- ADMIN -->
-        <Button fx:id="btnUsers" text="  Utilisateurs"
-                onAction="#showUsers" maxWidth="Infinity"
-                visible="false" managed="false"
-                style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
-                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
-                       -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
+              <!-- ENFANT SECTION -->
+              <HBox fx:id="sectionChildBox" alignment="CENTER_LEFT" spacing="8" styleClass="sidebar-section-header">
+                  <Rectangle width="4" height="16" arcWidth="4" arcHeight="4" fill="#8B5CF6"/>
+                  <Label fx:id="sectionChild" text="APPRENTISSAGE" styleClass="sidebar-section-label"/>
+              </HBox>
+              <HBox fx:id="btnMyCoursesChild" onMouseClicked="#showMyCoursesChild" alignment="CENTER_LEFT" spacing="12" styleClass="modern-nav-btn">
+<StackPane styleClass="nav-icon-bg">
+                              <Label text="📖" styleClass="nav-icon-label"/>
+                          </StackPane>
+                          <VBox alignment="CENTER_LEFT">
+                              <Label text="Mes cours" styleClass="nav-title"/>
+                          </VBox>
+              </HBox>
+              <HBox fx:id="btnGames" onMouseClicked="#showGames" alignment="CENTER_LEFT" spacing="12" styleClass="modern-nav-btn">
+<StackPane styleClass="nav-icon-bg">
+                              <Label text="🎮" styleClass="nav-icon-label"/>
+                          </StackPane>
+                          <VBox alignment="CENTER_LEFT">
+                              <Label text="Jeux" styleClass="nav-title"/>
+                          </VBox>
+              </HBox>
+              <HBox fx:id="btnChildLibrary" onMouseClicked="#showChildLibrary" alignment="CENTER_LEFT" spacing="12" styleClass="modern-nav-btn">
+<StackPane styleClass="nav-icon-bg">
+                              <Label text="📚" styleClass="nav-icon-label"/>
+                          </StackPane>
+                          <VBox alignment="CENTER_LEFT">
+                              <Label text="Bibliothèque" styleClass="nav-title"/>
+                              <Label text="Histoires ludiques" styleClass="nav-subtitle"/>
+                          </VBox>
+              </HBox>
 
-        <Button fx:id="btnAdminCourses" text="  Cours"
-                onAction="#showAdminCourses" maxWidth="Infinity"
-                visible="false" managed="false"
-                style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
-                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
-                       -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
+              <!-- PROFILE SECTION -->
+              <Region prefHeight="24" />
+          </VBox>
+      </ScrollPane>
 
-        <Button fx:id="btnAdminSeances" text="  Séances"
-                onAction="#showAdminSeances" maxWidth="Infinity"
-                visible="false" managed="false"
-                style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
-                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
-                       -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
-        <Button fx:id="btnAdminCalendar" text="  Calendar"
-                onAction="#showAdminCalendar" maxWidth="Infinity"
-                visible="false" managed="false"
-                style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
-                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
-                       -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
-        <Button fx:id="btnAdminStats" text="  Statistiques"
-                onAction="#showAdminStats" maxWidth="Infinity"
-                visible="false" managed="false"
-                style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
-                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
-                       -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
-
-        <!-- ENSEIGNANT -->
-        <Button fx:id="btnCourses" text="  Mes cours"
-                onAction="#showTeacherCourses" maxWidth="Infinity"
-                visible="false" managed="false"
-                style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
-                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
-                       -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
-
-        <Button fx:id="btnStudents" text="  Mes élèves"
-                onAction="#showStudents" maxWidth="Infinity"
-                visible="false" managed="false"
-                style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
-                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
-                       -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
-
-        <!-- PARENT -->
-        <Button fx:id="btnChildren" text="  Mes enfants"
-                onAction="#showChildren" maxWidth="Infinity"
-                visible="false" managed="false"
-                style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
-                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
-                       -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
-
-        <Button fx:id="btnParentCourses" text="  Cours"
-                onAction="#showParentCourses" maxWidth="Infinity"
-                visible="false" managed="false"
-                style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
-                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
-                       -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
-
-        <Button fx:id="btnEvents" text="  Événements"
-                onAction="#showEvents" maxWidth="Infinity"
-                visible="false" managed="false"
-                style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
-                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
-                       -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
-
-        <!-- ENFANT -->
-        <Button fx:id="btnMyCoursesChild" text="  Mes cours"
-                onAction="#showMyCoursesChild" maxWidth="Infinity"
-                visible="false" managed="false"
-                style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
-                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
-                       -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
-
-        <Button fx:id="btnGames" text="  Jeux éducatifs"
-                onAction="#showGames" maxWidth="Infinity"
-                visible="false" managed="false"
-                style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
-                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
-                       -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
-
-        <Separator style="-fx-padding: 8 0; -fx-opacity: 0.2;"/>
-
-        <Label text="COMPTE"
-               style="-fx-text-fill: #333355; -fx-font-size: 9px;
-                      -fx-font-weight: bold; -fx-padding: 4 8 6 8;"/>
-
-        <Button fx:id="btnProfile" text="  Mon profil"
-                onAction="#showProfile" maxWidth="Infinity"
-                style="-fx-background-color: transparent; -fx-text-fill: #AAAACC;
-                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
-                       -fx-padding: 10 16; -fx-cursor: hand; -fx-border-width: 0;"/>
-    </VBox>
-
-    <!-- Déconnexion -->
-    <VBox style="-fx-padding: 10; -fx-border-color: #2A2A4E; -fx-border-width: 1 0 0 0;">
-        <Button fx:id="btnLogout" text="  Déconnexion"
-                onAction="#handleLogout" maxWidth="Infinity"
-                style="-fx-background-color: transparent; -fx-text-fill: #555577;
-                       -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;
-                       -fx-padding: 9 16; -fx-cursor: hand; -fx-border-width: 0;
-                       -fx-font-size: 12px;"/>
-    </VBox>
-
+      <!-- Footer logout -->
+      <VBox styleClass="sidebar-footer">
+          <Button onAction="#handleLogout" styleClass="modern-logout-btn, logout-btn-container">
+              <graphic>
+                  <HBox alignment="CENTER_LEFT" spacing="12">
+                      <StackPane>
+                          <Rectangle width="32" height="32" arcWidth="16" arcHeight="16">
+                              <fill>
+                                  <LinearGradient startX="0" startY="0" endX="1" endY="1">
+                                      <stops>
+                                          <Stop offset="0.0" color="#EF4444"/>
+                                          <Stop offset="1.0" color="#E11D48"/>
+                                      </stops>
+                                  </LinearGradient>
+                              </fill>
+                          </Rectangle>
+                          <Label text="➔" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                      </StackPane>
+                      <VBox alignment="CENTER_LEFT">
+                          <Label text="Déconnexion" styleClass="logout-text-primary"/>
+                          <Label fx:id="labelUserName" text="Utilisateur" styleClass="logout-text-secondary"/>
+                      </VBox>
+                  </HBox>
+              </graphic>
+          </Button>
+          <!-- Hidden initial labels for compatibility with old controller -->
+          <Label fx:id="labelUserRole" visible="false" managed="false"/>
+          <Label fx:id="labelUserInitials" visible="false" managed="false"/>
+      </VBox>
 </VBox>

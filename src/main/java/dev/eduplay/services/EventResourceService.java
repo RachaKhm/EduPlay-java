@@ -1,49 +1,64 @@
 package dev.eduplay.services;
 
 import dev.eduplay.entities.EventResource;
+import dev.eduplay.entities.SchoolEvent;
+import dev.eduplay.interfaces.IGeneralService;
 import dev.eduplay.tools.MyDataBase;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventResourceService implements IGeneralService<EventResource>  {
+public class EventResourceService implements IGeneralService<EventResource> {
+
     Connection cn;
+
     public EventResourceService() {
         cn = MyDataBase.getInstance().getCnx();
     }
 
-
     @Override
     public void ajouter(EventResource resource) throws SQLException {
         String sql = "INSERT INTO event_resource(type, title, context, file_path, url, created_at, event_id) VALUES(?, ?, ?, ?, ?, ?, ?)";
-
         PreparedStatement ps = cn.prepareStatement(sql);
-
         ps.setString(1, resource.getType());
         ps.setString(2, resource.getTitle());
         ps.setString(3, resource.getContext());
         ps.setString(4, resource.getFilePath());
         ps.setString(5, resource.getUrl());
-        ps.setTimestamp(6, Timestamp.valueOf(LocalDateTime.now()));
-        ps.setInt(7, resource.getEvent().getId());
+        ps.setTimestamp(6, Timestamp.valueOf(resource.getCreatedAt()));
 
-        System.out.println("Executing insert event_resource...");
+        // Vérifier que event n'est pas null
+        if (resource.getEvent() == null) {
+            throw new SQLException("L'événement associé à la ressource est null");
+        }
+
+        ps.setInt(7, resource.getEvent().getId());  // ← Récupère l'ID depuis l'objet Event
+        System.out.println("Insertion ressource avec event_id: " + resource.getEvent().getId());
+
+        ps.executeUpdate();
+    }
+
+    // ✅ MÉTHODE AJOUTER AVEC eventId DIRECTEMENT (pour AddResourceController)
+    public void ajouterAvecID(EventResource resource, int eventId) throws SQLException {
+        String sql = "INSERT INTO event_resource(type, title, context, file_path, url, created_at, event_id) VALUES(?, ?, ?, ?, ?, ?, ?)";
+        PreparedStatement ps = cn.prepareStatement(sql);
+        ps.setString(1, resource.getType());
+        ps.setString(2, resource.getTitle());
+        ps.setString(3, resource.getContext());
+        ps.setString(4, resource.getFilePath());
+        ps.setString(5, resource.getUrl());
+        ps.setTimestamp(6, Timestamp.valueOf(resource.getCreatedAt()));
+        ps.setInt(7, eventId);
         ps.executeUpdate();
     }
 
     @Override
     public void supprimer(EventResource resource) throws SQLException {
-        if(chercher(resource) ==resource.getId()){
-            String sql = "DELETE FROM event_resource WHERE id = ?";
-            PreparedStatement pst = cn.prepareStatement(sql);
-            pst.setInt(1, resource.getId());
-            pst.executeUpdate();
-        }
-        else{
-            System.out.println("resource n'esxiste pas");
-        }
+        String sql = "DELETE FROM event_resource WHERE id = ?";
+        PreparedStatement pst = cn.prepareStatement(sql);
+        pst.setInt(1, resource.getId());
+        pst.executeUpdate();
     }
 
     @Override
@@ -52,49 +67,97 @@ public class EventResourceService implements IGeneralService<EventResource>  {
         PreparedStatement pst = cn.prepareStatement(sql);
         pst.setInt(1, resource.getId());
         ResultSet rs = pst.executeQuery();
-        if (rs.next()){
-            System.out.println("cette ressource existe avec l'id "+resource.getId());
-        }else{
-            System.out.println("cette ressource n'existe pas");
-        }
-        return resource.getId();    }
+        return rs.next() ? resource.getId() : -1;
+    }
 
     @Override
     public void modifier(EventResource resource) throws SQLException {
-        if(chercher(resource)== resource.getId()){
-            String sql = "UPDATE event_resource SET type = ?, title = ?, context = ?, file_path = ?, url = ? WHERE id = ?";            PreparedStatement pst = cn.prepareStatement(sql);
-            pst.setString(1, resource.getType());
-            pst.setString(2, resource.getTitle());
-            pst.setString(3, resource.getContext());
-            pst.setString(4, resource.getFilePath());
-            pst.setString(5, resource.getUrl());
-            pst.setInt(6, resource.getId());
-            pst.executeUpdate();
-        }
-        else {
-            System.out.println("cette resssouce n'existe pas");
-        }
+        String sql = "UPDATE event_resource SET type = ?, title = ?, context = ?, file_path = ?, url = ? WHERE id = ?";
+        PreparedStatement pst = cn.prepareStatement(sql);
+        pst.setString(1, resource.getType());
+        pst.setString(2, resource.getTitle());
+        pst.setString(3, resource.getContext());
+        pst.setString(4, resource.getFilePath());
+        pst.setString(5, resource.getUrl());
+        pst.setInt(6, resource.getId());
+        pst.executeUpdate();
     }
 
     @Override
     public List<EventResource> recuperer() throws SQLException {
-        String sql = "select * from event_resource";
+        String sql = "SELECT * FROM event_resource ORDER BY created_at DESC";
         Statement st = cn.createStatement();
         ResultSet rs = st.executeQuery(sql);
-        List<EventResource> ressources = new ArrayList<>();
-        while(rs.next()){
-            EventResource er = new EventResource(
-                    rs.getInt("id"),
-                    rs.getString("type"),
-                    rs.getString("title"),
-                    rs.getString("context"),
-                    rs.getString("file_path"),
-                    rs.getString("url"),
-                    rs.getTimestamp("created_at").toLocalDateTime(),
-                null
-            );
-            ressources.add(er);
-        }
+        List<EventResource> resources = new ArrayList<>();
+        while (rs.next()) {
+            EventResource er = new EventResource();
+            er.setId(rs.getInt("id"));
+            er.setType(rs.getString("type"));
+            er.setTitle(rs.getString("title"));
+            er.setContext(rs.getString("context"));
+            er.setFilePath(rs.getString("file_path"));
+            er.setUrl(rs.getString("url"));
+            er.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
 
-        return ressources;    }
+            // Récupérer l'événement associé
+            SchoolEvent event = new SchoolEvent();
+            event.setId(rs.getInt("event_id"));
+            er.setEvent(event);
+
+            resources.add(er);
+        }
+        return resources;
+    }
+
+    // ✅ Récupérer les ressources par ID d'événement
+    public List<EventResource> recupererParEventId(int eventId) throws SQLException {
+        String sql = "SELECT * FROM event_resource WHERE event_id = ? ORDER BY created_at DESC";
+        PreparedStatement pst = cn.prepareStatement(sql);
+        pst.setInt(1, eventId);
+        ResultSet rs = pst.executeQuery();
+        List<EventResource> resources = new ArrayList<>();
+        while (rs.next()) {
+            EventResource er = new EventResource();
+            er.setId(rs.getInt("id"));
+            er.setType(rs.getString("type"));
+            er.setTitle(rs.getString("title"));
+            er.setContext(rs.getString("context"));
+            er.setFilePath(rs.getString("file_path"));
+            er.setUrl(rs.getString("url"));
+            er.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+
+            // Créer l'événement associé avec son ID
+            SchoolEvent event = new SchoolEvent();
+            event.setId(rs.getInt("event_id"));
+            er.setEvent(event);
+
+            resources.add(er);
+        }
+        return resources;
+    }
+
+    // ✅ Récupérer une ressource par son ID
+    public EventResource recupererParId(int id) throws SQLException {
+        String sql = "SELECT * FROM event_resource WHERE id = ?";
+        PreparedStatement pst = cn.prepareStatement(sql);
+        pst.setInt(1, id);
+        ResultSet rs = pst.executeQuery();
+        if (rs.next()) {
+            EventResource er = new EventResource();
+            er.setId(rs.getInt("id"));
+            er.setType(rs.getString("type"));
+            er.setTitle(rs.getString("title"));
+            er.setContext(rs.getString("context"));
+            er.setFilePath(rs.getString("file_path"));
+            er.setUrl(rs.getString("url"));
+            er.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+
+            SchoolEvent event = new SchoolEvent();
+            event.setId(rs.getInt("event_id"));
+            er.setEvent(event);
+
+            return er;
+        }
+        return null;
+    }
 }

@@ -2,88 +2,161 @@ package dev.eduplay.controllers;
 
 import dev.eduplay.core.AppContext;
 import dev.eduplay.core.Router;
+import dev.eduplay.core.SessionManager;
+import dev.eduplay.entities.User;
+import dev.eduplay.services.UserService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class SidebarController {
 
-    @FXML private Label  labelUserName;
-    @FXML private Label  labelUserRole;
+    @FXML private Label labelUserName;
+    @FXML private Label labelUserRole;
+    @FXML private Label labelUserInitials;
+
+    /* ── Boutons communs ───────────────────────────────────── */
+
     @FXML private Button btnDashboard;
     @FXML private Button btnProfile;
-    @FXML private Button btnLogout;
 
-    // Admin
+    /* ── Boutons Admin ─────────────────────────────────────── */
+
+    @FXML private Label  sectionAdmin;
     @FXML private Button btnUsers;
     @FXML private Button btnTeachers;
     @FXML private Button btnParents;
-    @FXML private Button btnAdminCourses;
-    @FXML private Button btnAdminSeances;
-    @FXML private Button btnAdminCalendar;
-    @FXML private Button btnAdminStats;
 
-    // Enseignant
+    /* ── Boutons Enseignant ────────────────────────────────── */
+
+    @FXML private Label  sectionTeacher;
     @FXML private Button btnCourses;
     @FXML private Button btnStudents;
+    @FXML private Button btnLevel;
+    @FXML private Button BtnGames;
 
-    // Parent
+    /* ── Boutons Parent ────────────────────────────────────── */
+
+    @FXML private Label  sectionParent;
     @FXML private Button btnChildren;
-    @FXML private Button btnParentCourses;
     @FXML private Button btnEvents;
+    @FXML private HBox btnDashboard;
+    @FXML private HBox btnProfile;
 
-    // Enfant
+    @FXML private HBox sectionAdminBox;
+    @FXML private Label sectionAdmin;
+    @FXML private HBox btnUsers;
+    @FXML private HBox btnLibrary;
+    @FXML private HBox btnResource;
+
+    @FXML private Label  sectionChild;
     @FXML private Button btnMyCoursesChild;
     @FXML private Button btnGames;
+    @FXML private Button Games_children;
+    @FXML private HBox sectionTeacherBox;
+    @FXML private Label sectionTeacher;
+    @FXML private HBox btnCourses;
+    @FXML private HBox btnStudents;
 
-    private final List<Button> navButtons = new ArrayList<>();
+    @FXML private HBox sectionParentBox;
+    @FXML private Label sectionParent;
+    @FXML private HBox btnChildren;
+    @FXML private HBox btnEvents;
+
+    @FXML private HBox sectionChildBox;
+    @FXML private Label sectionChild;
+    @FXML private HBox btnMyCoursesChild;
+    @FXML private HBox btnGames;
+    @FXML private HBox btnChildLibrary;
+
+    private final UserService userService = new UserService();
+    private List<HBox> allNavButtons;
 
     @FXML
     public void initialize() {
-        labelUserName.setText(AppContext.getFullName());
-        labelUserRole.setText(capitalize(AppContext.getRole()));
 
-        collectNavButtons();
-        hideAll();
-        showForRole(AppContext.getRole());
+        allNavButtons = Arrays.asList(
+                btnDashboard,
+                btnUsers, btnLibrary, btnResource,
+                btnCourses, btnStudents,
+                btnChildren, btnEvents,
+                btnMyCoursesChild, btnGames, btnChildLibrary,
+                btnProfile
+        ).stream().filter(Objects::nonNull).collect(Collectors.toList());
+
+        String fullName = AppContext.getFullName();
+        String role = AppContext.getRole();
+
+        setIfNotNull(labelUserName, fullName);
+        setIfNotNull(labelUserRole, role);
+        setIfNotNull(labelUserInitials, buildInitials(fullName));
+
+        hideAllRoleSections();
+        showSectionsForRole(role);
 
         Router.setOnRouteChange(this::syncActiveButton);
         syncActiveButton(Router.getCurrentRoute());
     }
 
-    // ── Actions navigation ────────────────────
-    @FXML private void showDashboard()      { Router.go(AppContext.getDefaultRoute()); }
-    @FXML private void showProfile()        { Router.go("profile"); }
-    @FXML private void showUsers()          { Router.go("users"); }
-    @FXML private void showTeachers()       { Router.go("teachers"); }
-    @FXML private void showParents()        { Router.go("parents"); }
-    @FXML private void showAdminCourses()   { Router.go("admin_courses"); }
-    @FXML private void showAdminSeances()   { Router.go("admin_seances"); }
-    @FXML private void showAdminCalendar()  { Router.go("admin_calendar"); }
-    @FXML private void showAdminStats()     { Router.go("admin_stats"); }
-    @FXML private void showTeacherCourses() { Router.go("teacher_courses"); }
-    @FXML private void showStudents()       { Router.go("teacher_students"); }
-    @FXML private void showChildren()       { Router.go("parent_children"); }
-    @FXML private void showParentCourses()  { Router.go("parent_courses"); }
-    @FXML private void showEvents()         { Router.go("parent_events"); }
-    @FXML private void showMyCoursesChild() {
-        // Recharger la vue pour exécuter à nouveau initialize() (cache Router sinon liste figée).
-        Router.reload("child_courses");
-    }
-    @FXML private void showGames()          { Router.go("child_games"); }
+    /* NAVIGATION */
+
+    @FXML private void showDashboard() { Router.go(AppContext.getDefaultRoute()); }
+    @FXML private void showProfile() { Router.go("profile"); }
+    @FXML private void showUsers() { Router.go("users"); }
+    @FXML private void showLibrary() { Router.go("library"); }
+    @FXML private void showResource() { Router.go("resource"); }
+    @FXML private void showChildLibrary() { Router.go("child_library"); }
+
+    @FXML private void showCourses() { Router.go("teacher_courses"); }
+    @FXML private void showStudents() { Router.go("teacher_students"); }
+    @FXML private void showChildren() { Router.go("parent_children"); }
+    @FXML private void showEvents() { Router.go("parent_events"); }
+    @FXML private void showMyCoursesChild() { Router.go("child_courses"); }
+    @FXML private void showLevels()          { Router.go("levels_list"); }
+    @FXML private void showGames() { Router.go("games_list"); }
+    @FXML private void showGamesFront() { Router.go("child_games"); }
+
+    @FXML private void showGames() { Router.go("child_games"); }
 
     @FXML
     private void handleLogout() {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                "Se déconnecter ?", ButtonType.YES, ButtonType.NO);
-        confirm.setHeaderText(null);
+                "Voulez-vous vraiment vous déconnecter ?", ButtonType.YES, ButtonType.NO);
+        
+        // Supprimer la barre du haut (titre, croix de fermeture)
+        confirm.initStyle(javafx.stage.StageStyle.UNDECORATED);
+        // Supprimer l'icône (?)
+        confirm.setGraphic(null);
+        
+        confirm.setHeaderText("Confirmation de déconnexion");
+
+        try {
+            javafx.scene.control.DialogPane dialogPane = confirm.getDialogPane();
+            // Assure la suppression complète de l'icône dans l'en-tête
+            dialogPane.setGraphic(null);
+            
+            dialogPane.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
+            dialogPane.getStyleClass().add("modern-dialog");
+            
+            // Personnalisation des boutons
+            ((javafx.scene.control.Button) dialogPane.lookupButton(ButtonType.YES)).setText("Oui, me déconnecter");
+            ((javafx.scene.control.Button) dialogPane.lookupButton(ButtonType.NO)).setText("Annuler");
+        } catch (Exception e) {
+            System.err.println("Impossible de charger les styles pour le popup de déconnexion.");
+        }
+
         confirm.showAndWait().ifPresent(btn -> {
             if (btn == ButtonType.YES) {
                 AppContext.clear();
@@ -93,103 +166,172 @@ public class SidebarController {
         });
     }
 
-    // ── Affichage des boutons selon le rôle ───
-    private void hideAll() {
-        for (Button b : new Button[]{
-                btnUsers, btnTeachers, btnParents, btnAdminCourses, btnAdminSeances, btnAdminCalendar, btnAdminStats,
-                btnCourses, btnStudents,
-                btnChildren, btnParentCourses, btnEvents,
-                btnMyCoursesChild, btnGames
-        }) hide(b);
-    }
+    /* ACTIVE BUTTON */
 
-    private void showForRole(String role) {
-        switch (role) {
-            case "admin"      -> {
-                show(btnUsers);
-                show(btnTeachers);
-                show(btnParents);
-                show(btnAdminCourses);
-                show(btnAdminSeances);
-                show(btnAdminCalendar);
-                show(btnAdminStats);
-            }
-            case "enseignant" -> { show(btnCourses); show(btnStudents); }
-            case "parent"     -> { show(btnChildren); show(btnParentCourses); show(btnEvents); }
-            case "enfant"     -> { show(btnMyCoursesChild); show(btnGames); }
-        }
-    }
-
-    // ── Bouton actif synchronisé avec Router ──
     public void syncActiveButton(String route) {
-        navButtons.forEach(b -> { if (b.isVisible()) setInactive(b); });
 
-        Button active = switch (route) {
+        allNavButtons.stream()
+                .filter(b -> b != null && b.isVisible())
+                .forEach(b -> {
+                    b.getStyleClass().remove("modern-nav-btn-active");
+                    if (!b.getStyleClass().contains("modern-nav-btn")) {
+                        b.getStyleClass().add("modern-nav-btn");
+                    }
+                });
+
+        HBox active = switch (route) {
             case "admin_dashboard",
                  "teacher_dashboard",
                  "parent_dashboard",
-                 "child_dashboard"  -> btnDashboard;
-            case "users", "teachers", "parents" -> btnUsers;
-            case "admin_courses"    -> btnAdminCourses;
-            case "admin_seances"    -> btnAdminSeances;
-            case "admin_calendar"   -> btnAdminCalendar;
-            case "admin_stats"      -> btnAdminStats;
-            case "teacher_courses"  -> btnCourses;
+                 "child_dashboard" -> btnDashboard;
+
+            case "users" -> btnUsers;
+            case "library" -> btnLibrary;
+            case "resource" -> btnResource;
+
+            case "teacher_courses" -> btnCourses;
             case "teacher_students" -> btnStudents;
-            case "parent_children"  -> btnChildren;
-            case "parent_courses",
-                 "parent_course_detail" -> btnParentCourses;
-            case "parent_events"    -> btnEvents;
-            case "child_courses",
-                 "child_course_detail" -> btnMyCoursesChild;
-            case "child_games"      -> btnGames;
-            case "profile"          -> btnProfile;
-            default                 -> btnDashboard;
+
+            case "parent_children" -> btnChildren;
+            case "parent_events" -> btnEvents;
+
+            case "child_courses" -> btnMyCoursesChild;
+            case "child_games" -> btnGames;
+            case "child_library" -> btnChildLibrary;
+
+            case "profile" -> btnProfile;
+
+            default -> btnDashboard;
         };
 
-        if (active != null && active.isVisible()) setActive(active);
+        if (active != null && active.isVisible()) {
+            active.getStyleClass().add("modern-nav-btn-active");
+        }
     }
 
-    // ── Helpers ───────────────────────────────
-    private void collectNavButtons() {
-        navButtons.clear();
-        for (Button b : new Button[]{
-                btnDashboard, btnUsers, btnTeachers, btnParents, btnAdminCourses, btnAdminSeances, btnAdminCalendar, btnAdminStats,
-                btnCourses, btnStudents, btnChildren, btnParentCourses, btnEvents,
-                btnMyCoursesChild, btnGames, btnProfile
-        }) if (b != null) navButtons.add(b);
+    /* ROLE VISIBILITY */
+
+    private void hideAllRoleSections() {
+        // Sections admin
+        setVisible(sectionAdmin, false);
+        setVisible(btnUsers,     false);
+        setVisible(btnTeachers,  false);
+        setVisible(btnParents,   false);
+
+        // Sections enseignant
+        setVisible(sectionTeacher, false);
+        setVisible(btnCourses,     false);
+        setVisible(btnStudents,    false);
+        setVisible(btnLevel,    false);
+        setVisible(btnGames,    false);
+
+
+        // Sections parent
+        setVisible(sectionParent, false);
+        setVisible(btnChildren,   false);
+        setVisible(btnEvents,     false);
+
+        // Sections enfant
+        setVisible(sectionChild,      false);
+        setVisible(btnMyCoursesChild, false);
+        setVisible(btnGames,          false);
+        setVisible(Games_children,          false);
+        setVisible(sectionAdminBox, false);
+        setVisible(btnUsers, false);
+        setVisible(btnLibrary, false);
+        setVisible(btnResource, false);
+
+        setVisible(sectionTeacherBox, false);
+        setVisible(btnCourses, false);
+        setVisible(btnStudents, false);
+
+        setVisible(sectionParentBox, false);
+        setVisible(btnChildren, false);
+        setVisible(btnEvents, false);
+
+        setVisible(sectionChildBox, false);
+        setVisible(btnMyCoursesChild, false);
+        setVisible(btnGames, false);
+        setVisible(btnChildLibrary, false);
     }
 
-    private void show(Button b) { if (b != null) { b.setVisible(true);  b.setManaged(true);  } }
-    private void hide(Button b) { if (b != null) { b.setVisible(false); b.setManaged(false); } }
+    private void showSectionsForRole(String role) {
+        switch (role) {
+            case "admin" -> {
+                setVisible(sectionAdminBox, true);
+                setVisible(btnUsers, true);
+                setVisible(btnLibrary, true);
+                setVisible(btnResource, true);
+            }
+            case "enseignant" -> {
+                setVisible(sectionTeacher, true);
+                setVisible(btnCourses,     true);
+                setVisible(btnStudents,    true);
+                setVisible(btnGames,          true);
+                setVisible(btnLevel,    true);
 
-    private void setActive(Button b) {
-        b.setStyle("-fx-background-color:#E94560;-fx-text-fill:white;-fx-font-weight:bold;" +
-                "-fx-background-radius:8;-fx-alignment:CENTER_LEFT;-fx-padding:10 16;" +
-                "-fx-border-width:0;-fx-cursor:hand;");
+            }
+            case "parent" -> {
+                setVisible(sectionParent, true);
+                setVisible(btnChildren,   true);
+                setVisible(btnEvents,     true);
+
+            }
+            case "enfant" -> {
+                setVisible(sectionChild,      true);
+                setVisible(Games_children,          true);
+
+                setVisible(sectionTeacherBox, true);
+                setVisible(btnCourses, true);
+                setVisible(btnStudents, true);
+            }
+            case "parent" -> {
+                setVisible(sectionParentBox, true);
+                setVisible(btnChildren, true);
+                setVisible(btnEvents, true);
+            }
+            case "enfant" -> {
+                setVisible(sectionChildBox, true);
+                setVisible(btnMyCoursesChild, true);
+                setVisible(btnGames, true);
+                setVisible(btnChildLibrary, true);
+            }
+        }
     }
 
-    private void setInactive(Button b) {
-        b.setStyle("-fx-background-color:transparent;-fx-text-fill:#AAAACC;" +
-                "-fx-background-radius:8;-fx-alignment:CENTER_LEFT;-fx-padding:10 16;" +
-                "-fx-border-width:0;-fx-cursor:hand;");
-    }
+    /* LOGIN NAV */
 
     private void navigateToLogin() {
         try {
             Parent root = new FXMLLoader(
                     getClass().getResource("/views/auth/LoginView.fxml")).load();
-            Stage stage = (Stage) btnLogout.getScene().getWindow();
+
+            Stage stage = (Stage) btnDashboard.getScene().getWindow();
             stage.setScene(new Scene(root, 860, 540));
-            stage.setTitle("EduPlay — Connexion");
-            stage.centerOnScreen();
+
         } catch (IOException e) {
-            new Alert(Alert.AlertType.ERROR, "Erreur : " + e.getMessage()).showAndWait();
+            new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
     }
 
-    private String capitalize(String s) {
-        if (s == null || s.isBlank()) return "";
-        return s.substring(0, 1).toUpperCase() + s.substring(1);
+    /* UTILS */
+
+    private void setVisible(javafx.scene.Node node, boolean visible) {
+        if (node != null) {
+            node.setVisible(visible);
+            node.setManaged(visible);
+        }
     }
+
+    private void setIfNotNull(Label label, String text) {
+        if (label != null) label.setText(text);
+    }
+
+    private String buildInitials(String fullName) {
+        if (fullName == null || fullName.isBlank()) return "?";
+        String[] parts = fullName.split(" ");
+        return (parts[0].charAt(0) + "" + parts[parts.length - 1].charAt(0)).toUpperCase();
+    }
+
+
 }

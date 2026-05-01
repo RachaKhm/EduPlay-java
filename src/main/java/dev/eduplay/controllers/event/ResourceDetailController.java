@@ -1,0 +1,181 @@
+package dev.eduplay.controllers.event;
+
+import dev.eduplay.core.Router;
+import dev.eduplay.entities.EventResource;
+import dev.eduplay.services.EventResourceService;
+import javafx.fxml.FXML;
+import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
+
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
+
+public class ResourceDetailController {
+
+    @FXML private Button backBtn;
+    @FXML private Button editBtn;
+    @FXML private Button deleteBtn;
+    @FXML private Button openUrlBtn;
+    @FXML private Button openFileBtn;
+    @FXML private Label eventInfoLabel;
+    @FXML private Label titleValue;
+    @FXML private Label typeValue;
+    @FXML private Label createdAtValue;
+    @FXML private TextArea contextValue;
+    @FXML private Label urlValue;
+    @FXML private Label filePathValue;
+    @FXML private VBox urlBox;
+    @FXML private VBox filePathBox;
+
+    private EventResourceService service;
+    private int eventId;
+    private String eventTitle;
+    private EventResource currentResource;
+    private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    @FXML
+    public void initialize() {
+        System.out.println("ResourceDetailController initialisé");
+        service = new EventResourceService();
+        setupActions();
+    }
+
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
+        System.out.println("setEventId reçu: " + eventId);
+    }
+
+    public void setEventTitle(String eventTitle) {
+        this.eventTitle = eventTitle;
+        System.out.println("setEventTitle reçu: " + eventTitle);
+        eventInfoLabel.setText("Événement : " + eventTitle);
+    }
+
+    public void setResource(EventResource resource) {
+        this.currentResource = resource;
+        System.out.println("setResource reçu: " + resource.getTitle());
+        displayResourceDetails();
+    }
+
+    private void setupActions() {
+        backBtn.setOnAction(e -> goBack());
+        editBtn.setOnAction(e -> goToEdit());
+        deleteBtn.setOnAction(e -> deleteResource());
+        openUrlBtn.setOnAction(e -> openUrl());
+        openFileBtn.setOnAction(e -> openFile());
+    }
+
+    private void displayResourceDetails() {
+        if (currentResource == null) return;
+
+        titleValue.setText(currentResource.getTitle());
+
+        String type = currentResource.getType();
+        String typeStyle = "";
+        switch (type) {
+            case "VIDEO": typeStyle = "-fx-text-fill: #ef4444; -fx-font-weight: bold;"; break;
+            case "DOCUMENT": typeStyle = "-fx-text-fill: #3b82f6; -fx-font-weight: bold;"; break;
+            case "LIEN": typeStyle = "-fx-text-fill: #10b981; -fx-font-weight: bold;"; break;
+            case "CHECKLIST": typeStyle = "-fx-text-fill: #f59e0b; -fx-font-weight: bold;"; break;
+            case "PLANNING": typeStyle = "-fx-text-fill: #8b5cf6; -fx-font-weight: bold;"; break;
+            default: typeStyle = "-fx-font-weight: bold;";
+        }
+        typeValue.setStyle(typeStyle);
+        typeValue.setText(type);
+
+        if (currentResource.getCreatedAt() != null) {
+            createdAtValue.setText(currentResource.getCreatedAt().format(dateFormatter));
+        }
+
+        contextValue.setText(currentResource.getContext() != null ? currentResource.getContext() : "Aucune description");
+
+        if (currentResource.getUrl() != null && !currentResource.getUrl().isEmpty()) {
+            urlValue.setText(currentResource.getUrl());
+            urlBox.setVisible(true);
+            urlBox.setManaged(true);
+        } else {
+            urlBox.setVisible(false);
+            urlBox.setManaged(false);
+        }
+
+        if (currentResource.getFilePath() != null && !currentResource.getFilePath().isEmpty()) {
+            filePathValue.setText(currentResource.getFilePath());
+            filePathBox.setVisible(true);
+            filePathBox.setManaged(true);
+        } else {
+            filePathBox.setVisible(false);
+            filePathBox.setManaged(false);
+        }
+    }
+
+    private void openUrl() {
+        String url = urlValue.getText();
+        if (url != null && !url.isEmpty()) {
+            try {
+                if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                    url = "https://" + url;
+                }
+                Desktop.getDesktop().browse(new URI(url));
+            } catch (IOException | URISyntaxException e) {
+                showAlert("Erreur", "Impossible d'ouvrir l'URL: " + e.getMessage());
+            }
+        }
+    }
+
+    private void openFile() {
+        String filePath = filePathValue.getText();
+        if (filePath != null && !filePath.isEmpty()) {
+            try {
+                File file = new File(filePath);
+                if (file.exists()) {
+                    Desktop.getDesktop().open(file);
+                } else {
+                    showAlert("Erreur", "Le fichier n'existe pas: " + filePath);
+                }
+            } catch (IOException e) {
+                showAlert("Erreur", "Impossible d'ouvrir le fichier: " + e.getMessage());
+            }
+        }
+    }
+
+    private void goBack() {
+        Router.go("event_resource", eventId, eventTitle);
+    }
+
+    // ✅ CORRIGÉ : Utilise edit_resource au lieu de add_resource
+    private void goToEdit() {
+        if (currentResource != null) {
+            Router.go("edit_resource", eventId, eventTitle, currentResource);
+        }
+    }
+
+    private void deleteResource() {
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmation");
+        confirm.setHeaderText("Supprimer la ressource");
+        confirm.setContentText("Êtes-vous sûr de vouloir supprimer la ressource \"" + currentResource.getTitle() + "\" ?");
+
+        if (confirm.showAndWait().get() == ButtonType.OK) {
+            try {
+                service.supprimer(currentResource);
+                showAlert("Succès", "Ressource supprimée avec succès");
+                goBack();
+            } catch (SQLException e) {
+                showAlert("Erreur", "Impossible de supprimer la ressource: " + e.getMessage());
+            }
+        }
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+}

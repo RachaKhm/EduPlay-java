@@ -7,26 +7,24 @@
 <BorderPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dev.eduplay.controllers.UserListController"
-            style="-fx-background-color: #F8F9FA;">
+            stylesheets="@../../styles/admin.css"
+            styleClass="admin-scroll-pane">
 
     <!-- ===== HEADER ===== -->
     <top>
-        <VBox style="-fx-background-color: #1A1A2E; -fx-padding: 0;">
+        <VBox styleClass="admin-header-bg">
             <HBox alignment="CENTER_LEFT" spacing="16"
-                  style="-fx-padding: 18 28 18 28;">
+                  styleClass="admin-header-container">
                 <Label text="EduPlay"
-                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #E94560;"/>
+                       styleClass="sidebar-brand-edu" style="-fx-font-size: 18px; -fx-text-fill: white;"/>
                 <Label text="›"
-                       style="-fx-font-size: 16px; -fx-text-fill: #555577;"/>
+                       styleClass="admin-breadcrumb-separator"/>
                 <Label text="Gestion des utilisateurs"
-                       style="-fx-font-size: 14px; -fx-text-fill: #AAAACC;"/>
+                       styleClass="admin-breadcrumb-text, admin-breadcrumb-text-active"/>
                 <HBox HBox.hgrow="ALWAYS"/>
                 <Button text="+ Nouvel utilisateur"
                         onAction="#openAddUserForm"
-                        style="-fx-background-color: #E94560; -fx-text-fill: white;
-                               -fx-font-size: 13px; -fx-font-weight: bold;
-                               -fx-padding: 8 18; -fx-background-radius: 6;
-                               -fx-cursor: hand;"/>
+                        styleClass="admin-btn-primary-small"/>
             </HBox>
         </VBox>
     </top>
@@ -37,99 +35,75 @@
 
             <!-- Barre filtres -->
             <HBox spacing="12" alignment="CENTER_LEFT"
-                  style="-fx-padding: 16 28 16 28;
-                         -fx-background-color: white;
-                         -fx-border-color: #E8E8F0;
-                         -fx-border-width: 0 0 1 0;">
+                  styleClass="admin-filter-bar">
 
                 <!-- Recherche -->
                 <TextField fx:id="searchField"
                            promptText="Rechercher par nom, prénom, email..."
                            onKeyReleased="#search"
                            prefWidth="280"
-                           style="-fx-background-color: #F4F4F8;
-                                  -fx-background-radius: 6;
-                                  -fx-border-radius: 6;
-                                  -fx-border-color: #DDDDE8;
-                                  -fx-border-width: 1;
-                                  -fx-padding: 8 12;
-                                  -fx-font-size: 13px;"/>
+                           styleClass="admin-search-field"/>
 
                 <!-- Filtre type -->
                 <Label text="Type :"
                        style="-fx-font-size: 13px; -fx-text-fill: #666688;"/>
                 <ComboBox fx:id="typeFilter"
-                          onAction="#search"
-                          prefWidth="140"
-                          style="-fx-font-size: 13px;"/>
+                           onAction="#search"
+                           prefWidth="140"
+                           style="-fx-font-size: 13px;"/>
 
                 <HBox HBox.hgrow="ALWAYS"/>
 
                 <!-- Status -->
                 <Label fx:id="statusLabel"
                        text="0 utilisateur(s)"
-                       style="-fx-font-size: 12px; -fx-text-fill: #9999BB;"/>
+                       styleClass="stat-sublabel" style="-fx-font-size: 12px;"/>
             </HBox>
 
             <!-- Tableau -->
             <TableView fx:id="userTable"
                        VBox.vgrow="ALWAYS"
-                       style="-fx-background-color: white;
-                              -fx-table-cell-border-color: #F0F0F8;
-                              -fx-font-size: 13px;">
+                       styleClass="admin-table-full">
                 <columns>
                     <TableColumn fx:id="colId" text="ID" prefWidth="55"
-                                 style="-fx-alignment: CENTER;"/>
+                                 styleClass="admin-table-cell-center"/>
                     <TableColumn fx:id="colFirstName" text="Prénom" prefWidth="130"/>
                     <TableColumn fx:id="colLastName"  text="Nom"    prefWidth="130"/>
                     <TableColumn fx:id="colEmail"     text="Email"  prefWidth="220"/>
                     <TableColumn fx:id="colType"      text="Type"   prefWidth="110"
-                                 style="-fx-alignment: CENTER;"/>
+                                 styleClass="admin-table-cell-center"/>
                     <TableColumn fx:id="colActive"    text="Actif"  prefWidth="80"
-                                 style="-fx-alignment: CENTER;"/>
+                                 styleClass="admin-table-cell-center"/>
                     <TableColumn fx:id="colActions"   text="Actions" prefWidth="160"
-                                 style="-fx-alignment: CENTER;"/>
+                                 styleClass="admin-table-cell-center"/>
                 </columns>
                 <placeholder>
                     <Label text="Aucun utilisateur trouvé."
-                           style="-fx-font-size: 14px; -fx-text-fill: #AAAACC;"/>
+                           styleClass="stat-sublabel" style="-fx-font-size: 14px;"/>
                 </placeholder>
             </TableView>
 
             <!-- Footer barre d'actions -->
             <HBox spacing="10" alignment="CENTER_LEFT"
-                  style="-fx-padding: 12 28;
-                         -fx-background-color: white;
-                         -fx-border-color: #E8E8F0;
-                         -fx-border-width: 1 0 0 0;">
+                  styleClass="admin-action-bar">
 
                 <Button text="Modifier"
                         onAction="#editSelectedUser"
-                        style="-fx-background-color: #4A90D9; -fx-text-fill: white;
-                               -fx-font-size: 12px; -fx-padding: 7 16;
-                               -fx-background-radius: 5; -fx-cursor: hand;"/>
+                        styleClass="admin-btn-action-blue"/>
 
                 <Button text="Activer / Désactiver"
                         onAction="#toggleActiveUser"
-                        style="-fx-background-color: #F0A500; -fx-text-fill: white;
-                               -fx-font-size: 12px; -fx-padding: 7 16;
-                               -fx-background-radius: 5; -fx-cursor: hand;"/>
+                        styleClass="admin-btn-action-orange"/>
 
                 <Button text="Supprimer"
                         onAction="#deleteUser"
-                        style="-fx-background-color: #E94560; -fx-text-fill: white;
-                               -fx-font-size: 12px; -fx-padding: 7 16;
-                               -fx-background-radius: 5; -fx-cursor: hand;"/>
+                        styleClass="auth-primary-button" style="-fx-font-size: 12px; -fx-padding: 7 16; -fx-background-radius: 5;"/>
 
                 <HBox HBox.hgrow="ALWAYS"/>
 
                 <Button text="Actualiser"
                         onAction="#refreshList"
-                        style="-fx-background-color: #F4F4F8; -fx-text-fill: #444466;
-                               -fx-font-size: 12px; -fx-padding: 7 14;
-                               -fx-background-radius: 5; -fx-border-color: #DDDDE8;
-                               -fx-border-width: 1; -fx-border-radius: 5;
-                               -fx-cursor: hand;"/>
+                        styleClass="admin-btn-action-refresh"/>
             </HBox>
 
         </VBox>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.MainController"
+            prefWidth="1300" prefHeight="800"
+            styleClass="main-root"
+            stylesheets="@/styles/main-view.css">
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <left>
+        <fx:include fx:id="sidebar" source="/views/shared/Sidebar.fxml"/>
+    </left>
+
+    <!-- ═══ ZONE PRINCIPALE ═══ -->
+    <center>
+        <BorderPane>
+
+            <!-- Topbar -->
+            <top>
+                <HBox alignment="CENTER_RIGHT" spacing="16" styleClass="topbar">
+
+                    <!-- Barre de recherche -->
+                    <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                        <HBox spacing="8" alignment="CENTER_LEFT" styleClass="search-box">
+                            <Label text="🔍" styleClass="search-icon"/>
+                            <TextField promptText="Rechercher..." styleClass="search-field"/>
+                        </HBox>
+                    </HBox>
+
+                    <!-- Bouton Enrollment Facial -->
+                    <StackPane fx:id="faceEnrollBtn"
+                               onMouseClicked="#handleFaceEnroll"
+                               styleClass="icon-btn">
+                        <Label text="🪪" styleClass="icon-label">
+                            <tooltip>
+                                <Tooltip text="Enregistrer / Modifier mon visage"/>
+                            </tooltip>
+                        </Label>
+                    </StackPane>
+
+                    <!-- Notification Bell -->
+                    <StackPane styleClass="icon-btn">
+                        <Label text="🔔" styleClass="icon-label"/>
+                        <Label text="3" styleClass="notif-badge"/>
+                    </StackPane>
+
+                    <!-- Profile Button -->
+                    <HBox fx:id="btnProfile" onMouseClicked="#showProfile"
+                          alignment="CENTER" spacing="12"
+                          styleClass="profile-btn">
+                        <StackPane styleClass="profile-avatar">
+                            <Label fx:id="pillInitials" text="U" styleClass="profile-initials"/>
+                        </StackPane>
+                        <VBox alignment="CENTER_LEFT">
+                            <Label fx:id="pillName"   text="Utilisateur" styleClass="profile-name"/>
+                            <Label fx:id="pillRole"   text="Rôle"        styleClass="profile-role"/>
+                        </VBox>
+                    </HBox>
+
+                </HBox>
+            </top>
+
+            <!-- Contenu dynamique -->
+            <center>
+                <StackPane fx:id="contentArea" styleClass="content-area"/>
+            </center>
+
+        </BorderPane>
+    </center>
+
+</BorderPane>
