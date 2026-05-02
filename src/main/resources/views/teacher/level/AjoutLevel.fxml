@@ -71,6 +71,10 @@
                                       -fx-border-width: 1; -fx-background-radius: 6;
                                       -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
                 </VBox>
+                <!-- Feedback -->
+                <Label fx:id="feedbackname" text="" wrapText="true"
+                       style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
+
 
                 <VBox spacing="6" style="-fx-padding: 14 0 0 0;">
                     <Label text="Description"
@@ -81,6 +85,10 @@
                                      -fx-border-width: 1; -fx-background-radius: 6;
                                      -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
                 </VBox>
+                <!-- Feedback -->
+                <Label fx:id="feedbackdesc" text="" wrapText="true"
+                       style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
+
 
                 <Separator style="-fx-padding: 20 0 0 0;"/>
 
@@ -113,6 +121,10 @@
                                  style="-fx-font-size: 13px;"/>
                     </VBox>
                 </HBox>
+                <!-- Feedback -->
+                <Label fx:id="feedbackage" text="" wrapText="true"
+                       style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
+
 
                 <VBox spacing="6" style="-fx-padding: 14 0 0 0;">
                     <Label text="Objectif pédagogique *"
@@ -124,6 +136,10 @@
                                      -fx-border-width: 1; -fx-background-radius: 6;
                                      -fx-border-radius: 6; -fx-padding: 9 12; -fx-font-size: 13px;"/>
                 </VBox>
+                <!-- Feedback -->
+                <Label fx:id="feedbackpedag" text="" wrapText="true"
+                       style="-fx-font-size: 12px; -fx-padding: 12 0 0 0; -fx-text-fill: #2E9E6E;"/>
+
 
                 <!-- Feedback -->
                 <Label fx:id="feedbackLabel" text="" wrapText="true"
@@ -131,7 +147,7 @@
 
                 <!-- Boutons -->
                 <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 24 0 0 0;">
-                    <Button text="Annuler" onAction="#closeForm"
+                    <Button text="Annuler" onAction="#showLevels"
                             style="-fx-background-color: white; -fx-border-color: #DDDDE8;
                                    -fx-border-width: 1; -fx-border-radius: 6;
                                    -fx-background-radius: 6; -fx-text-fill: #555577;

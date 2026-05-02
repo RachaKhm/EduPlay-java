@@ -233,33 +233,21 @@ public class UserListController {
         openForm(selected);
     }
 
+    // Static holder to pass user to edit to UserFormController
+    private static User userToEdit = null;
+
+    public static User getUserToEdit() { return userToEdit; }
+    public static void setUserToEdit(User user) { userToEdit = user; }
+    public static void clearUserToEdit() { userToEdit = null; }
+
     /**
-     * Ouvre le formulaire utilisateur en fenêtre modale.
+     * Ouvre le formulaire utilisateur inline via le Router.
      *
      * @param user null = mode création, non-null = mode édition
      */
     private void openForm(User user) {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    getClass().getResource("/views/child/UserFormView.fxml"));
-            Parent root = loader.load();
-
-            UserFormController ctrl = loader.getController();
-            if (user != null) ctrl.setUser(user);
-
-            Stage stage = new Stage();
-            stage.initModality(Modality.APPLICATION_MODAL);
-            stage.setTitle(user == null
-                    ? "Nouvel utilisateur"
-                    : "Modifier — " + user.getFullName());
-            stage.setScene(new Scene(root));
-            stage.setOnHidden(e -> loadUsers()); // rafraîchir après fermeture
-            stage.show();
-
-        } catch (IOException e) {
-            showAlert(Alert.AlertType.ERROR,
-                    "Impossible d'ouvrir le formulaire : " + e.getMessage());
-        }
+        setUserToEdit(user);
+        Router.reload("admin_user_form");
     }
 
     /* ── Utilitaires ───────────────────────────────────────── */

@@ -3,6 +3,7 @@ package dev.eduplay.services;
 import dev.eduplay.entities.EventRegistration;
 import dev.eduplay.entities.SchoolEvent;
 import dev.eduplay.entities.User;
+import dev.eduplay.interfaces.IGeneralService;
 import dev.eduplay.tools.MyDataBase;
 import dev.eduplay.utils.QRCodeGenerator;
 
@@ -107,7 +108,7 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         // ========== 4. ENVOI DE L'EMAIL DE CONFIRMATION ==========
         if (registrationId > 0 && registration.getParent() != null && registration.getParent().getEmail() != null) {
             try {
-                EmailService emailService = new EmailService();
+                EmailServiceEvent emailService = new EmailServiceEvent();
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
                 String eventDate = registration.getEvent().getStartDate() != null ?

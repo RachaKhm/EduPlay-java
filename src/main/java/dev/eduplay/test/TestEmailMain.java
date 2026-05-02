@@ -1,12 +1,12 @@
 package dev.eduplay.test;
 
-import dev.eduplay.services.EmailService;
+import dev.eduplay.services.EmailServiceEvent;
 
 public class TestEmailMain {
     public static void main(String[] args) {
         System.out.println("=== TEST ENVOI EMAIL ===\n");
 
-        EmailService emailService = new EmailService();
+        EmailServiceEvent emailService = new EmailServiceEvent();
 
         // Test d'envoi simple
         emailService.sendSimpleEmail(

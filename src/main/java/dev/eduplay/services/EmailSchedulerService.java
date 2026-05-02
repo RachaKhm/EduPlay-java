@@ -16,14 +16,14 @@ public class EmailSchedulerService {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private final EventRegistrationService registrationService;
     private final SchoolEventService eventService;
-    private final EmailService emailService;
+    private final EmailServiceEvent emailService;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
     private boolean running = false;
 
     public EmailSchedulerService() {
         this.registrationService = new EventRegistrationService();
         this.eventService = new SchoolEventService();
-        this.emailService = new EmailService();
+        this.emailService = new EmailServiceEvent();
     }
 
     public void startReminderScheduler() {

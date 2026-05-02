@@ -1,8 +1,8 @@
 package dev.eduplay.services;
 
 import dev.eduplay.entities.EventRegistration;
-import dev.eduplay.entities.EventResource;
 import dev.eduplay.entities.SchoolEvent;
+import dev.eduplay.interfaces.IGeneralService;
 import dev.eduplay.tools.MyDataBase;
 
 import java.sql.*;
@@ -146,7 +146,7 @@ public class SchoolEventService implements IGeneralService<SchoolEvent> {
      */
     private void notifyParentsOfEventChange(SchoolEvent oldEvent, SchoolEvent newEvent) throws SQLException {
         EventRegistrationService registrationService = new EventRegistrationService();
-        EmailService emailService = new EmailService();
+        EmailServiceEvent emailService = new EmailServiceEvent();
         NotificationService notificationService = new NotificationService();
 
         List<EventRegistration> registrations = registrationService.recupererParEventId(newEvent.getId());

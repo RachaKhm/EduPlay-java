@@ -1,4 +1,4 @@
-package entities;
+package dev.eduplay.entities;
 
 import java.time.LocalDateTime;
 
@@ -45,6 +45,10 @@ public class Level {
         this.pedagGoal = pedagGoal;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public Level() {
+
     }
 
     public int getId() {
@@ -106,7 +110,21 @@ public class Level {
         this.pedagGoal = pedagGoal;
     }
 
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
 
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
     @Override
     public String toString() {
