@@ -99,31 +99,44 @@ public class ChildResourceController {
         }
 
         for (BookRequest br : list) {
-            HBox item = new HBox(12);
+            HBox item = new HBox(16);
             item.setAlignment(Pos.CENTER_LEFT);
-            item.setStyle("-fx-background-color: white; -fx-padding: 12 16; -fx-background-radius: 12; -fx-border-color: #F1F5F9; -fx-border-width: 1; -fx-border-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.02), 5, 0, 0, 2);");
+            item.setStyle("-fx-background-color: linear-gradient(to right, #F0FDF4, #FFFFFF); " +
+                          "-fx-padding: 16; -fx-background-radius: 16; " +
+                          "-fx-border-color: #DCFCE7; -fx-border-width: 0 0 0 4; " + // Left accent border
+                          "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.04), 10, 0, 0, 4);");
             
-            StackPane iconBox = new StackPane(new Label("📚"));
-            iconBox.setStyle("-fx-background-color: #F0FDF4; -fx-padding: 8; -fx-background-radius: 10;");
+            // Hover effect
+            item.setOnMouseEntered(e -> item.setStyle(item.getStyle() + "-fx-background-color: linear-gradient(to right, #DCFCE7, #FFFFFF); -fx-scale-x: 1.01; -fx-scale-y: 1.01;"));
+            item.setOnMouseExited(e -> item.setStyle(item.getStyle().replace("-fx-background-color: linear-gradient(to right, #DCFCE7, #FFFFFF); -fx-scale-x: 1.01; -fx-scale-y: 1.01;", "")));
+
+            StackPane iconBox = new StackPane(new Label("✨"));
+            iconBox.setStyle("-fx-background-color: white; -fx-min-width: 44; -fx-min-height: 44; -fx-background-radius: 22; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 2);");
+            Label sparkle = (Label) iconBox.getChildren().get(0);
+            sparkle.setStyle("-fx-font-size: 20px;");
             
-            VBox info = new VBox(2);
+            VBox info = new VBox(4);
             Label title = new Label(br.getBookTitle());
-            title.setStyle("-fx-font-weight: bold; -fx-text-fill: #0F172A; -fx-font-size: 14px;");
+            title.setStyle("-fx-font-weight: bold; -fx-text-fill: #064E3B; -fx-font-size: 15px;");
             
-            String dateStr = (br.getRequestedAt() != null) ? br.getRequestedAt().format(DateTimeFormatter.ofPattern("dd/MM")) : "N/A";
-            Label sub = new Label("Disponible depuis le " + dateStr + " ✨");
-            sub.setStyle("-fx-font-size: 11px; -fx-text-fill: #16A34A; -fx-font-weight: bold;");
+            String dateStr = (br.getRequestedAt() != null) ? br.getRequestedAt().format(DateTimeFormatter.ofPattern("dd MMMM")) : "N/A";
+            Label sub = new Label("✨ Super ! Disponible depuis le " + dateStr);
+            sub.setStyle("-fx-font-size: 12px; -fx-text-fill: #16A34A;");
             info.getChildren().addAll(title, sub);
             
             Region spacer = new Region();
             HBox.setHgrow(spacer, Priority.ALWAYS);
             
-            Button btnRead = new Button("Lire");
-            btnRead.setStyle("-fx-background-color: #22C55E; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 6 20; -fx-cursor: hand;");
+            Button btnRead = new Button("Ouvrir le livre 📖");
+            btnRead.setStyle("-fx-background-color: linear-gradient(to right, #10B981, #059669); " +
+                             "-fx-text-fill: white; -fx-font-weight: bold; " +
+                             "-fx-background-radius: 12; -fx-padding: 8 20; " +
+                             "-fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(16,185,129,0.3), 8, 0, 0, 3);");
+            
             btnRead.setOnAction(e -> {
                 bookRequestService.marquerCommeNotifie(br.getId());
                 loadNotifications();
-                showPremiumPopup("Bonne lecture !", "Le livre « " + br.getBookTitle() + " » t'attend ! 📖", "#10B981");
+                showPremiumPopup("C'est parti !", "Découvrons ensemble « " + br.getBookTitle() + " »", "#10B981");
             });
             
             item.getChildren().addAll(iconBox, info, spacer, btnRead);

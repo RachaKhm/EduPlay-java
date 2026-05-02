@@ -14,11 +14,19 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+import javafx.application.Platform;
 import javafx.animation.Timeline;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
-import javafx.util.Duration;
-import javafx.application.Platform;
+import javafx.animation.FadeTransition;
+import javafx.animation.TranslateTransition;
+import javafx.geometry.Pos;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.Priority;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -106,16 +114,82 @@ public class SidebarController {
 
     private void showSystemNotification(BookRequest req) {
         Platform.runLater(() -> {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-            alert.setTitle("Bonne nouvelle ! 📚");
-            alert.setHeaderText("Un livre que tu as demandé est disponible !");
-            alert.setContentText("Le livre « " + req.getBookTitle() + " » a été ajouté à la bibliothèque.\nTu peux maintenant aller le lire ! ✨");
+            // Overlay semi-transparent
+            StackPane overlay = new StackPane();
+            overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.4);"); // Assombrit le fond
+            overlay.setPrefSize(2000, 2000); // Couvre tout
             
-            DialogPane dialogPane = alert.getDialogPane();
-            dialogPane.setStyle("-fx-background-color: #F0F9FF; -fx-font-family: 'Segoe UI';");
+            VBox popup = new VBox(20);
+            popup.setAlignment(Pos.CENTER);
+            popup.setMaxSize(420, 260);
+            popup.setStyle("-fx-background-color: white; -fx-background-radius: 30; -fx-padding: 30; " +
+                          "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 40, 0, 0, 15); " +
+                          "-fx-border-color: linear-gradient(to bottom right, #3B82F6, #8B5CF6); -fx-border-width: 3; -fx-border-radius: 30;");
             
-            alert.show();
+            // Icone avec cercle de fond
+            StackPane iconBox = new StackPane(new Label("📚"));
+            iconBox.setStyle("-fx-background-color: #DBEAFE; -fx-min-width: 60; -fx-min-height: 60; -fx-background-radius: 30;");
+            Label iconLabel = (Label) iconBox.getChildren().get(0);
+            iconLabel.setStyle("-fx-font-size: 28px;");
+            
+            VBox textContent = new VBox(8);
+            textContent.setAlignment(Pos.CENTER);
+            Label lblTitle = new Label("Cadeau de lecture ! ✨");
+            lblTitle.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1E293B;");
+            
+            Label lblMsg = new Label("Le livre « " + req.getBookTitle() + " » est arrivé !\nTu veux le découvrir maintenant ?");
+            lblMsg.setStyle("-fx-text-fill: #64748B; -fx-font-size: 15px; -fx-text-alignment: center;");
+            lblMsg.setWrapText(true);
+            textContent.getChildren().addAll(lblTitle, lblMsg);
+            
+            HBox buttons = new HBox(12);
+            buttons.setAlignment(Pos.CENTER);
+            
+            Button btnLater = new Button("Plus tard");
+            btnLater.setStyle("-fx-background-color: #F1F5F9; -fx-text-fill: #64748B; -fx-font-weight: bold; -fx-background-radius: 12; -fx-padding: 10 20; -fx-cursor: hand;");
+            btnLater.setOnAction(e -> hidePopup(overlay));
+
+            Button btnGo = new Button("Lire maintenant 📖");
+            btnGo.setStyle("-fx-background-color: linear-gradient(to right, #3B82F6, #8B5CF6); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 12; -fx-padding: 10 24; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(59,130,246,0.4), 10, 0, 0, 4);");
+            btnGo.setOnAction(e -> {
+                Router.go("child_resource", req.getBookTitle());
+                hidePopup(overlay);
+            });
+            
+            buttons.getChildren().addAll(btnLater, btnGo);
+            popup.getChildren().addAll(iconBox, textContent, buttons);
+            overlay.getChildren().add(popup);
+            
+            StackPane root = Router.getContainer();
+            if (root != null) {
+                root.getChildren().add(overlay);
+                
+                // Animation
+                overlay.setOpacity(0);
+                popup.setScaleX(0.7); popup.setScaleY(0.7);
+                
+                FadeTransition fadeIn = new FadeTransition(Duration.millis(300), overlay);
+                fadeIn.setToValue(1);
+                
+                fadeIn.play();
+                
+                // Zoom effect for popup
+                javafx.animation.ScaleTransition zoom = new javafx.animation.ScaleTransition(Duration.millis(400), popup);
+                zoom.setToX(1.0); zoom.setToY(1.0);
+                zoom.setInterpolator(javafx.animation.Interpolator.EASE_BOTH);
+                zoom.play();
+            }
         });
+    }
+
+    private void hidePopup(StackPane overlay) {
+        StackPane root = Router.getContainer();
+        if (root != null && root.getChildren().contains(overlay)) {
+            FadeTransition fadeOut = new FadeTransition(Duration.millis(300), overlay);
+            fadeOut.setToValue(0);
+            fadeOut.setOnFinished(ev -> root.getChildren().remove(overlay));
+            fadeOut.play();
+        }
     }
 
     @FXML private void showDashboard()      { Router.go(AppContext.getDefaultRoute()); }
