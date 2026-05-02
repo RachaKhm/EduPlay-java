@@ -25,6 +25,13 @@
                style="-fx-font-size: 13px; -fx-text-fill: #92400E;"/>
     </HBox>
 
+    <!-- Search Bar -->
+    <HBox style="-fx-padding: 14 20 0 20;">
+        <TextField fx:id="searchField" promptText="🔍 Rechercher une séance par titre..." 
+                   style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-border-color: #E2E8F0; -fx-padding: 10 14; -fx-background-color: white;"
+                   HBox.hgrow="ALWAYS"/>
+    </HBox>
+
     <!-- Séances list -->
     <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
                 style="-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;">

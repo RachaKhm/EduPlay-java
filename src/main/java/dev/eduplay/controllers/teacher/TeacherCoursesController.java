@@ -3,6 +3,8 @@ package dev.eduplay.controllers.teacher;
 import dev.eduplay.core.AppContext;
 import dev.eduplay.services.CourseService;
 import dev.eduplay.entities.Course;
+import dev.eduplay.entities.CourseReview;
+import dev.eduplay.services.CourseReviewService;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -44,6 +46,7 @@ public class TeacherCoursesController {
     private SortedList<Course> sorted;
 
     private CourseService courseService;
+    private CourseReviewService reviewService;
 
     @FXML
     public void initialize() {
@@ -53,6 +56,7 @@ public class TeacherCoursesController {
 
         try {
             courseService = new CourseService();
+            reviewService = new CourseReviewService();
         } catch (SQLException e) {
             showError("Base de données", "Impossible d'initialiser CourseService", e.getMessage());
             return;
@@ -225,6 +229,10 @@ public class TeacherCoursesController {
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
+        Button viewReviews = new Button("⭐ Avis");
+        viewReviews.setStyle(buttonStyle("#F59E0B"));
+        viewReviews.setOnAction(e -> openReviewsDialog(c));
+
         Button edit = new Button("Modifier");
         edit.setStyle(buttonStyle("#4A90D9"));
         edit.setOnAction(e -> openCourseForm(c));
@@ -233,7 +241,7 @@ public class TeacherCoursesController {
         del.setStyle(buttonStyle("#E94560"));
         del.setOnAction(e -> deleteCourse(c));
 
-        HBox actions = new HBox(10, edit, del);
+        HBox actions = new HBox(10, viewReviews, edit, del);
         actions.setAlignment(Pos.CENTER_RIGHT);
 
         card.getChildren().addAll(title, desc, meta, small, spacer, actions);
@@ -279,6 +287,67 @@ public class TeacherCoursesController {
             dialog.showAndWait();
         } catch (IOException e) {
             showError("UI", "Impossible d'ouvrir le formulaire", e.getMessage());
+        }
+    }
+
+    private void openReviewsDialog(Course c) {
+        try {
+            java.util.List<CourseReview> reviews = reviewService.getAllReviewsForCourse(c.getId());
+            
+            Dialog<Void> dialog = new Dialog<>();
+            dialog.setTitle("Avis sur le cours");
+            dialog.setHeaderText("Avis pour : " + safe(c.getTitle(), ""));
+            dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+            VBox content = new VBox(15);
+            content.setPadding(new Insets(20));
+            content.setPrefWidth(400);
+
+            if (reviews.isEmpty()) {
+                Label empty = new Label("Aucun avis pour ce cours.");
+                empty.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 14px;");
+                content.getChildren().add(empty);
+            } else {
+                double avg = reviewService.getAverageRating(c.getId());
+                Label avgLbl = new Label(String.format(Locale.US, "Note moyenne : %.1f ⭐", avg));
+                avgLbl.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #F59E0B;");
+                content.getChildren().add(avgLbl);
+
+                ScrollPane scroll = new ScrollPane();
+                scroll.setFitToWidth(true);
+                scroll.setPrefHeight(300);
+                scroll.setStyle("-fx-background-color: transparent; -fx-border-color: transparent;");
+
+                VBox list = new VBox(10);
+                for (CourseReview r : reviews) {
+                    VBox rBox = new VBox(5);
+                    rBox.setPadding(new Insets(10));
+                    rBox.setStyle("-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8;");
+                    
+                    String stars = "⭐".repeat(r.getRating()) + "☆".repeat(5 - r.getRating());
+                    Label st = new Label(stars);
+                    st.setStyle("-fx-text-fill: #F59E0B; -fx-font-size: 14px;");
+                    
+                    Label cmt = new Label(safe(r.getComment(), "(Aucun commentaire)"));
+                    cmt.setWrapText(true);
+                    cmt.setStyle("-fx-text-fill: #334155; -fx-font-size: 13px;");
+
+                    String date = r.getCreatedAt() != null ? r.getCreatedAt().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) : "";
+                    Label dt = new Label(date);
+                    dt.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 11px;");
+
+                    rBox.getChildren().addAll(st, cmt, dt);
+                    list.getChildren().add(rBox);
+                }
+                scroll.setContent(list);
+                content.getChildren().add(scroll);
+            }
+
+            dialog.getDialogPane().setContent(content);
+            dialog.showAndWait();
+
+        } catch (SQLException e) {
+            showError("Base de données", "Erreur lors du chargement des avis", e.getMessage());
         }
     }
 

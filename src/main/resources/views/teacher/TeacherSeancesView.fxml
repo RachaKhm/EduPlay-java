@@ -16,9 +16,6 @@
                 <Label fx:id="subtitleLabel" text="Planifiez vos sessions de cours"
                        style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.8);"/>
             </VBox>
-            <Button fx:id="addBtn" text="+ Ajouter une séance"
-                    style="-fx-background-color: white; -fx-text-fill: #6366F1; -fx-font-weight: bold;
-                           -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
         </HBox>
     </VBox>
 

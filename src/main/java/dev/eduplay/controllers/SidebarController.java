@@ -40,7 +40,6 @@ public class SidebarController {
     @FXML private HBox sectionTeacherBox;
     @FXML private Label sectionTeacher;
     @FXML private HBox btnCourses;
-    @FXML private HBox btnStudents;
     @FXML private HBox btnLevel;
     @FXML private HBox btnGames;
 
@@ -71,7 +70,7 @@ public class SidebarController {
         allNavButtons = Arrays.asList(
                 btnDashboard,
                 btnUsers, btnLibrary, btnResource, btnCalendar, btnStats,
-                btnCourses, btnStudents, btnLevel, btnGames, btnSeances,
+                btnCourses, btnLevel, btnGames, btnSeances,
                 btnChildren, btnParentSeances, btnEvents,
                 btnMyCoursesChild, btnChildLibrary,
                 btnProfile
@@ -182,7 +181,6 @@ public class SidebarController {
             case "admin_stats" -> btnStats;
 
             case "teacher_courses" -> btnCourses;
-            case "teacher_students" -> btnStudents;
             case "teacher_seances" -> btnSeances;
 
             case "parent_children" -> btnChildren;
@@ -217,7 +215,6 @@ public class SidebarController {
         setVisible(sectionTeacherBox, false);
         setVisible(sectionTeacher, false);
         setVisible(btnCourses, false);
-        setVisible(btnStudents, false);
         setVisible(btnLevel, false);
         setVisible(btnGames, false);
         setVisible(btnSeances, false);
@@ -250,7 +247,6 @@ public class SidebarController {
                 setVisible(sectionTeacherBox, true);
                 setVisible(sectionTeacher, true);
                 setVisible(btnCourses, true);
-                setVisible(btnStudents, true);
                 setVisible(btnGames, true);
                 setVisible(btnLevel, true);
                 setVisible(btnSeances, true);
