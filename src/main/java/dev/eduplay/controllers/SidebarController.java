@@ -28,17 +28,26 @@ public class SidebarController {
     @FXML private HBox btnUsers;
     @FXML private HBox btnTeachers;
     @FXML private HBox btnParents;
+
+    // ==================== ÉVÉNEMENTS (AJOUTÉS) ====================
+    @FXML private Label sectionEvents;
+    @FXML private HBox sectionEventsBox;
     @FXML private HBox btnEventList;
+    @FXML private HBox btnAddEvent;
     @FXML private HBox btnRegistrationList;
+    @FXML private HBox btnScanner;
+    @FXML private HBox btnStatistics;
+    // ==============================================================
+
     @FXML private HBox btnCourses;
     @FXML private HBox btnStudents;
     @FXML private HBox btnChildren;
     @FXML private HBox btnEvents;
     @FXML private HBox btnMyCoursesChild;
     @FXML private HBox btnGames;
-    @FXML private HBox btnLibrary;        // ← AJOUTÉ
-    @FXML private HBox btnResource;       // ← AJOUTÉ
-    @FXML private HBox btnChildLibrary;   // ← AJOUTÉ
+    @FXML private HBox btnLibrary;
+    @FXML private HBox btnResource;
+    @FXML private HBox btnChildLibrary;
 
     @FXML private Label sectionAdmin;
     @FXML private Label sectionTeacher;
@@ -51,7 +60,9 @@ public class SidebarController {
     public void initialize() {
         allNavButtons = Arrays.asList(
                 btnDashboard, btnUsers, btnTeachers, btnParents,
-                btnEventList, btnRegistrationList,
+                // ==================== ÉVÉNEMENTS ====================
+                btnEventList, btnAddEvent, btnRegistrationList, btnScanner, btnStatistics,
+                // ====================================================
                 btnCourses, btnStudents,
                 btnChildren, btnEvents,
                 btnMyCoursesChild, btnGames,
@@ -73,23 +84,31 @@ public class SidebarController {
         syncActiveButton(Router.getCurrentRoute());
     }
 
-    // ⚠️ TOUTES les méthodes de navigation
+    // ==================== NAVIGATION ====================
+
     @FXML private void showDashboard() { Router.go(AppContext.getDefaultRoute()); }
     @FXML private void showProfile() { Router.go("profile"); }
     @FXML private void showUsers() { Router.go("users"); }
     @FXML private void showTeachers() { Router.go("teachers"); }
     @FXML private void showParents() { Router.go("parents"); }
+
+    // ==================== ÉVÉNEMENTS (AJOUTÉS) ====================
     @FXML private void showEventList() { Router.go("event_list"); }
+    @FXML private void showAddEvent() { Router.go("add_event"); }
     @FXML private void showRegistrationList() { Router.go("registration_list"); }
+    @FXML private void showScanner() { Router.go("scanner"); }
+    @FXML private void showStatistics() { Router.go("statistics"); }
+    // ===============================================================
+
     @FXML private void showCourses() { Router.go("teacher_courses"); }
     @FXML private void showStudents() { Router.go("teacher_students"); }
     @FXML private void showChildren() { Router.go("parent_children"); }
     @FXML private void showEvents() { Router.go("parent_events"); }
     @FXML private void showMyCoursesChild() { Router.go("child_courses"); }
     @FXML private void showGames() { Router.go("child_games"); }
-    @FXML private void showLibrary() { Router.go("library"); }           // ← AJOUTÉ
-    @FXML private void showResource() { Router.go("resource"); }         // ← AJOUTÉ
-    @FXML private void showChildLibrary() { Router.go("child_library"); } // ← AJOUTÉ
+    @FXML private void showLibrary() { Router.go("library"); }
+    @FXML private void showResource() { Router.go("resource"); }
+    @FXML private void showChildLibrary() { Router.go("child_library"); }
 
     @FXML
     private void handleLogout() {
@@ -113,8 +132,13 @@ public class SidebarController {
         HBox active = switch (route) {
             case "admin_dashboard", "teacher_dashboard", "parent_dashboard", "child_dashboard" -> btnDashboard;
             case "users", "teachers", "parents" -> btnUsers;
+            // ==================== ÉVÉNEMENTS ====================
             case "event_list" -> btnEventList;
+            case "add_event" -> btnAddEvent;
             case "registration_list" -> btnRegistrationList;
+            case "scanner" -> btnScanner;
+            case "statistics" -> btnStatistics;
+            // ====================================================
             case "teacher_courses" -> btnCourses;
             case "teacher_students" -> btnStudents;
             case "parent_children" -> btnChildren;
@@ -139,11 +163,21 @@ public class SidebarController {
         setVisible(sectionTeacher, false);
         setVisible(sectionParent, false);
         setVisible(sectionChild, false);
+
         setVisible(btnUsers, false);
         setVisible(btnTeachers, false);
         setVisible(btnParents, false);
+
+        // ==================== ÉVÉNEMENTS ====================
+        setVisible(sectionEvents, false);
+        setVisible(sectionEventsBox, false);
         setVisible(btnEventList, false);
+        setVisible(btnAddEvent, false);
         setVisible(btnRegistrationList, false);
+        setVisible(btnScanner, false);
+        setVisible(btnStatistics, false);
+        // ====================================================
+
         setVisible(btnCourses, false);
         setVisible(btnStudents, false);
         setVisible(btnChildren, false);
@@ -162,8 +196,15 @@ public class SidebarController {
                 setVisible(btnUsers, true);
                 setVisible(btnTeachers, true);
                 setVisible(btnParents, true);
+                // ==================== ÉVÉNEMENTS (ADMIN) ====================
+                setVisible(sectionEvents, true);
+                setVisible(sectionEventsBox, true);
                 setVisible(btnEventList, true);
+                setVisible(btnAddEvent, true);
                 setVisible(btnRegistrationList, true);
+                setVisible(btnScanner, true);
+                setVisible(btnStatistics, true);
+                // ===========================================================
                 setVisible(btnLibrary, true);
                 setVisible(btnResource, true);
                 break;

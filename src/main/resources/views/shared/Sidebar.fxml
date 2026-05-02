@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.paint.LinearGradient?>
 <?import javafx.scene.paint.Stop?>
 
@@ -12,12 +12,10 @@
       fx:controller="dev.eduplay.controllers.SidebarController"
       prefWidth="260"
       spacing="0"
-      styleClass="sidebar-root"
-      stylesheets="@/styles/sidebar.css">
+      styleClass="sidebar-root">
 
-    <!-- HEADER -->
+    <!-- ==================== HEADER ==================== -->
     <HBox alignment="CENTER_LEFT" spacing="12" styleClass="sidebar-header">
-
         <StackPane>
             <Rectangle width="48" height="48" arcWidth="24" arcHeight="24">
                 <fill>
@@ -31,23 +29,20 @@
             </Rectangle>
             <Label text="🎓" styleClass="sidebar-logo-icon"/>
         </StackPane>
-
         <VBox spacing="2">
             <HBox>
-                <Label text="Edu"  styleClass="sidebar-brand-edu"/>
+                <Label text="Edu" styleClass="sidebar-brand-edu"/>
                 <Label text="Play" styleClass="sidebar-brand-play"/>
             </HBox>
             <Label text="Super Admin" styleClass="sidebar-role-label"/>
         </VBox>
-
     </HBox>
 
-    <!-- NAV -->
+    <!-- ==================== NAVIGATION ==================== -->
     <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="sidebar-scroll">
-
         <VBox spacing="6" styleClass="sidebar-nav">
 
-            <!-- DASHBOARD -->
+            <!-- ==================== DASHBOARD ==================== -->
             <HBox fx:id="btnDashboard"
                   onMouseClicked="#showDashboard"
                   alignment="CENTER_LEFT"
@@ -58,12 +53,11 @@
                 </VBox>
             </HBox>
 
-            <!-- ADMIN SECTION -->
+            <!-- ==================== SECTION ADMIN ==================== -->
             <HBox fx:id="sectionAdminBox" spacing="8" styleClass="section-header-box">
                 <Label fx:id="sectionAdmin" text="ADMIN" styleClass="section-label"/>
             </HBox>
 
-            <!-- USERS -->
             <HBox fx:id="btnUsers"
                   onMouseClicked="#showUsers"
                   alignment="CENTER_LEFT"
@@ -74,7 +68,82 @@
                 </VBox>
             </HBox>
 
-            <!-- LIBRARY -->
+            <HBox fx:id="btnTeachers"
+                  onMouseClicked="#showTeachers"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="👨‍🏫 Enseignants" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="btnParents"
+                  onMouseClicked="#showParents"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="👪 Parents" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- ==================== SECTION ÉVÉNEMENTS ==================== -->
+            <HBox fx:id="sectionEventsBox" spacing="8" styleClass="section-header-box">
+                <Label fx:id="sectionEvents" text="ÉVÉNEMENTS" styleClass="section-label"/>
+            </HBox>
+
+            <HBox fx:id="btnEventList"
+                  onMouseClicked="#showEventList"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📅 Liste des événements" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="btnAddEvent"
+                  onMouseClicked="#showAddEvent"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="➕ Ajouter un événement" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="btnRegistrationList"
+                  onMouseClicked="#showRegistrationList"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📋 Inscriptions" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="btnScanner"
+                  onMouseClicked="#showScanner"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📷 Scanner QR" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="btnStatistics"
+                  onMouseClicked="#showStatistics"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📊 Statistiques" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- ==================== SECTION BIBLIOTHÈQUE ==================== -->
             <HBox fx:id="btnLibrary"
                   onMouseClicked="#showLibrary"
                   alignment="CENTER_LEFT"
@@ -85,7 +154,6 @@
                 </VBox>
             </HBox>
 
-            <!-- RESOURCES -->
             <HBox fx:id="btnResource"
                   onMouseClicked="#showResource"
                   alignment="CENTER_LEFT"
@@ -96,73 +164,87 @@
                 </VBox>
             </HBox>
 
-            <!-- TEACHER SECTION -->
-            <HBox fx:id="sectionTeacherBox" styleClass="section-header-box">
+            <!-- ==================== SECTION ENSEIGNANT ==================== -->
+            <HBox fx:id="sectionTeacherBox" spacing="8" styleClass="section-header-box">
                 <Label fx:id="sectionTeacher" text="COURS" styleClass="section-label"/>
             </HBox>
 
             <HBox fx:id="btnCourses"
                   onMouseClicked="#showCourses"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
                   styleClass="modern-nav-btn">
-                <VBox>
+                <VBox alignment="CENTER_LEFT">
                     <Label text="📖 Mes cours" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
             <HBox fx:id="btnStudents"
                   onMouseClicked="#showStudents"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
                   styleClass="modern-nav-btn">
-                <VBox>
+                <VBox alignment="CENTER_LEFT">
                     <Label text="🎓 Mes élèves" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
-            <!-- PARENT SECTION -->
-            <HBox fx:id="sectionParentBox" styleClass="section-header-box">
+            <!-- ==================== SECTION PARENT ==================== -->
+            <HBox fx:id="sectionParentBox" spacing="8" styleClass="section-header-box">
                 <Label fx:id="sectionParent" text="FAMILLE" styleClass="section-label"/>
             </HBox>
 
             <HBox fx:id="btnChildren"
                   onMouseClicked="#showChildren"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
                   styleClass="modern-nav-btn">
-                <VBox>
+                <VBox alignment="CENTER_LEFT">
                     <Label text="👨‍👧‍👦 Enfants" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
             <HBox fx:id="btnEvents"
                   onMouseClicked="#showEvents"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
                   styleClass="modern-nav-btn">
-                <VBox>
+                <VBox alignment="CENTER_LEFT">
                     <Label text="📅 Événements" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
-            <!-- CHILD SECTION -->
-            <HBox fx:id="sectionChildBox" styleClass="section-header-box">
+            <!-- ==================== SECTION ENFANT ==================== -->
+            <HBox fx:id="sectionChildBox" spacing="8" styleClass="section-header-box">
                 <Label fx:id="sectionChild" text="APPRENTISSAGE" styleClass="section-label"/>
             </HBox>
 
             <HBox fx:id="btnMyCoursesChild"
                   onMouseClicked="#showMyCoursesChild"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
                   styleClass="modern-nav-btn">
-                <VBox>
+                <VBox alignment="CENTER_LEFT">
                     <Label text="📖 Mes cours" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
             <HBox fx:id="btnGames"
                   onMouseClicked="#showGames"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
                   styleClass="modern-nav-btn">
-                <VBox>
+                <VBox alignment="CENTER_LEFT">
                     <Label text="🎮 Jeux" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
             <HBox fx:id="btnChildLibrary"
                   onMouseClicked="#showChildLibrary"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
                   styleClass="modern-nav-btn">
-                <VBox>
+                <VBox alignment="CENTER_LEFT">
                     <Label text="📚 Bibliothèque" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
@@ -170,7 +252,7 @@
         </VBox>
     </ScrollPane>
 
-    <!-- Footer logout -->
+    <!-- ==================== FOOTER ==================== -->
     <VBox styleClass="sidebar-footer">
         <Button onAction="#handleLogout" styleClass="modern-logout-btn">
             <graphic>
@@ -195,8 +277,9 @@
                 </HBox>
             </graphic>
         </Button>
+
         <!-- Hidden labels for controller compatibility -->
-        <Label fx:id="labelUserRole"     visible="false" managed="false"/>
+        <Label fx:id="labelUserRole" visible="false" managed="false"/>
         <Label fx:id="labelUserInitials" visible="false" managed="false"/>
     </VBox>
 

@@ -34,28 +34,33 @@ public class Router {
     }
 
     private static void registerRoutes() {
-        // Admin
+        // ==================== ADMIN (Back Office) ====================
         routes.put("admin_dashboard", "/views/admin/DashboardView.fxml");
         routes.put("users",           "/views/admin/UserListView.fxml");
         routes.put("teachers",        "/views/admin/UserListView.fxml");
         routes.put("parents",         "/views/admin/UserListView.fxml");
 
-        // Enseignant
+        // ==================== ENSEIGNANT ====================
         routes.put("teacher_dashboard", "/views/teacher/TeacherDashboardView.fxml");
         routes.put("teacher_courses",   "/views/teacher/CoursesView.fxml");
         routes.put("teacher_students",  "/views/teacher/StudentsView.fxml");
 
-        // Parent
-        routes.put("parent_dashboard", "/views/parent/ParentDashboardView.fxml");
-        routes.put("parent_children",  "/views/parent/ChildrenView.fxml");
-        routes.put("parent_events",    "/views/parent/EventsView.fxml");
+        // ==================== PARENT (Front Office) ====================
+        routes.put("parent_dashboard",          "/views/parent/ParentDashboardView.fxml");
+        routes.put("parent_children",           "/views/parent/ChildrenView.fxml");
+        routes.put("parent_events",             "/views/parent/EventsView.fxml");
+        routes.put("parent_event_list",         "/views/parent/ParentEventList.fxml");
+        routes.put("parent_registrations",      "/views/parent/ParentRegistrationsList.fxml");
+        routes.put("parent_event_detail",       "/views/parent/ParentEventDetail.fxml");
+        routes.put("parent_registration_form",  "/views/parent/ParentRegistrationForm.fxml");
+        routes.put("parent_registration_detail","/views/parent/ParentRegistrationDetail.fxml");
 
-        // Enfant
+        // ==================== ENFANT ====================
         routes.put("child_dashboard",  "/views/child/ChildDashboardView.fxml");
         routes.put("child_courses",    "/views/child/MyCoursesView.fxml");
         routes.put("child_games",      "/views/child/GamesView.fxml");
 
-        // Routes pour Events
+        // ==================== BACK OFFICE - ÉVÉNEMENTS ====================
         routes.put("event_list",        "/views/event/event_list.fxml");
         routes.put("add_event",         "/views/event/add_event.fxml");
         routes.put("edit_event",        "/views/event/edit_event.fxml");
@@ -68,7 +73,13 @@ public class Router {
         routes.put("registration_detail", "/views/registration/registration_detail.fxml");
         routes.put("edit_registration", "/views/registration/edit_registration.fxml");
 
-        // Commun
+        // ==================== SCANNER QR CODE ====================
+        routes.put("scanner", "/views/scanner/ScannerView.fxml");
+
+        // ==================== STATISTIQUES ====================
+        routes.put("statistics", "/views/admin/StatisticsView.fxml");
+
+        // ==================== COMMUN ====================
         routes.put("profile", "/views/shared/ProfileView.fxml");
     }
 
