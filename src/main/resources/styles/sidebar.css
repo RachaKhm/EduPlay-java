@@ -1,0 +1,68 @@
+/* sidebar.css - Styles pour la sidebar */
+
+.sidebar {
+    -fx-background-color: #1e293b;
+    -fx-pref-width: 230;
+}
+
+.sidebar-logo-title {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.sidebar-logo-subtitle {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 11px;
+}
+
+.sidebar-section-label {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 15 15 5 15;
+}
+
+.nav-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #cbd5e1;
+    -fx-padding: 8 15;
+    -fx-font-size: 13px;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.nav-btn:hover {
+    -fx-background-color: #334155;
+    -fx-text-fill: white;
+}
+
+.nav-btn-active {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+}
+
+.sidebar-user-name {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.sidebar-user-role {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 11px;
+}
+
+.sidebar-logout-btn {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.sidebar-logout-btn:hover {
+    -fx-background-color: #dc2626;
+}

@@ -1,0 +1,230 @@
+/* main-view.css - Styles pour la vue principale */
+
+/* ==================== ROOT ==================== */
+.main-root {
+    -fx-background-color: #f1f5f9;
+}
+
+/* ==================== TOPBAR ==================== */
+.topbar {
+    -fx-background-color: white;
+    -fx-padding: 12 24;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 0 0 1 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.03), 4, 0, 0, 1);
+}
+
+.search-box {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 25;
+    -fx-padding: 6 12;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 25;
+}
+
+.search-field {
+    -fx-background-color: transparent;
+    -fx-padding: 4;
+    -fx-font-size: 13px;
+    -fx-prompt-text-fill: #94a3b8;
+}
+
+.search-icon {
+    -fx-font-size: 14px;
+    -fx-text-fill: #94a3b8;
+}
+
+/* ==================== BOUTONS ICONES ==================== */
+.icon-btn {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 30;
+    -fx-padding: 8;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 2, 0, 0, 1);
+}
+
+.icon-btn:hover {
+    -fx-background-color: #e2e8f0;
+}
+
+.icon-label {
+    -fx-font-size: 18px;
+}
+
+.notif-badge {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-padding: 2 5;
+    -fx-background-radius: 10;
+    -fx-translate-x: 8;
+    -fx-translate-y: -6;
+}
+
+/* ==================== PROFIL ==================== */
+.profile-btn {
+    -fx-background-color: #f8fafc;
+    -fx-background-radius: 40;
+    -fx-padding: 6 12 6 6;
+    -fx-cursor: hand;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 40;
+}
+
+.profile-btn:hover {
+    -fx-background-color: #f1f5f9;
+}
+
+.profile-avatar {
+    -fx-background-color: linear-gradient(135deg, #3b82f6, #4f46e5);
+    -fx-background-radius: 30;
+    -fx-min-width: 36;
+    -fx-min-height: 36;
+    -fx-max-width: 36;
+    -fx-max-height: 36;
+}
+
+.profile-initials {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.profile-name {
+    -fx-text-fill: #1e293b;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.profile-role {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+}
+
+/* ==================== CONTENT AREA ==================== */
+.content-area {
+    -fx-background-color: #f1f5f9;
+    -fx-padding: 20;
+}
+
+/* ==================== SIDEBAR ==================== */
+.sidebar-root {
+    -fx-background-color: linear-gradient(to bottom, #1e293b, #0f172a);
+}
+
+.sidebar-header {
+    -fx-padding: 24 20;
+    -fx-border-color: #334155;
+    -fx-border-width: 0 0 1 0;
+}
+
+.sidebar-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.sidebar-nav {
+    -fx-padding: 16 12;
+}
+
+.sidebar-footer {
+    -fx-padding: 16;
+    -fx-border-color: #334155;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* Boutons de navigation modernes */
+.modern-nav-btn {
+    -fx-background-color: transparent;
+    -fx-padding: 10 12;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+}
+
+.modern-nav-btn:hover {
+    -fx-background-color: rgba(255,255,255,0.08);
+}
+
+.modern-nav-btn-active {
+    -fx-background-color: #3b82f6;
+    -fx-border-color: rgba(255,255,255,0.2);
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
+.nav-btn-label {
+    -fx-text-fill: #cbd5e1;
+    -fx-font-size: 13px;
+}
+
+.modern-nav-btn-active .nav-btn-label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* Sections headers */
+.section-header-box {
+    -fx-padding: 16 0 8 0;
+}
+
+.section-label {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-letter-spacing: 1px;
+}
+
+/* Footer logout */
+.modern-logout-btn {
+    -fx-background-color: rgba(239, 68, 68, 0.15);
+    -fx-border-color: rgba(239, 68, 68, 0.3);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-padding: 10;
+    -fx-cursor: hand;
+}
+
+.modern-logout-btn:hover {
+    -fx-background-color: rgba(239, 68, 68, 0.25);
+}
+
+.logout-label {
+    -fx-text-fill: #fca5a5;
+    -fx-font-weight: bold;
+    -fx-font-size: 13px;
+}
+
+.logout-user-label {
+    -fx-text-fill: #94a3b8;
+    -fx-font-size: 11px;
+}
+
+.logout-icon {
+    -fx-text-fill: #ef4444;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* Logo sidebar */
+.sidebar-logo-icon {
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+}
+
+.sidebar-brand-edu {
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.sidebar-brand-play {
+    -fx-text-fill: #3b82f6;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.sidebar-role-label {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 11px;
+}
