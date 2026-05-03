@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+
+<?import java.lang.String?>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.eduplay.controllers.parent.ParentRegistrationsListController"
+      spacing="20" alignment="TOP_CENTER"
+      style="-fx-background-color: #f8f9fa;">
+
+    <padding>
+        <Insets top="25" right="35" bottom="25" left="35"/>
+    </padding>
+
+    <children>
+        <HBox alignment="CENTER_LEFT" spacing="20">
+            <VBox HBox.hgrow="ALWAYS">
+                <Label text="📋 Mes inscriptions" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #22223A;"/>
+                <Label text="Suivez vos inscriptions aux événements"
+                       style="-fx-text-fill: #9999BB; -fx-font-size: 14px; -fx-padding: 5 0 0 0;"/>
+            </VBox>
+            <HBox spacing="10">
+                <Button fx:id="refreshBtn" text="🔄 Rafraîchir" style="-fx-background-color: #10b981; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 25; -fx-cursor: hand;"/>
+                <Button fx:id="backToEventsBtn" text="← Voir les événements" style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 25; -fx-cursor: hand;"/>
+            </HBox>
+        </HBox>
+
+        <!-- ✅ Barre de filtres -->
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <ComboBox fx:id="filterCombo" prefWidth="130" promptText="Filtrer"
+                      style="-fx-padding: 8; -fx-background-radius: 12; -fx-border-color: #e5e7eb; -fx-border-radius: 12;">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Toutes"/>
+                        <String fx:value="À venir"/>
+                        <String fx:value="Passées"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+        </HBox>
+
+        <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" style="-fx-background-color: transparent;">
+            <content>
+                <VBox spacing="12">
+                    <VBox fx:id="registrationsContainer" spacing="12"/>
+                    <Label fx:id="emptyLabel" text="Aucune inscription pour le moment"
+                           style="-fx-text-fill: #94a3b8; -fx-font-size: 14px;" visible="false" managed="false"/>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </children>
+</VBox>

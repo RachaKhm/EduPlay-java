@@ -39,7 +39,7 @@ public class UserService implements IGeneralService<User> {
             ps.setString(11, user.getSpecialite());
             ps.setString(12, user.getNiveau());
             ps.setString(13, "[\"ROLE_" + (user.getType() != null ? user.getType().toUpperCase() : "USER") + "\"]");
-            if (user.getParentId() != null && user.getParentId() > 0) {
+            if (user.getParentId() > 0) {
                 ps.setInt(14, user.getParentId());
             } else {
                 ps.setNull(14, java.sql.Types.INTEGER);
@@ -123,6 +123,28 @@ public class UserService implements IGeneralService<User> {
         return null;
     }
 
+    public List<User> getChildrenByParentId(int parentId) {
+        List<User> users = new ArrayList<>();
+        String query = """
+                SELECT * FROM `user`
+                WHERE parent_id = ?
+                  AND LOWER(TRIM(COALESCE(type, ''))) NOT IN ('admin', 'enseignant', 'parent')
+                ORDER BY first_name, last_name
+                """;
+        try (PreparedStatement ps = cnx.prepareStatement(query)) {
+            ps.setInt(1, parentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    users.add(extractUserFromResultSet(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println(" Error retrieving children for parent " + parentId + ": " + e.getMessage());
+        }
+        return users;
+    }
+
+
     public List<User> getByType(String type) {
         List<User> users = new ArrayList<>();
         String query = "SELECT * FROM user WHERE type = ? ORDER BY created_at DESC";
@@ -143,6 +165,18 @@ public class UserService implements IGeneralService<User> {
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setString(1, login.trim());
             ps.setString(2, login.trim());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return extractUserFromResultSet(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public User findByEmail(String email) {
+        String query = "SELECT * FROM user WHERE email = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(query)) {
+            ps.setString(1, email.trim());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return extractUserFromResultSet(rs);
         } catch (SQLException e) {
@@ -179,7 +213,8 @@ public class UserService implements IGeneralService<User> {
 
             // Essayer d'envoyer l'email
             try {
-                EmailService.sendPasswordResetEmail(email, token);
+                EmailService emailService = new EmailService();
+                emailService.sendPasswordResetEmail(email, token);
                 System.out.println("[Reset] Email envoyé à " + email);
             } catch (Exception e) {
                 // Email non configuré → fallback : stocker le token en mémoire
@@ -223,103 +258,79 @@ public class UserService implements IGeneralService<User> {
     // ─── BRUTE FORCE PROTECTION ───────────────────────────────────────────────
 
     public boolean isAccountLocked(String identifier) {
-        try {
-            String sql = "SELECT locked_until FROM user WHERE email = ? OR username = ?";
-            try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-                ps.setString(1, identifier);
-                ps.setString(2, identifier);
-                ResultSet rs = ps.executeQuery();
-                if (rs.next()) {
-                    LocalDateTime lockedUntil = rs.getObject("locked_until", LocalDateTime.class);
-                    if (lockedUntil != null && LocalDateTime.now().isBefore(lockedUntil)) return true;
-                }
+        String sql = "SELECT locked_until FROM user WHERE email = ? OR username = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, identifier);
+            ps.setString(2, identifier);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                LocalDateTime lockedUntil = rs.getObject("locked_until", LocalDateTime.class);
+                if (lockedUntil != null && LocalDateTime.now().isBefore(lockedUntil)) return true;
             }
-        } catch (Exception e) {
-            // Column may not exist yet — skip brute force check
-        }
+        } catch (Exception e) { e.printStackTrace(); }
         return false;
     }
 
     public void recordFailedAttempt(String identifier) {
-        try {
-            String sql = """
-                UPDATE user SET login_attempts = login_attempts + 1,
-                locked_until = CASE WHEN login_attempts + 1 >= 5
-                    THEN DATE_ADD(NOW(), INTERVAL 15 MINUTE) ELSE locked_until END
-                WHERE email = ? OR username = ?
-            """;
-            try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-                ps.setString(1, identifier);
-                ps.setString(2, identifier);
-                ps.executeUpdate();
-            }
-        } catch (Exception e) {
-            // Column may not exist yet — skip
-        }
+        String sql = """
+            UPDATE user SET login_attempts = login_attempts + 1,
+            locked_until = CASE WHEN login_attempts + 1 >= 5
+                THEN DATE_ADD(NOW(), INTERVAL 15 MINUTE) ELSE locked_until END
+            WHERE email = ? OR username = ?
+        """;
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, identifier);
+            ps.setString(2, identifier);
+            ps.executeUpdate();
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     public void resetFailedAttempts(int userId) {
-        try {
-            String sql = "UPDATE user SET login_attempts = 0, locked_until = NULL WHERE id = ?";
-            try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-                ps.setInt(1, userId);
-                ps.executeUpdate();
-            }
-        } catch (Exception e) {
-            // Column may not exist yet — skip
-        }
+        String sql = "UPDATE user SET login_attempts = 0, locked_until = NULL WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     // ─── SESSION TOKEN ────────────────────────────────────────────────────────
 
     public String createSession(int userId) {
         String token = UUID.randomUUID().toString();
-        try {
-            LocalDateTime expiry = LocalDateTime.now().plusHours(8);
-            String sql = "UPDATE user SET session_token = ?, session_expiry = ? WHERE id = ?";
-            try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-                ps.setString(1, token);
-                ps.setObject(2, expiry);
-                ps.setInt(3, userId);
-                ps.executeUpdate();
-            }
-        } catch (Exception e) {
-            // Column may not exist yet — skip session persistence
-        }
+        LocalDateTime expiry = LocalDateTime.now().plusHours(8);
+        String sql = "UPDATE user SET session_token = ?, session_expiry = ? WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, token);
+            ps.setObject(2, expiry);
+            ps.setInt(3, userId);
+            ps.executeUpdate();
+        } catch (Exception e) { e.printStackTrace(); }
         return token;
     }
 
     public void invalidateSession(int userId) {
-        try {
-            String sql = "UPDATE user SET session_token = NULL, session_expiry = NULL WHERE id = ?";
-            try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-                ps.setInt(1, userId);
-                ps.executeUpdate();
-            }
-        } catch (Exception e) {
-            // Column may not exist yet — skip
-        }
+        String sql = "UPDATE user SET session_token = NULL, session_expiry = NULL WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, userId);
+            ps.executeUpdate();
+        } catch (Exception e) { e.printStackTrace(); }
     }
 
     // ─── 2FA OTP ──────────────────────────────────────────────────────────────
 
     public boolean sendOtp(User user) {
         String otp = String.valueOf((int)(Math.random() * 900000) + 100000);
-        try {
-            LocalDateTime expiry = LocalDateTime.now().plusMinutes(5);
-            String sql = "UPDATE user SET otp_code = ?, otp_expiry = ? WHERE id = ?";
-            try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-                ps.setString(1, otp);
-                ps.setObject(2, expiry);
-                ps.setInt(3, user.getId());
-                ps.executeUpdate();
-            }
-            EmailService.sendOtpEmail(user.getEmail(), otp);
+        LocalDateTime expiry = LocalDateTime.now().plusMinutes(5);
+        String sql = "UPDATE user SET otp_code = ?, otp_expiry = ? WHERE id = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setString(1, otp);
+            ps.setObject(2, expiry);
+            ps.setInt(3, user.getId());
+            ps.executeUpdate();
+            EmailService emailService = new EmailService();
+            emailService.sendOtpEmail(user.getEmail(), otp);
             return true;
-        } catch (Exception e) {
-            // OTP columns may not exist yet, or email not configured
-            return false;
-        }
+        } catch (Exception e) { e.printStackTrace(); return false; }
     }
 
     public boolean verifyOtp(int userId, String inputOtp) {
@@ -392,63 +403,11 @@ public class UserService implements IGeneralService<User> {
         java.sql.Date birthDate = rs.getDate("birth_date");
         if (birthDate != null) user.setBirthDate(birthDate.toLocalDate());
 
-        if (hasColumn(rs, "parent_id")) {
-            int pid = rs.getInt("parent_id");
-            if (!rs.wasNull()) {
-                user.setParentId(pid);
-            }
-        }
-
-        // Handle invalid MySQL zero dates (0000-00-00...) without failing row mapping.
-        String createdAtRaw = rs.getString("created_at");
-        if (createdAtRaw != null
-                && !createdAtRaw.isBlank()
-                && !createdAtRaw.startsWith("0000-00-00")) {
-            Timestamp createdAt = rs.getTimestamp("created_at");
-            if (createdAt != null) {
-                user.setCreatedAt(createdAt.toLocalDateTime());
-            }
-        }
+        Timestamp createdAt = rs.getTimestamp("created_at");
+        if (createdAt != null) user.setCreatedAt(createdAt.toLocalDateTime());
 
         return user;
     }
-
-    private static boolean hasColumn(ResultSet rs, String columnLabel) throws SQLException {
-        var md = rs.getMetaData();
-        for (int i = 1; i <= md.getColumnCount(); i++) {
-            if (columnLabel.equalsIgnoreCase(md.getColumnLabel(i))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Enfants liés au parent via {@code user.parent_id}.
-     * Ne filtre plus sur {@code type = 'enfant'} strictement : en base le type peut varier
-     * (casse, espaces, libellé différent). On exclut seulement les rôles adultes connus.
-     */
-    public List<User> getChildrenByParentId(int parentId) {
-        List<User> users = new ArrayList<>();
-        String query = """
-                SELECT * FROM `user`
-                WHERE parent_id = ?
-                  AND LOWER(TRIM(COALESCE(type, ''))) NOT IN ('admin', 'enseignant', 'parent')
-                ORDER BY first_name, last_name
-                """;
-        try (PreparedStatement ps = cnx.prepareStatement(query)) {
-            ps.setInt(1, parentId);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    users.add(extractUserFromResultSet(rs));
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println(" Error retrieving children for parent " + parentId + ": " + e.getMessage());
-        }
-        return users;
-    }
-
     // Récupérer l'embedding par ID (utilisé dans FaceLoginController)
     public String getFacialEmbedding(int userId) {
         String sql = "SELECT facial_embedding FROM user WHERE id = ?";
@@ -456,11 +415,7 @@ public class UserService implements IGeneralService<User> {
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getString("facial_embedding");
-        } catch (java.sql.SQLSyntaxErrorException e) {
-            System.err.println("Note: Colonne 'facial_embedding' manquante dans la table user. L'authentification faciale est désactivée.");
-        } catch (Exception e) { 
-            e.printStackTrace(); 
-        }
+        } catch (Exception e) { e.printStackTrace(); }
         return null;
     }
 
@@ -472,12 +427,6 @@ public class UserService implements IGeneralService<User> {
             ps.setInt(2, userId);
             ps.executeUpdate();
             return true;
-        } catch (java.sql.SQLSyntaxErrorException e) {
-            System.err.println("Note: Impossible de sauvegarder le visage. Colonne 'facial_embedding' manquante.");
-            return false;
-        } catch (Exception e) { 
-            e.printStackTrace(); 
-            return false; 
-        }
+        } catch (Exception e) { e.printStackTrace(); return false; }
     }
 }

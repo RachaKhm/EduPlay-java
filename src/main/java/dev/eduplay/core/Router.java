@@ -1,5 +1,8 @@
 package dev.eduplay.core;
 
+import dev.eduplay.controllers.ScannerController;
+import dev.eduplay.controllers.event.EditRegistrationController;
+import dev.eduplay.controllers.event.RegistrationDetailController;
 import dev.eduplay.entities.EventRegistration;
 import dev.eduplay.entities.EventResource;
 import dev.eduplay.entities.SchoolEvent;
@@ -24,6 +27,8 @@ public class Router {
     private static final Map<String, Node>   viewCache = new HashMap<>();
     private static final Map<String, String> routes    = new HashMap<>();
     private static Consumer<String> onRouteChange;
+    private static Object currentController;
+    private static Object transitData;
 
     private static final Map<String, Object> routeParams = new HashMap<>();
 
@@ -39,15 +44,24 @@ public class Router {
         routes.put("users",           "/views/admin/UserListView.fxml");
         routes.put("teachers",        "/views/admin/UserListView.fxml");
         routes.put("parents",         "/views/admin/UserListView.fxml");
+        routes.put("statistics",      "/views/admin/StatisticsView.fxml");  // ← AJOUTER CETTE LIGNE
         routes.put("library",         "/views/admin/AdminCoursesView.fxml");
         routes.put("resource",        "/views/admin/AdminSeancesView.fxml");
         routes.put("admin_calendar",  "/views/admin/AdminCalendarView.fxml");
         routes.put("admin_stats",     "/views/admin/AdminStatsView.fxml");
+        routes.put("library_index",   "/LibraryIndex.fxml");
+        routes.put("library_form",    "/LibraryForm.fxml");
+        routes.put("library_show",    "/LibraryShow.fxml");
+        routes.put("admin_resource_index", "/ResourceIndex.fxml");
+        routes.put("admin_resource_form",  "/ResourceForm.fxml");
+        routes.put("admin_resource_show",  "/ResourceShow.fxml");
+        routes.put("book_requests_index",  "/BookRequestIndex.fxml");
+        routes.put("statistics_index",     "/StatisticsView.fxml");
 
         // Enseignant
         routes.put("teacher_dashboard", "/views/teacher/TeacherDashboardView.fxml");
         routes.put("teacher_courses",   "/views/teacher/CoursesView.fxml");
-        routes.put("teacher_students",  "/views/teacher/CoursesView.fxml"); // fallback
+
         routes.put("levels_list",       "/views/teacher/level/ListLevel.fxml");
         routes.put("Ajout_level",       "/views/teacher/level/AjoutLevel.fxml");
         routes.put("Modifier_level",    "/views/teacher/level/ModiferLevel.fxml");
@@ -55,12 +69,17 @@ public class Router {
         routes.put("Ajout_game",        "/views/teacher/game/AjoutGame.fxml");
         routes.put("Modifier_game",     "/views/teacher/game/ModifierGame.fxml");
 
-        // Parent
-        routes.put("parent_dashboard", "/views/parent/ParentDashboardView.fxml");
-        routes.put("parent_children",  "/views/parent/ChildrenView.fxml");
-        routes.put("parent_events",    "/views/event/event_list.fxml");
-        routes.put("parent_courses",   "/views/parent/ParentCoursesView.fxml");
-        routes.put("parent_seances",   "/views/parent/ParentSeancesView.fxml");
+        // ==================== PARENT (Front Office) ====================
+        routes.put("parent_dashboard",          "/views/parent/ParentDashboardView.fxml");
+        routes.put("parent_children",           "/views/parent/ChildrenView.fxml");
+        routes.put("parent_events",             "/views/event/event_list.fxml");
+        routes.put("parent_event_list",         "/views/parent/ParentEventList.fxml");
+        routes.put("parent_registrations",      "/views/parent/ParentRegistrationsList.fxml");
+        routes.put("parent_event_detail",       "/views/parent/ParentEventDetail.fxml");
+        routes.put("parent_registration_form",  "/views/parent/ParentRegistrationForm.fxml");
+        routes.put("parent_registration_detail","/views/parent/ParentRegistrationDetail.fxml");
+        routes.put("parent_courses",            "/views/parent/ParentCoursesView.fxml");
+        routes.put("parent_seances",            "/views/parent/ParentSeancesView.fxml");
 
         // Enfant
         routes.put("child_dashboard",  "/views/child/ChildDashboardView.fxml");
@@ -72,6 +91,8 @@ public class Router {
         // Enseignant extras
         routes.put("teacher_seances",  "/views/teacher/TeacherSeancesView.fxml");
 
+        routes.put("child_resource",   "/views/child/ChildResourceView.fxml");
+        routes.put("child_library",    "/views/child/ChildLibraryView.fxml");
         // Routes pour Events
         routes.put("event_list",        "/views/event/event_list.fxml");
         routes.put("add_event",         "/views/event/add_event.fxml");
@@ -85,6 +106,15 @@ public class Router {
         routes.put("registration_detail", "/views/registration/registration_detail.fxml");
         routes.put("edit_registration", "/views/registration/edit_registration.fxml");
 
+        // ==================== SCANNER QR CODE ====================
+        routes.put("scanner", "/views/scanner/ScannerView.fxml");
+
+        // ==================== COMMUN ====================
+        routes.put("profile", "/views/shared/ProfileView.fxml");
+        routes.put("forgot-password", "/views/forgot-password.fxml");
+        routes.put("reset-password",  "/views/reset-password.fxml");
+        routes.put("face-login", "/views/face-login.fxml");
+        routes.put("login", "/views/LoginView.fxml");
         // Commun
         routes.put("profile",          "/views/shared/ProfileView.fxml");
         routes.put("forgot-password",  "/views/auth/forgot-password.fxml");
@@ -123,17 +153,43 @@ public class Router {
         if (route.equals(currentRoute)) return;
 
         try {
+            boolean isDynamicRoute = route.equals("event_detail") ||
+                    route.equals("edit_event") ||
+                    route.equals("event_resource") ||
+                    route.equals("resource_detail") ||
+                    route.equals("registration_detail") ||
+                    route.equals("edit_registration") ||
+                    route.equals("parent_event_detail") ||
+                    route.equals("parent_registration_form") ||
+                    route.equals("parent_registration_detail") ||
+                    route.equals("add_resource") ||
+                    route.equals("edit_resource") ||
+                    route.equals("add_event") ||
+                    route.equals("scanner") ||
+                    route.equals("statistics");  // ← AJOUTER statistics comme route dynamique
+
+            if (isDynamicRoute) {
+                viewCache.remove(route);
+            }
+
             Node view = viewCache.get(route);
 
             if (view == null) {
-                URL resource = Router.class.getResource(routes.get(route));
+                String fxmlPath = routes.get(route);
+                System.out.println("Chargement FXML: " + fxmlPath);
+                URL resource = Router.class.getResource(fxmlPath);
+
                 if (resource == null) {
+                    System.err.println("Resource non trouvée: " + fxmlPath);
                     view = makePlaceholder(route);
+                    currentController = null;
                 } else {
                     FXMLLoader loader = new FXMLLoader(resource);
                     view = loader.load();
 
                     Object controller = loader.getController();
+                    currentController = controller;
+
                     if (controller != null) {
                         // Pour l'ajout d'événement (pas de paramètre)
                         if ("add_event".equals(route)) {
@@ -306,8 +362,29 @@ public class Router {
         return box;
     }
 
-    public static void reload(String route) { viewCache.remove(route); currentRoute = ""; go(route); }
-    public static String getCurrentRoute() { return currentRoute; }
+    public static void reload(String route)                  { viewCache.remove(route); currentRoute = ""; go(route); }
+
+    public static void reload(String route, Object data) {
+        transitData = data;
+        reload(route);
+    }
+
+    public static Object getTransitData() {
+        Object data = transitData;
+        transitData = null; // consommer la donnée
+        return data;
+    }
+
+    public static StackPane getContainer() { return container; }
+    public static String getCurrentRoute()                   { return currentRoute; }
     public static void setOnRouteChange(Consumer<String> l) { onRouteChange = l; }
-    public static void clearCache() { viewCache.clear(); currentRoute = ""; routeParams.clear(); }
+    public static void clearCache() {
+        viewCache.clear();
+        currentRoute = "";
+        routeParams.clear();
+        currentController = null;
+    }
+    public static Object getCurrentController() { return currentController; }
+
+
 }

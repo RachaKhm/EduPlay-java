@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane fitToWidth="true"
+            styleClass="profile-scroll"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.ProfileController"
+            stylesheets="@/styles/profile-view.css">
+
+    <VBox alignment="CENTER" styleClass="profile-scroll-content">
+
+        <!-- Conteneur principal (Card) -->
+        <VBox maxWidth="600" spacing="0" styleClass="profile-card">
+
+            <!-- En-tête : Avatar + Nom -->
+            <VBox alignment="CENTER" spacing="12" styleClass="profile-header">
+
+                <!-- Avatar -->
+                <StackPane fx:id="avatarContainer" maxWidth="80" maxHeight="80">
+
+                    <!-- Cercle initial (par défaut) -->
+                    <VBox alignment="CENTER" styleClass="profile-avatar-circle">
+                        <Label fx:id="initialsLabel" text="U" styleClass="profile-initials-label"/>
+                    </VBox>
+
+                    <!-- Photo Cloudinary (cachée par défaut) -->
+                    <ImageView fx:id="profileImageView"
+                               fitWidth="80" fitHeight="80"
+                               preserveRatio="false"
+                               visible="false" managed="false"/>
+
+                    <!-- Badge rôle -->
+                    <Label fx:id="roleBadge" text="ROLE"
+                           StackPane.alignment="BOTTOM_CENTER"
+                           style="-fx-translate-y: 12;"/>
+                </StackPane>
+
+                <!-- Bouton changer photo -->
+                <Button text="📷  Changer la photo" onAction="#handleChangePhoto"
+                        styleClass="profile-photo-btn">
+                    <VBox.margin><Insets top="8"/></VBox.margin>
+                </Button>
+
+                <!-- Status upload -->
+                <Label fx:id="uploadStatusLabel" text="" styleClass="upload-status"/>
+
+                <!-- Nom complet -->
+                <Label fx:id="fullNameLabel" text="Prénom Nom" styleClass="profile-fullname"/>
+            </VBox>
+
+            <Separator>
+                <VBox.margin><Insets top="10" bottom="10"/></VBox.margin>
+            </Separator>
+
+            <!-- === Informations personnelles === -->
+            <Label text="Informations personnelles" styleClass="section-title"/>
+
+            <!-- Ligne 1 : Prénom / Nom -->
+            <HBox spacing="16">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Prénom *" styleClass="field-label"/>
+                    <TextField fx:id="firstNameField" styleClass="form-field"/>
+                    <Label fx:id="firstNameError" text="" styleClass="error-label" wrapText="true"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Nom *" styleClass="field-label"/>
+                    <TextField fx:id="lastNameField" styleClass="form-field"/>
+                    <Label fx:id="lastNameError" text="" styleClass="error-label" wrapText="true"/>
+                </VBox>
+            </HBox>
+
+            <!-- Ligne 2 : Email / Téléphone -->
+            <HBox spacing="16" styleClass="row-top">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Adresse email" styleClass="field-label"/>
+                    <TextField fx:id="emailField" styleClass="form-field"/>
+                    <Label fx:id="emailError" text="" styleClass="error-label" wrapText="true"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Téléphone" styleClass="field-label"/>
+                    <TextField fx:id="telephoneField" styleClass="form-field"/>
+                    <Label fx:id="telephoneError" text="" styleClass="error-label" wrapText="true"/>
+                </VBox>
+            </HBox>
+
+            <!-- Ligne 3 : Adresse / Date naissance -->
+            <HBox spacing="16" styleClass="row-top">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Adresse" styleClass="field-label"/>
+                    <TextField fx:id="adresseField" styleClass="form-field"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Date de naissance" styleClass="field-label"/>
+                    <DatePicker fx:id="birthDateField" maxWidth="Infinity" styleClass="date-picker-field"/>
+                </VBox>
+            </HBox>
+
+            <!-- === Champs Conditionnels === -->
+
+            <!-- Enfant -->
+            <HBox fx:id="enfantBox" spacing="16" styleClass="row-top">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Identifiant *" styleClass="field-label"/>
+                    <TextField fx:id="usernameField" styleClass="form-field"/>
+                    <Label fx:id="usernameError" text="" styleClass="error-label" wrapText="true"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Niveau *" styleClass="field-label"/>
+                    <ComboBox fx:id="niveauCombo" maxWidth="Infinity" styleClass="form-field"/>
+                </VBox>
+            </HBox>
+
+            <!-- Enseignant -->
+            <HBox fx:id="enseignantBox" spacing="16" styleClass="row-top">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Spécialité *" styleClass="field-label"/>
+                    <TextField fx:id="specialiteField" styleClass="form-field"/>
+                    <Label fx:id="specialiteError" text="" styleClass="error-label" wrapText="true"/>
+                </VBox>
+            </HBox>
+
+            <Separator>
+                <VBox.margin><Insets top="16" bottom="8"/></VBox.margin>
+            </Separator>
+
+            <!-- === Sécurité & Mot de passe === -->
+            <VBox styleClass="security-box">
+                <Label text="🔒 Sécurité &amp; Mot de passe" styleClass="security-title"/>
+                <Label text="Ne remplissez ces champs que si vous souhaitez modifier votre mot de passe actuel."
+                       wrapText="true" styleClass="security-hint"/>
+
+                <VBox spacing="4" style="-fx-padding: 0 0 10 0;">
+                    <Label text="Mot de passe actuel" styleClass="field-label"/>
+                    <PasswordField fx:id="oldPasswordField" styleClass="security-field"/>
+                    <Label fx:id="oldPasswordError" text="" styleClass="error-label" wrapText="true"/>
+                </VBox>
+
+                <HBox spacing="16">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Nouveau mot de passe" styleClass="field-label"/>
+                        <PasswordField fx:id="passwordField" promptText="Min 6 caractères" styleClass="security-field"/>
+                        <Label fx:id="passwordError" text="" styleClass="error-label" wrapText="true"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Confirmer" styleClass="field-label"/>
+                        <PasswordField fx:id="confirmPasswordField" styleClass="security-field"/>
+                        <Label fx:id="confirmPasswordError" text="" styleClass="error-label" wrapText="true"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Message succès -->
+            <Label fx:id="successLabel" text="" wrapText="true"
+                   styleClass="success-label"
+                   maxWidth="Infinity" alignment="CENTER"/>
+
+            <!-- Bouton Enregistrer -->
+            <Button text="Enregistrer les modifications" onAction="#saveProfile"
+                    maxWidth="Infinity"
+                    styleClass="save-btn">
+                <VBox.margin><Insets top="20"/></VBox.margin>
+            </Button>
+
+        </VBox>
+    </VBox>
+</ScrollPane>

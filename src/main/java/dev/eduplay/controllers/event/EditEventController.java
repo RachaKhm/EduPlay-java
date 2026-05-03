@@ -31,6 +31,7 @@ public class EditEventController {
     @FXML private ComboBox<Integer> endHourCombo;
     @FXML private ComboBox<Integer> endMinuteCombo;
     @FXML private TextField locationField;
+    @FXML private TextField capacityField;  // ✅ AJOUTÉ
     @FXML private Button browseImageBtn;
     @FXML private Button submitBtn;
     @FXML private Button cancelBtn;
@@ -57,6 +58,14 @@ public class EditEventController {
         startMinuteCombo.setValue(0);
         endHourCombo.setValue(17);
         endMinuteCombo.setValue(0);
+        capacityField.setText("50");
+
+        // Validation du champ capacité (chiffres uniquement)
+        capacityField.textProperty().addListener((obs, old, newVal) -> {
+            if (newVal != null && !newVal.matches("\\d*")) {
+                capacityField.setText(old);
+            }
+        });
     }
 
     public void setEvent(SchoolEvent event) {
@@ -70,6 +79,7 @@ public class EditEventController {
         titleField.setText(currentEvent.getTitle());
         descriptionArea.setText(currentEvent.getDescription());
         locationField.setText(currentEvent.getLocation());
+        capacityField.setText(String.valueOf(currentEvent.getMaxCapacity()));
 
         if (currentEvent.getStartDate() != null) {
             startDatePicker.setValue(currentEvent.getStartDate().toLocalDate());
@@ -273,6 +283,23 @@ public class EditEventController {
                 return;
             }
 
+            // ✅ Validation de la capacité
+            int maxCapacity = 50;
+            try {
+                maxCapacity = Integer.parseInt(capacityField.getText().trim());
+                if (maxCapacity < 1) {
+                    showError("La capacité doit être au moins 1");
+                    capacityField.requestFocus();
+                    resetButton();
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                showError("Veuillez saisir un nombre valide pour la capacité");
+                capacityField.requestFocus();
+                resetButton();
+                return;
+            }
+
             if (startDatePicker.getValue() == null) {
                 showError("La date de début est obligatoire");
                 resetButton();
@@ -313,6 +340,7 @@ public class EditEventController {
             currentEvent.setStartDate(startDateTime);
             currentEvent.setEndDate(endDateTime);
             currentEvent.setLocation(location.trim());
+            currentEvent.setMaxCapacity(maxCapacity);  // ✅ Mise à jour capacité
             if (imagePath != null) currentEvent.setImagePath(imagePath);
 
             service.modifier(currentEvent);

@@ -66,7 +66,7 @@
             <!-- Mot de passe -->
             <VBox spacing="4" style="-fx-padding: 14 0 0 0;">
                 <Label text="Mot de passe *" styleClass="auth-label"/>
-                <Label text="Requis — minimum 6 caractères" styleClass="auth-form-subtitle" style="-fx-padding: 0 0 4 0;"/>
+                <Label text="Requis — minimum 8 caractères" styleClass="auth-form-subtitle" style="-fx-padding: 0 0 4 0;"/>
                 <PasswordField fx:id="passwordField" promptText="Mot de passe"
                                styleClass="signup-input-small"/>
                 <Label fx:id="passwordError" text="" styleClass="child-error-label" wrapText="true"/>

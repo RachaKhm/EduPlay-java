@@ -2,18 +2,24 @@ package dev.eduplay.controllers;
 
 import dev.eduplay.core.AppContext;
 import dev.eduplay.core.Router;
-import dev.eduplay.core.SessionManager;
-import dev.eduplay.entities.User;
-import dev.eduplay.services.UserService;
+import dev.eduplay.entities.BookRequest;
+import dev.eduplay.services.BookRequestService;
+import javafx.animation.*;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -27,55 +33,68 @@ public class SidebarController {
     @FXML private Label labelUserRole;
     @FXML private Label labelUserInitials;
 
-    @FXML private HBox btnDashboard;
-    @FXML private HBox btnProfile;
+    /* ── COMMON ──────────────────────────────── */
+    @FXML private Node btnDashboard;
+    @FXML private Node btnLogout;
 
-    /* ── Sections ── */
-    @FXML private HBox sectionAdminBox;
-    @FXML private Label sectionAdmin;
-    @FXML private HBox btnUsers;
-    @FXML private HBox btnLibrary;
-    @FXML private HBox btnResource;
+    /* ── ADMIN ──────────────────────────────── */
+    @FXML private Node sectionAdminBox;
+    @FXML private Node sectionContentBox;
+    @FXML private Node btnUsers;
+    @FXML private Node btnTeachers;
+    @FXML private Node btnParents;
+    @FXML private Node btnAdminCourses;
+    @FXML private Node btnLibrary;
+    @FXML private Node btnBookRequests;
+    @FXML private Node btnResource;
+    
+    @FXML private Node sectionEventsBox;
+    @FXML private Node btnEventList;
+    @FXML private Node btnAddEvent;
+    @FXML private Node btnRegistrationList;
+    @FXML private Node btnScanner;
+    @FXML private Node btnStatistics;
+    @FXML private Node btnCalendar;
 
-    @FXML private HBox sectionTeacherBox;
-    @FXML private Label sectionTeacher;
-    @FXML private HBox btnCourses;
-    @FXML private HBox btnLevel;
-    @FXML private HBox btnGames;
+    /* ── TEACHER ───────────────────────────── */
+    @FXML private Node sectionTeacherBox;
+    @FXML private Node btnCourses;
+    @FXML private Node btnLevel;
+    @FXML private Node btnGamesTeacher;
+    @FXML private Node btnSeances;
 
-    @FXML private HBox sectionParentBox;
-    @FXML private Label sectionParent;
-    @FXML private HBox btnChildren;
-    @FXML private HBox btnParentSeances;
-    @FXML private HBox btnEvents;
+    /* ── PARENT ─────────────────────────────── */
+    @FXML private Node sectionParentBox;
+    @FXML private Node btnChildren;
+    
+    @FXML private Node sectionParentEventsBox;
+    @FXML private Node btnParentEventList;
+    @FXML private Node btnParentSeances;
+    @FXML private Node btnParentRegistrations;
 
-    @FXML private HBox sectionChildBox;
-    @FXML private Label sectionChild;
-    @FXML private HBox btnMyCoursesChild;
-    @FXML private HBox btnChildLibrary;
+    /* ── CHILD ──────────────────────────────── */
+    @FXML private Node sectionChildBox;
+    @FXML private Node sectionChildLibraryBox;
+    @FXML private Node btnMyCoursesChild;
+    @FXML private Node btnGames;
+    @FXML private Node btnChildLibrary;
+    @FXML private Node btnEvents;
 
-    // Admin extras
-    @FXML private HBox btnCalendar;
-    @FXML private HBox btnStats;
-
-    // Teacher extras
-    @FXML private HBox btnSeances;
-
-    private final UserService userService = new UserService();
-    private List<HBox> allNavButtons;
+    private List<Node> allNavButtons;
 
     @FXML
     public void initialize() {
-
+        // Initialize the list of all buttons for highlighting logic
         allNavButtons = Arrays.asList(
                 btnDashboard,
-                btnUsers, btnLibrary, btnResource, btnCalendar, btnStats,
-                btnCourses, btnLevel, btnGames, btnSeances,
-                btnChildren, btnParentSeances, btnEvents,
-                btnMyCoursesChild, btnChildLibrary,
-                btnProfile
+                btnUsers, btnTeachers, btnParents, btnAdminCourses, btnLibrary, btnBookRequests, btnResource, btnEventList, btnAddEvent, btnRegistrationList, 
+                btnScanner, btnStatistics, btnCalendar,
+                btnCourses, btnLevel, btnGamesTeacher, btnSeances,
+                btnChildren, btnParentEventList, btnParentSeances, btnParentRegistrations,
+                btnMyCoursesChild, btnGames, btnChildLibrary, btnEvents, btnLogout
         ).stream().filter(Objects::nonNull).collect(Collectors.toList());
 
+        // Set user info
         String fullName = AppContext.getFullName();
         String role = AppContext.getRole();
 
@@ -83,68 +102,139 @@ public class SidebarController {
         setIfNotNull(labelUserRole, role);
         setIfNotNull(labelUserInitials, buildInitials(fullName));
 
+        // Manage visibility
         hideAllRoleSections();
         showSectionsForRole(role);
 
+        // Setup routing sync
         Router.setOnRouteChange(this::syncActiveButton);
         syncActiveButton(Router.getCurrentRoute());
-    }
 
-    /* NAVIGATION */
-
-    @FXML private void showDashboard()       { Router.go(AppContext.getDefaultRoute()); }
-    @FXML private void showProfile()         { Router.go("profile"); }
-    @FXML private void showUsers()           { Router.go("users"); }
-    @FXML private void showLibrary()         { Router.go("library"); }
-    @FXML private void showResource()        { Router.go("resource"); }
-    @FXML private void showCalendar()        { Router.go("admin_calendar"); }
-    @FXML private void showStats()           { Router.go("admin_stats"); }
-    @FXML private void showChildLibrary()    { Router.go("child_library"); }
-    @FXML private void showTeacherSeances()  { Router.go("teacher_seances"); }
-    @FXML private void showParentSeances()   { Router.go("parent_seances"); }
-
-    @FXML private void showCourses()     { Router.go("teacher_courses"); }
-    @FXML private void showStudents()    { Router.go("teacher_students"); }
-    @FXML private void showChildren()    { Router.go("parent_children"); }
-    @FXML private void showEvents()      { Router.go("child_seances"); }
-    @FXML private void showMyCoursesChild() { Router.go("child_courses"); }
-    @FXML private void showLevels()      { Router.go("levels_list"); }
-    @FXML private void showGames() {
-        // Teachers go to game management list; children go to game play list
-        if (AppContext.isTeacher() || AppContext.isAdmin()) {
-            Router.go("games_list");
-        } else {
-            Router.go("child_games");
+        // Book notification check for children
+        if ("enfant".equalsIgnoreCase(role)) {
+            startNotificationCheck();
         }
     }
-    @FXML private void showGamesFront() { Router.go("child_games"); }
+
+    private void startNotificationCheck() {
+        BookRequestService brService = new BookRequestService();
+        Timeline timeline = new Timeline(
+            new KeyFrame(Duration.seconds(30), e -> {
+                int childId = AppContext.getUserId();
+                List<BookRequest> unread = brService.getNotificationsNonLues(childId);
+                for (BookRequest req : unread) {
+                    showSystemNotification(req);
+                    brService.marquerCommeNotifie(req.getId());
+                }
+            })
+        );
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
+    }
+
+    private void showSystemNotification(BookRequest req) {
+        Platform.runLater(() -> {
+            try {
+                Stage stage = (Stage) btnDashboard.getScene().getWindow();
+                StackPane root = (StackPane) stage.getScene().getRoot();
+
+                VBox toast = new VBox(5);
+                toast.setStyle("-fx-background-color: #1E293B; -fx-padding: 15; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 5);");
+                toast.setMaxWidth(300);
+                toast.setMaxHeight(Region.USE_PREF_SIZE);
+                
+                Label title = new Label("📚 Livre Disponible !");
+                title.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
+                
+                Label desc = new Label("Votre demande pour '" + req.getBookTitle() + "' a été acceptée.");
+                desc.setStyle("-fx-text-fill: #94A3B8; -fx-font-size: 12px;");
+                desc.setWrapText(true);
+
+                toast.getChildren().addAll(title, desc);
+                
+                StackPane.setAlignment(toast, Pos.TOP_RIGHT);
+                StackPane.setMargin(toast, new Insets(20));
+                
+                root.getChildren().add(toast);
+
+                // Animation
+                toast.setOpacity(0);
+                toast.setTranslateY(-20);
+
+                FadeTransition fadeIn = new FadeTransition(Duration.millis(500), toast);
+                fadeIn.setToValue(1);
+                
+                TranslateTransition slideDown = new TranslateTransition(Duration.millis(500), toast);
+                slideDown.setToY(0);
+
+                SequentialTransition show = new SequentialTransition(new ParallelTransition(fadeIn, slideDown));
+                
+                PauseTransition delay = new PauseTransition(Duration.seconds(5));
+                
+                FadeTransition fadeOut = new FadeTransition(Duration.millis(500), toast);
+                fadeOut.setToValue(0);
+                
+                show.setOnFinished(ev -> {
+                    delay.play();
+                    delay.setOnFinished(ev2 -> {
+                        fadeOut.play();
+                        fadeOut.setOnFinished(ev3 -> root.getChildren().remove(toast));
+                    });
+                });
+                
+                show.play();
+
+            } catch (Exception e) {
+                System.err.println("Failed to show notification: " + e.getMessage());
+            }
+        });
+    }
+
+    /* ───────────────── NAVIGATION ───────────────── */
+
+    @FXML private void showDashboard() { Router.go(AppContext.getDefaultRoute()); }
+    
+    // ADMIN
+    @FXML private void showUsers() { Router.go("users"); }
+    @FXML private void showTeachers() { Router.go("teachers"); }
+    @FXML private void showParents() { Router.go("parents"); }
+    @FXML private void showAdminCourses() { Router.go("library"); }
+    @FXML private void showLibrary() { Router.go("library_index"); }
+    @FXML private void showBookRequests() { Router.go("book_requests_index"); }
+    @FXML private void showResource() { Router.go("admin_resource_index"); }
+    @FXML private void showEventList() { Router.go("event_list"); }
+    @FXML private void showAddEvent() { Router.go("add_event"); }
+    @FXML private void showRegistrationList() { Router.go("registration_list"); }
+    @FXML private void showScanner() { Router.go("scanner"); }
+    @FXML private void showStatistics() { Router.go("statistics"); }
+    @FXML private void showCalendar() { Router.go("admin_calendar"); }
+
+    // TEACHER
+    @FXML private void showCourses() { Router.go("teacher_courses"); }
+    @FXML private void showLevels() { Router.go("levels_list"); }
+    @FXML private void showGamesTeacher() { Router.go("games_list"); }
+    @FXML private void showTeacherSeances() { Router.go("teacher_seances"); }
+
+    // PARENT
+    @FXML private void showChildren() { Router.go("parent_children"); }
+    @FXML private void showParentEventList() { Router.go("parent_event_list"); }
+    @FXML private void showParentSeances() { Router.go("parent_seances"); }
+    @FXML private void showParentRegistrations() { Router.go("parent_registrations"); }
+
+    // CHILD
+    @FXML private void showMyCoursesChild() { Router.go("child_courses"); }
+    @FXML private void showGames() { Router.go("child_games"); }
+    @FXML private void showChildLibrary() { Router.go("child_library"); }
+    @FXML private void showEvents() { Router.go("child_seances"); }
+
+    /* ───────────────── LOGOUT ───────────────── */
 
     @FXML
     private void handleLogout() {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                "Voulez-vous vraiment vous déconnecter ?", ButtonType.YES, ButtonType.NO);
-        
-        // Supprimer la barre du haut (titre, croix de fermeture)
-        confirm.initStyle(javafx.stage.StageStyle.UNDECORATED);
-        // Supprimer l'icône (?)
-        confirm.setGraphic(null);
-        
-        confirm.setHeaderText("Confirmation de déconnexion");
-
-        try {
-            javafx.scene.control.DialogPane dialogPane = confirm.getDialogPane();
-            // Assure la suppression complète de l'icône dans l'en-tête
-            dialogPane.setGraphic(null);
-            
-            dialogPane.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
-            dialogPane.getStyleClass().add("modern-dialog");
-            
-            // Personnalisation des boutons
-            ((javafx.scene.control.Button) dialogPane.lookupButton(ButtonType.YES)).setText("Oui, me déconnecter");
-            ((javafx.scene.control.Button) dialogPane.lookupButton(ButtonType.NO)).setText("Annuler");
-        } catch (Exception e) {
-            System.err.println("Impossible de charger les styles pour le popup de déconnexion.");
-        }
+                "Voulez-vous vraiment vous déconnecter ?",
+                ButtonType.YES, ButtonType.NO);
+        confirm.setHeaderText("Déconnexion");
 
         confirm.showAndWait().ifPresent(btn -> {
             if (btn == ButtonType.YES) {
@@ -155,111 +245,128 @@ public class SidebarController {
         });
     }
 
-    /* ACTIVE BUTTON */
+    /* ───────────────── ROUTE SYNC ───────────────── */
 
     public void syncActiveButton(String route) {
+        if (allNavButtons == null) return;
 
-        allNavButtons.stream()
-                .filter(b -> b != null && b.isVisible())
-                .forEach(b -> {
-                    b.getStyleClass().remove("modern-nav-btn-active");
-                    if (!b.getStyleClass().contains("modern-nav-btn")) {
-                        b.getStyleClass().add("modern-nav-btn");
-                    }
-                });
+        allNavButtons.forEach(b -> b.getStyleClass().remove("nav-btn-active"));
 
-        HBox active = switch (route) {
-            case "admin_dashboard",
-                 "teacher_dashboard",
-                 "parent_dashboard",
-                 "child_dashboard" -> btnDashboard;
-
+        Node active = switch (route) {
+            case "admin_dashboard", "teacher_dashboard", "parent_dashboard", "child_dashboard" -> btnDashboard;
             case "users" -> btnUsers;
-            case "library" -> btnLibrary;
-            case "resource" -> btnResource;
+            case "teachers" -> btnTeachers;
+            case "parents" -> btnParents;
+            case "library" -> btnAdminCourses;
+            case "library_index" -> btnLibrary;
+            case "book_requests_index" -> btnBookRequests;
+            case "admin_resource_index" -> btnResource;
+            case "event_list" -> btnEventList;
+            case "add_event" -> btnAddEvent;
+            case "registration_list" -> btnRegistrationList;
+            case "scanner" -> btnScanner;
+            case "statistics" -> btnStatistics;
             case "admin_calendar" -> btnCalendar;
-            case "admin_stats" -> btnStats;
-
             case "teacher_courses" -> btnCourses;
+            case "levels_list" -> btnLevel;
+            case "games_list" -> btnGamesTeacher;
             case "teacher_seances" -> btnSeances;
-
             case "parent_children" -> btnChildren;
+            case "parent_event_list" -> btnParentEventList;
             case "parent_seances" -> btnParentSeances;
-
+            case "parent_registrations" -> btnParentRegistrations;
             case "child_courses" -> btnMyCoursesChild;
             case "child_games" -> btnGames;
             case "child_library" -> btnChildLibrary;
             case "child_seances" -> btnEvents;
-
-            case "profile" -> btnProfile;
-
-            default -> btnDashboard;
+            default -> null;
         };
 
         if (active != null && active.isVisible()) {
-            active.getStyleClass().add("modern-nav-btn-active");
+            active.getStyleClass().add("nav-btn-active");
         }
     }
 
-    /* ROLE VISIBILITY */
+    /* ───────────────── ROLE VISIBILITY ───────────────── */
 
     private void hideAllRoleSections() {
         setVisible(sectionAdminBox, false);
-        setVisible(sectionAdmin, false);
+        setVisible(sectionContentBox, false);
         setVisible(btnUsers, false);
+        setVisible(btnTeachers, false);
+        setVisible(btnParents, false);
+        setVisible(btnAdminCourses, false);
         setVisible(btnLibrary, false);
+        setVisible(btnBookRequests, false);
         setVisible(btnResource, false);
+        setVisible(sectionEventsBox, false);
+        setVisible(btnEventList, false);
+        setVisible(btnAddEvent, false);
+        setVisible(btnRegistrationList, false);
+        setVisible(btnScanner, false);
+        setVisible(btnStatistics, false);
         setVisible(btnCalendar, false);
-        setVisible(btnStats, false);
 
         setVisible(sectionTeacherBox, false);
-        setVisible(sectionTeacher, false);
         setVisible(btnCourses, false);
         setVisible(btnLevel, false);
-        setVisible(btnGames, false);
+        setVisible(btnGamesTeacher, false);
         setVisible(btnSeances, false);
 
         setVisible(sectionParentBox, false);
-        setVisible(sectionParent, false);
         setVisible(btnChildren, false);
+        setVisible(sectionParentEventsBox, false);
+        setVisible(btnParentEventList, false);
         setVisible(btnParentSeances, false);
-        setVisible(btnEvents, false);
+        setVisible(btnParentRegistrations, false);
 
         setVisible(sectionChildBox, false);
-        setVisible(sectionChild, false);
+        setVisible(sectionChildLibraryBox, false);
         setVisible(btnMyCoursesChild, false);
+        setVisible(btnGames, false);
         setVisible(btnChildLibrary, false);
+        setVisible(btnEvents, false);
     }
 
     private void showSectionsForRole(String role) {
         if (role == null) return;
-        switch (role) {
+        switch (role.toLowerCase()) {
             case "admin" -> {
                 setVisible(sectionAdminBox, true);
-                setVisible(sectionAdmin, true);
+                setVisible(sectionContentBox, true);
                 setVisible(btnUsers, true);
+                setVisible(btnTeachers, true);
+                setVisible(btnParents, true);
+                setVisible(btnAdminCourses, true);
                 setVisible(btnLibrary, true);
+                setVisible(btnBookRequests, true);
                 setVisible(btnResource, true);
+                setVisible(sectionEventsBox, true);
+                setVisible(btnEventList, true);
+                setVisible(btnAddEvent, true);
+                setVisible(btnRegistrationList, true);
+                setVisible(btnScanner, true);
+                setVisible(btnStatistics, true);
                 setVisible(btnCalendar, true);
-                setVisible(btnStats, true);
             }
             case "enseignant" -> {
                 setVisible(sectionTeacherBox, true);
-                setVisible(sectionTeacher, true);
                 setVisible(btnCourses, true);
-                setVisible(btnGames, true);
                 setVisible(btnLevel, true);
+                setVisible(btnGamesTeacher, true);
                 setVisible(btnSeances, true);
             }
             case "parent" -> {
                 setVisible(sectionParentBox, true);
-                setVisible(sectionParent, true);
                 setVisible(btnChildren, true);
+                setVisible(sectionParentEventsBox, true);
+                setVisible(btnParentEventList, true);
                 setVisible(btnParentSeances, true);
+                setVisible(btnParentRegistrations, true);
             }
             case "enfant" -> {
                 setVisible(sectionChildBox, true);
-                setVisible(sectionChild, true);
+                setVisible(sectionChildLibraryBox, true);
                 setVisible(btnMyCoursesChild, true);
                 setVisible(btnGames, true);
                 setVisible(btnChildLibrary, true);
@@ -268,39 +375,36 @@ public class SidebarController {
         }
     }
 
-    /* LOGIN NAV */
+    /* ───────────────── LOGIN ───────────────── */
 
     private void navigateToLogin() {
         try {
-            Parent root = new FXMLLoader(
-                    getClass().getResource("/views/auth/LoginView.fxml")).load();
-
+            Parent root = new FXMLLoader(getClass().getResource("/views/auth/LoginView.fxml")).load();
             Stage stage = (Stage) btnDashboard.getScene().getWindow();
             stage.setScene(new Scene(root, 860, 540));
-
+            stage.centerOnScreen();
         } catch (IOException e) {
-            new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
+            new Alert(Alert.AlertType.ERROR, "Erreur navigation: " + e.getMessage()).show();
         }
     }
 
-    /* UTILS */
+    /* ───────────────── UTILS ───────────────── */
 
-    private void setVisible(javafx.scene.Node node, boolean visible) {
+    private void setVisible(Node node, boolean value) {
         if (node != null) {
-            node.setVisible(visible);
-            node.setManaged(visible);
+            node.setVisible(value);
+            node.setManaged(value);
         }
     }
 
     private void setIfNotNull(Label label, String text) {
-        if (label != null) label.setText(text);
+        if (label != null && text != null) label.setText(text);
     }
 
-    private String buildInitials(String fullName) {
-        if (fullName == null || fullName.isBlank()) return "?";
-        String[] parts = fullName.split(" ");
-        return (parts[0].charAt(0) + "" + parts[parts.length - 1].charAt(0)).toUpperCase();
+    private String buildInitials(String name) {
+        if (name == null || name.isBlank()) return "?";
+        String[] p = name.trim().split("\\s+");
+        if (p.length == 1) return p[0].substring(0, 1).toUpperCase();
+        return (p[0].charAt(0) + "" + p[p.length - 1].charAt(0)).toUpperCase();
     }
-
-
 }

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.eduplay.controllers.StatisticsController">
+    <VBox spacing="24" style="-fx-padding: 30; -fx-background-color: #F8FAFC;">
+
+        <!-- HEADER -->
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: linear-gradient(to right, #6366F1, #9333EA); -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);">
+            <VBox HBox.hgrow="ALWAYS" spacing="8">
+                <Label text="📊 Statistiques" style="-fx-text-fill: white; -fx-font-size: 32px; -fx-font-weight: bold;"/>
+                <Label text="Vue d'ensemble des bibliothèques et ressources" style="-fx-text-fill: #E0E7FF; -fx-font-size: 16px;"/>
+            </VBox>
+            <Button text="🔄 Actualiser" onAction="#handleRefresh"
+                    style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 13px; -fx-background-radius: 12; -fx-padding: 10 18; -fx-border-color: rgba(255,255,255,0.4); -fx-border-width: 1; -fx-border-radius: 12; -fx-cursor: hand;"/>
+        </HBox>
+
+        <!-- KPI CARDS -->
+        <HBox spacing="20">
+            <!-- Total Bibliothèques -->
+            <VBox HBox.hgrow="ALWAYS" spacing="8" style="-fx-background-color: white; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 24; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <StackPane style="-fx-background-color: #EEF2FF; -fx-background-radius: 14; -fx-min-width: 52; -fx-min-height: 52;">
+                        <Label text="📚" style="-fx-font-size: 26px;"/>
+                    </StackPane>
+                    <VBox spacing="4">
+                        <Label text="Bibliothèques" style="-fx-font-size: 13px; -fx-text-fill: #64748B; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblTotalLibraries" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #6366F1;"/>
+                    </VBox>
+                </HBox>
+                <Label text="Total dans la base de données" style="-fx-font-size: 11px; -fx-text-fill: #94A3B8;"/>
+            </VBox>
+
+            <!-- Total Ressources -->
+            <VBox HBox.hgrow="ALWAYS" spacing="8" style="-fx-background-color: white; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 24; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <StackPane style="-fx-background-color: #F0FDF4; -fx-background-radius: 14; -fx-min-width: 52; -fx-min-height: 52;">
+                        <Label text="📂" style="-fx-font-size: 26px;"/>
+                    </StackPane>
+                    <VBox spacing="4">
+                        <Label text="Ressources" style="-fx-font-size: 13px; -fx-text-fill: #64748B; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblTotalResources" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #10B981;"/>
+                    </VBox>
+                </HBox>
+                <Label text="Total dans la base de données" style="-fx-font-size: 11px; -fx-text-fill: #94A3B8;"/>
+            </VBox>
+
+            <!-- Moyenne ressources/bibliothèque -->
+            <VBox HBox.hgrow="ALWAYS" spacing="8" style="-fx-background-color: white; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 24; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <StackPane style="-fx-background-color: #FFF7ED; -fx-background-radius: 14; -fx-min-width: 52; -fx-min-height: 52;">
+                        <Label text="📈" style="-fx-font-size: 26px;"/>
+                    </StackPane>
+                    <VBox spacing="4">
+                        <Label text="Moy. ressources/biblio" style="-fx-font-size: 13px; -fx-text-fill: #64748B; -fx-font-weight: bold;"/>
+                        <Label fx:id="lblAvgResources" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #F59E0B;"/>
+                    </VBox>
+                </HBox>
+                <Label text="Ressources par bibliothèque" style="-fx-font-size: 11px; -fx-text-fill: #94A3B8;"/>
+            </VBox>
+        </HBox>
+
+        <!-- ROW 2: Niveaux + Top Bibliothèques -->
+        <HBox spacing="20" alignment="TOP_LEFT">
+
+            <!-- Distribution par niveau -->
+            <VBox HBox.hgrow="ALWAYS" spacing="16" style="-fx-background-color: white; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 28; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+                <HBox spacing="14" alignment="CENTER_LEFT">
+                    <StackPane style="-fx-background-color: #EEF2FF; -fx-background-radius: 12; -fx-padding: 10;" >
+                        <Label text="🎯" style="-fx-font-size: 20px;"/>
+                    </StackPane>
+                    <VBox spacing="2">
+                        <Label text="Distribution par niveau" style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                        <Label text="Bibliothèques classées par difficulté" style="-fx-font-size: 12px; -fx-text-fill: #94A3B8;"/>
+                    </VBox>
+                </HBox>
+                <Separator/>
+
+                <!-- Débutant -->
+                <VBox spacing="6">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="🟢 Débutant" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #374151;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblCountDebutant" text="0" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #10B981;"/>
+                    </HBox>
+                    <StackPane style="-fx-background-color: #D1FAE5; -fx-background-radius: 6;" prefHeight="10">
+                        <HBox alignment="CENTER_LEFT">
+                            <Region fx:id="barDebutant" prefHeight="10" style="-fx-background-color: linear-gradient(to right, #10B981, #059669); -fx-background-radius: 6;"/>
+                        </HBox>
+                    </StackPane>
+                </VBox>
+
+                <!-- Intermédiaire -->
+                <VBox spacing="6">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="🟡 Intermédiaire" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #374151;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblCountIntermediaire" text="0" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #F59E0B;"/>
+                    </HBox>
+                    <StackPane style="-fx-background-color: #FEF3C7; -fx-background-radius: 6;" prefHeight="10">
+                        <HBox alignment="CENTER_LEFT">
+                            <Region fx:id="barIntermediaire" prefHeight="10" style="-fx-background-color: linear-gradient(to right, #F59E0B, #D97706); -fx-background-radius: 6;"/>
+                        </HBox>
+                    </StackPane>
+                </VBox>
+
+                <!-- Avancé -->
+                <VBox spacing="6">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="🔴 Avancé" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #374151;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblCountAvance" text="0" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #EF4444;"/>
+                    </HBox>
+                    <StackPane style="-fx-background-color: #FEE2E2; -fx-background-radius: 6;" prefHeight="10">
+                        <HBox alignment="CENTER_LEFT">
+                            <Region fx:id="barAvance" prefHeight="10" style="-fx-background-color: linear-gradient(to right, #EF4444, #DC2626); -fx-background-radius: 6;"/>
+                        </HBox>
+                    </StackPane>
+                </VBox>
+
+                <!-- Expert -->
+                <VBox spacing="6">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="🟣 Expert" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #374151;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblCountExpert" text="0" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #8B5CF6;"/>
+                    </HBox>
+                    <StackPane style="-fx-background-color: #EDE9FE; -fx-background-radius: 6;" prefHeight="10">
+                        <HBox alignment="CENTER_LEFT">
+                            <Region fx:id="barExpert" prefHeight="10" style="-fx-background-color: linear-gradient(to right, #8B5CF6, #7C3AED); -fx-background-radius: 6;"/>
+                        </HBox>
+                    </StackPane>
+                </VBox>
+            </VBox>
+
+            <!-- Top 5 Bibliothèques par ressources -->
+            <VBox HBox.hgrow="ALWAYS" spacing="16" style="-fx-background-color: white; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 28; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+                <HBox spacing="14" alignment="CENTER_LEFT">
+                    <StackPane style="-fx-background-color: #FFF7ED; -fx-background-radius: 12; -fx-padding: 10;">
+                        <Label text="🏆" style="-fx-font-size: 20px;"/>
+                    </StackPane>
+                    <VBox spacing="2">
+                        <Label text="Top Bibliothèques" style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                        <Label text="Les plus riches en ressources" style="-fx-font-size: 12px; -fx-text-fill: #94A3B8;"/>
+                    </VBox>
+                </HBox>
+                <Separator/>
+                <VBox fx:id="topLibrariesBox" spacing="12"/>
+            </VBox>
+        </HBox>
+
+        <!-- ROW 3: Distribution par type de ressource -->
+        <VBox spacing="16" style="-fx-background-color: white; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 28; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+            <HBox spacing="14" alignment="CENTER_LEFT">
+                <StackPane style="-fx-background-color: #F0FDF4; -fx-background-radius: 12; -fx-padding: 10;">
+                    <Label text="📋" style="-fx-font-size: 20px;"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Ressources par type" style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                    <Label text="Distribution selon le type de contenu" style="-fx-font-size: 12px; -fx-text-fill: #94A3B8;"/>
+                </VBox>
+            </HBox>
+            <Separator/>
+            <FlowPane fx:id="resourceTypePane" hgap="16" vgap="12" alignment="TOP_LEFT"/>
+        </VBox>
+
+    </VBox>
+</ScrollPane>

@@ -17,6 +17,7 @@ public class AppContext {
 
     public static String getRole()     { return currentUser != null ? currentUser.getType() : "unknown"; }
     public static String getFullName() { return currentUser != null ? currentUser.getFullName() : ""; }
+    public static int getUserId()      { return currentUser != null ? currentUser.getId() : 0; }
 
     private static boolean is(String role) {
         return currentUser != null && role.equals(currentUser.getType());

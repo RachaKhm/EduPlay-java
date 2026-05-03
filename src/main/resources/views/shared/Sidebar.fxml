@@ -54,13 +54,13 @@
                   spacing="12"
                   styleClass="modern-nav-btn">
                 <VBox alignment="CENTER_LEFT">
-                    <Label text="📊 Dashboard" styleClass="nav-btn-label"/>
+                    <Label text="📊 Tableau de bord" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
             <!-- ADMIN SECTION -->
             <HBox fx:id="sectionAdminBox" spacing="8" styleClass="section-header-box">
-                <Label fx:id="sectionAdmin" text="ADMIN" styleClass="section-label"/>
+                <Label fx:id="sectionAdmin" text="ADMINISTRATION" styleClass="section-label"/>
             </HBox>
 
             <!-- USERS -->
@@ -74,25 +74,129 @@
                 </VBox>
             </HBox>
 
-            <!-- LIBRARY -->
+            <!-- TEACHERS -->
+            <HBox fx:id="btnTeachers"
+                  onMouseClicked="#showTeachers"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="👨‍🏫 Enseignants" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- PARENTS -->
+            <HBox fx:id="btnParents"
+                  onMouseClicked="#showParents"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="👪 Parents" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- CONTENT SECTION -->
+            <HBox fx:id="sectionContentBox" spacing="8" styleClass="section-header-box">
+                <Label text="CONTENU &amp; BIBLIOTHÈQUE" styleClass="section-label"/>
+            </HBox>
+
+            <!-- ADMIN COURSES -->
+            <HBox fx:id="btnAdminCourses"
+                  onMouseClicked="#showAdminCourses"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📚 Gestion des cours" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- LIBRARY (REAL BOOKS) -->
             <HBox fx:id="btnLibrary"
                   onMouseClicked="#showLibrary"
                   alignment="CENTER_LEFT"
                   spacing="12"
                   styleClass="modern-nav-btn">
                 <VBox alignment="CENTER_LEFT">
-                    <Label text="📚 Cours" styleClass="nav-btn-label"/>
+                    <Label text="📖 Gestion Bibliothèque" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
-            <!-- RESOURCES -->
+            <!-- BOOK REQUESTS -->
+            <HBox fx:id="btnBookRequests"
+                  onMouseClicked="#showBookRequests"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📋 Demandes de livres" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- RESOURCES (SEANCES) -->
             <HBox fx:id="btnResource"
                   onMouseClicked="#showResource"
                   alignment="CENTER_LEFT"
                   spacing="12"
                   styleClass="modern-nav-btn">
                 <VBox alignment="CENTER_LEFT">
-                    <Label text="📂 Séances" styleClass="nav-btn-label"/>
+                    <Label text="📂 Gestion des séances" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- ==================== SECTION ÉVÉNEMENTS ==================== -->
+            <HBox fx:id="sectionEventsBox" spacing="8" styleClass="section-header-box">
+                <Label fx:id="sectionEvents" text="ÉVÉNEMENTS" styleClass="section-label"/>
+            </HBox>
+
+            <HBox fx:id="btnEventList"
+                  onMouseClicked="#showEventList"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📅 Liste des événements" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="btnAddEvent"
+                  onMouseClicked="#showAddEvent"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="➕ Ajouter un événement" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="btnRegistrationList"
+                  onMouseClicked="#showRegistrationList"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📋 Inscriptions" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="btnScanner"
+                  onMouseClicked="#showScanner"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📷 Scanner QR" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="btnStatistics"
+                  onMouseClicked="#showStatistics"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📊 Statistiques" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
@@ -106,33 +210,51 @@
                 </VBox>
             </HBox>
 
-            <HBox fx:id="btnStats"
-                  onMouseClicked="#showStats"
-                  alignment="CENTER_LEFT"
-                  spacing="12"
-                  styleClass="modern-nav-btn">
-                <VBox alignment="CENTER_LEFT">
-                    <Label text="📊 Statistiques" styleClass="nav-btn-label"/>
-                </VBox>
-            </HBox>
-
             <!-- TEACHER SECTION -->
             <HBox fx:id="sectionTeacherBox" styleClass="section-header-box">
-                <Label fx:id="sectionTeacher" text="COURS" styleClass="section-label"/>
+                <Label fx:id="sectionTeacher" text="ESPACE ENSEIGNANT" styleClass="section-label"/>
             </HBox>
 
             <HBox fx:id="btnCourses"
                   onMouseClicked="#showCourses"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
                   styleClass="modern-nav-btn">
-                <VBox>
+                <VBox alignment="CENTER_LEFT">
                     <Label text="📖 Mes cours" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
+            <!-- LEVELS (Added from colleague) -->
+            <HBox fx:id="btnLevel"
+                  onMouseClicked="#showLevels"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                <Label text="📊 Gestion des niveaux" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- GAMES (Added from colleague) -->
+            <HBox fx:id="btnGamesTeacher"
+                  onMouseClicked="#showGamesTeacher"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                <Label text="🎮 Gestion des jeux" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+
+
             <HBox fx:id="btnSeances"
                   onMouseClicked="#showTeacherSeances"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
                   styleClass="modern-nav-btn">
-                <VBox>
+                <VBox alignment="CENTER_LEFT">
                     <Label text="🗓️ Mes Séances" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
@@ -144,19 +266,49 @@
 
             <HBox fx:id="btnChildren"
                   onMouseClicked="#showChildren"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
                   styleClass="modern-nav-btn">
-                <VBox>
-                    <Label text="👨‍👧‍👦 Enfants" styleClass="nav-btn-label"/>
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="👨‍👧‍👦 Mes enfants" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- PARENT EVENTS -->
+            <HBox fx:id="sectionParentEventsBox" spacing="8" styleClass="section-header-box">
+                <Label text="ÉVÉNEMENTS" styleClass="section-label"/>
+            </HBox>
+
+            <HBox fx:id="btnParentEventList"
+                  onMouseClicked="#showParentEventList"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📅 Explorer les événements" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
             <HBox fx:id="btnParentSeances"
                   onMouseClicked="#showParentSeances"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
                   styleClass="modern-nav-btn">
-                <VBox>
-                    <Label text="📅 Séances" styleClass="nav-btn-label"/>
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📅 Suivi des séances" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
+
+            <HBox fx:id="btnParentRegistrations"
+                  onMouseClicked="#showParentRegistrations"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📋 Mes inscriptions" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
 
             <!-- CHILD SECTION -->
             <HBox fx:id="sectionChildBox" styleClass="section-header-box">
@@ -165,66 +317,75 @@
 
             <HBox fx:id="btnMyCoursesChild"
                   onMouseClicked="#showMyCoursesChild"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
                   styleClass="modern-nav-btn">
-                <VBox>
+                <VBox alignment="CENTER_LEFT">
                     <Label text="📖 Mes cours" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
             <HBox fx:id="btnGames"
                   onMouseClicked="#showGames"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
                   styleClass="modern-nav-btn">
-                <VBox>
+                <VBox alignment="CENTER_LEFT">
                     <Label text="🎮 Jeux" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
+
+
+            <!-- CHILD LIBRARY SECTION -->
+            <HBox fx:id="sectionChildLibraryBox" spacing="8" styleClass="section-header-box">
+                <Label text="LIVRES &amp; BIBLIOTHÈQUE" styleClass="section-label"/>
+            </HBox>
+
             <HBox fx:id="btnChildLibrary"
                   onMouseClicked="#showChildLibrary"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
                   styleClass="modern-nav-btn">
-                <VBox>
-                    <Label text="📚 Cours" styleClass="nav-btn-label"/>
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📖 Bibliothèque de livres" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
-            <!-- Moved for kid access -->
             <HBox fx:id="btnEvents"
                   onMouseClicked="#showEvents"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
                   styleClass="modern-nav-btn">
-                <VBox>
-                    <Label text="📂 Séances" styleClass="nav-btn-label"/>
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📂 Mes séances" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
-
 
         </VBox>
     </ScrollPane>
 
     <!-- Footer logout -->
     <VBox styleClass="sidebar-footer">
-        <Button onAction="#handleLogout" styleClass="modern-logout-btn">
-            <graphic>
-                <HBox alignment="CENTER_LEFT" spacing="12">
-                    <StackPane>
-                        <Rectangle width="32" height="32" arcWidth="16" arcHeight="16">
-                            <fill>
-                                <LinearGradient startX="0" startY="0" endX="1" endY="1">
-                                    <stops>
-                                        <Stop offset="0.0" color="#EF4444"/>
-                                        <Stop offset="1.0" color="#E11D48"/>
-                                    </stops>
-                                </LinearGradient>
-                            </fill>
-                        </Rectangle>
-                        <Label text="➔" styleClass="logout-icon"/>
-                    </StackPane>
-                    <VBox alignment="CENTER_LEFT">
-                        <Label text="Déconnexion" styleClass="logout-label"/>
-                        <Label fx:id="labelUserName" text="Utilisateur" styleClass="logout-user-label"/>
-                    </VBox>
-                </HBox>
-            </graphic>
-        </Button>
+        <HBox fx:id="btnLogout" onMouseClicked="#handleLogout" styleClass="modern-logout-hbox" alignment="CENTER_LEFT" spacing="12">
+            <StackPane>
+                <Rectangle width="32" height="32" arcWidth="16" arcHeight="16">
+                    <fill>
+                        <LinearGradient startX="0" startY="0" endX="1" endY="1">
+                            <stops>
+                                <Stop offset="0.0" color="#EF4444"/>
+                                <Stop offset="1.0" color="#E11D48"/>
+                            </stops>
+                        </LinearGradient>
+                    </fill>
+                </Rectangle>
+                <Label text="➔" styleClass="logout-icon"/>
+            </StackPane>
+            <VBox alignment="CENTER_LEFT">
+                <Label text="Déconnexion" styleClass="logout-label"/>
+                <Label fx:id="labelUserName" text="Utilisateur" styleClass="logout-user-label"/>
+            </VBox>
+        </HBox>
         <!-- Hidden labels for controller compatibility -->
         <Label fx:id="labelUserRole"     visible="false" managed="false"/>
         <Label fx:id="labelUserInitials" visible="false" managed="false"/>

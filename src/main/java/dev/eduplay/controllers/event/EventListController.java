@@ -3,13 +3,20 @@ package dev.eduplay.controllers.event;
 import dev.eduplay.core.Router;
 import dev.eduplay.entities.SchoolEvent;
 import dev.eduplay.services.SchoolEventService;
+import dev.eduplay.utils.CSVExporter;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,14 +36,15 @@ public class EventListController {
     @FXML private TextField searchField;
     @FXML private ComboBox<String> sortCombo;
     @FXML private ToggleButton orderToggle;
+    @FXML private ComboBox<String> filterCombo;
     @FXML private Button addBtn;
+    @FXML private Button exportBtn;
     @FXML private Button prevBtn;
     @FXML private Button nextBtn;
     @FXML private Label pageInfo;
     @FXML private Button refreshBtn;
 
     private SchoolEventService service;
-    private dev.eduplay.services.EventRegistrationService registrationService;
     private ObservableList<SchoolEvent> originalEvents;
     private ObservableList<SchoolEvent> filteredEvents;
     private ObservableList<SchoolEvent> currentPageEvents;
@@ -47,13 +55,13 @@ public class EventListController {
     private String currentSearchText = "";
     private String currentSortBy = "startDate";
     private boolean currentAscending = false;
+    private Timeline autoRefresh;
 
     @FXML
     public void initialize() {
         System.out.println("=== EventListController initialisé ===");
 
         service = new SchoolEventService();
-        registrationService = new dev.eduplay.services.EventRegistrationService();
         originalEvents = FXCollections.observableArrayList();
         filteredEvents = FXCollections.observableArrayList();
         currentPageEvents = FXCollections.observableArrayList();
@@ -65,7 +73,18 @@ public class EventListController {
         orderToggle.setText("⬇️ Desc");
         orderToggle.setSelected(false);
 
-        cleanExpiredEvents();
+        filterCombo.getItems().clear();
+        filterCombo.getItems().addAll("Tous", "À venir", "Passés");
+        filterCombo.setValue("Tous");
+
+        // ✅ Rafraîchissement automatique toutes les 30 secondes
+        autoRefresh = new Timeline(new KeyFrame(Duration.seconds(30), e -> {
+            System.out.println("🔄 Rafraîchissement automatique des événements");
+            loadEvents();
+        }));
+        autoRefresh.setCycleCount(Timeline.INDEFINITE);
+        autoRefresh.play();
+
         loadEvents();
 
         searchField.textProperty().addListener((obs, old, newVal) -> {
@@ -88,6 +107,18 @@ public class EventListController {
             currentPage = 1;
             applyFiltersAndSort();
         });
+
+        filterCombo.valueProperty().addListener((obs, old, newVal) -> {
+            currentPage = 1;
+            applyFiltersAndSort();
+        });
+    }
+
+    // ✅ Méthode pour arrêter le rafraîchissement
+    public void shutdown() {
+        if (autoRefresh != null) {
+            autoRefresh.stop();
+        }
     }
 
     private void setupTableColumns() {
@@ -117,8 +148,7 @@ public class EventListController {
             private final Button ressourcesBtn = new Button("Ressources");
             private final Button modifierBtn = new Button("Modifier");
             private final Button supprimerBtn = new Button("Supprimer");
-            private final Button inscrireBtn = new Button("S'inscrire");
-            private final HBox container = new HBox(8);
+            private final HBox container = new HBox(8, voirBtn, ressourcesBtn, modifierBtn, supprimerBtn);
 
             {
                 String btnStyle = "-fx-padding: 6 12; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;";
@@ -126,7 +156,6 @@ public class EventListController {
                 ressourcesBtn.setStyle("-fx-background-color: #8b5cf6; -fx-text-fill: white;" + btnStyle);
                 modifierBtn.setStyle("-fx-background-color: #3b82f6; -fx-text-fill: white;" + btnStyle);
                 supprimerBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white;" + btnStyle);
-                inscrireBtn.setStyle("-fx-background-color: #10b981; -fx-text-fill: white;" + btnStyle);
                 container.setAlignment(javafx.geometry.Pos.CENTER);
             }
 
@@ -142,17 +171,6 @@ public class EventListController {
                     ressourcesBtn.setOnAction(e -> Router.go("event_resource", event.getId(), event.getTitle()));
                     modifierBtn.setOnAction(e -> Router.go("edit_event", event));
                     supprimerBtn.setOnAction(e -> supprimerEvent(event));
-                    inscrireBtn.setOnAction(e -> Router.go("registration_detail", event.getId())); // Or custom registration view
-
-                    container.getChildren().clear();
-                    container.getChildren().addAll(voirBtn, ressourcesBtn);
-
-                    if (dev.eduplay.core.AppContext.isAdmin()) {
-                        container.getChildren().addAll(modifierBtn, supprimerBtn);
-                    } else if (dev.eduplay.core.AppContext.isParent()) {
-                        container.getChildren().add(inscrireBtn);
-                    }
-
                     setGraphic(container);
                 }
             }
@@ -160,61 +178,17 @@ public class EventListController {
     }
 
     private void setupActions() {
-        addBtn.setOnAction(e -> {
-            System.out.println("Nouvel événement");
-            Router.go("add_event");
-        });
+        addBtn.setOnAction(e -> Router.go("add_event"));
+        exportBtn.setOnAction(e -> exporterEvenements());
         refreshBtn.setOnAction(e -> refreshManually());
         prevBtn.setOnAction(e -> pagePrecedente());
         nextBtn.setOnAction(e -> pageSuivante());
     }
 
-    private void cleanExpiredEvents() {
-        try {
-            LocalDateTime now = LocalDateTime.now();
-            List<SchoolEvent> allEvents = service.recuperer();
-            List<SchoolEvent> expiredEvents = new ArrayList<>();
-
-            for (SchoolEvent event : allEvents) {
-                if (event.getEndDate() != null && event.getEndDate().isBefore(now)) {
-                    expiredEvents.add(event);
-                }
-            }
-
-            if (!expiredEvents.isEmpty()) {
-                for (SchoolEvent event : expiredEvents) {
-                    service.supprimerAvecRessources(event);
-                    System.out.println("🗑️ Événement expiré supprimé: " + event.getTitle());
-                }
-                showAlert("Nettoyage automatique", expiredEvents.size() + " événement(s) expiré(s) supprimé(s)");
-            }
-        } catch (SQLException e) {
-            System.err.println("Erreur lors du nettoyage: " + e.getMessage());
-        }
-    }
-
     private void loadEvents() {
         try {
-            cleanExpiredEvents();
-            List<SchoolEvent> allEvents = service.recuperer();
-            
-            // Filter for children: only show events they are registered for
-            if (dev.eduplay.core.AppContext.isChild()) {
-                String myName = dev.eduplay.core.AppContext.getFullName();
-                List<dev.eduplay.entities.EventRegistration> myRegs = registrationService.recuperer().stream()
-                        .filter(r -> myName.equalsIgnoreCase(r.getChildFullName()))
-                        .collect(Collectors.toList());
-                
-                List<Integer> registeredEventIds = myRegs.stream()
-                        .map(r -> r.getEvent().getId())
-                        .collect(Collectors.toList());
-                
-                allEvents = allEvents.stream()
-                        .filter(e -> registeredEventIds.contains(e.getId()))
-                        .collect(Collectors.toList());
-            }
-
-            originalEvents.setAll(allEvents);
+            List<SchoolEvent> events = service.recuperer();
+            originalEvents.setAll(events);
             applyFiltersAndSort();
         } catch (SQLException e) {
             showAlert("Erreur", "Impossible de charger les événements: " + e.getMessage());
@@ -231,11 +205,21 @@ public class EventListController {
 
     private void applyFiltersAndSort() {
         String searchLower = currentSearchText.toLowerCase().trim();
+        String filter = filterCombo.getValue();
+        LocalDateTime now = LocalDateTime.now();
 
         List<SchoolEvent> filtered = originalEvents.stream()
                 .filter(e -> searchLower.isEmpty() ||
                         e.getTitle().toLowerCase().contains(searchLower) ||
                         e.getLocation().toLowerCase().contains(searchLower))
+                .filter(e -> {
+                    if ("À venir".equals(filter)) {
+                        return e.getEndDate() != null && e.getEndDate().isAfter(now);
+                    } else if ("Passés".equals(filter)) {
+                        return e.getEndDate() != null && e.getEndDate().isBefore(now);
+                    }
+                    return true;
+                })
                 .collect(Collectors.toList());
 
         Comparator<SchoolEvent> comparator = getComparator(currentSortBy);
@@ -253,20 +237,13 @@ public class EventListController {
 
     private Comparator<SchoolEvent> getComparator(String sortBy) {
         if (sortBy == null) return Comparator.comparing(SchoolEvent::getStartDate, Comparator.nullsLast(Comparator.naturalOrder()));
-
         switch (sortBy) {
-            case "title":
-                return Comparator.comparing(SchoolEvent::getTitle, Comparator.nullsLast(String::compareTo));
-            case "location":
-                return Comparator.comparing(SchoolEvent::getLocation, Comparator.nullsLast(String::compareTo));
-            case "startDate":
-                return Comparator.comparing(SchoolEvent::getStartDate, Comparator.nullsLast(Comparator.naturalOrder()));
-            case "endDate":
-                return Comparator.comparing(SchoolEvent::getEndDate, Comparator.nullsLast(Comparator.naturalOrder()));
-            case "createdAt":
-                return Comparator.comparing(SchoolEvent::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder()));
-            default:
-                return Comparator.comparing(SchoolEvent::getStartDate, Comparator.nullsLast(Comparator.naturalOrder()));
+            case "title": return Comparator.comparing(SchoolEvent::getTitle, Comparator.nullsLast(String::compareTo));
+            case "location": return Comparator.comparing(SchoolEvent::getLocation, Comparator.nullsLast(String::compareTo));
+            case "startDate": return Comparator.comparing(SchoolEvent::getStartDate, Comparator.nullsLast(Comparator.naturalOrder()));
+            case "endDate": return Comparator.comparing(SchoolEvent::getEndDate, Comparator.nullsLast(Comparator.naturalOrder()));
+            case "createdAt": return Comparator.comparing(SchoolEvent::getCreatedAt, Comparator.nullsLast(Comparator.naturalOrder()));
+            default: return Comparator.comparing(SchoolEvent::getStartDate, Comparator.nullsLast(Comparator.naturalOrder()));
         }
     }
 
@@ -316,8 +293,7 @@ public class EventListController {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmation");
         confirm.setHeaderText("Supprimer l'événement");
-        confirm.setContentText("Êtes-vous sûr de vouloir supprimer l'événement \"" + event.getTitle() + "\" ?\n\nToutes les ressources associées seront également supprimées.");
-
+        confirm.setContentText("Êtes-vous sûr de vouloir supprimer l'événement \"" + event.getTitle() + "\" ?");
         if (confirm.showAndWait().get() == ButtonType.OK) {
             try {
                 service.supprimerAvecRessources(event);
@@ -327,6 +303,41 @@ public class EventListController {
                 showAlert("Erreur", "Impossible de supprimer l'événement: " + e.getMessage());
                 e.printStackTrace();
             }
+        }
+    }
+
+    private void exporterEvenements() {
+        try {
+            List<SchoolEvent> eventsToExport = filteredEvents.isEmpty() ? new ArrayList<>(originalEvents) : new ArrayList<>(filteredEvents);
+            if (eventsToExport.isEmpty()) {
+                showAlert("Export", "❌ Aucun événement à exporter");
+                return;
+            }
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Enregistrer le fichier CSV");
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
+            fileChooser.setInitialFileName("evenements_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".csv");
+            Stage stage = (Stage) exportBtn.getScene().getWindow();
+            File file = fileChooser.showSaveDialog(stage);
+            if (file != null) {
+                String[] headers = {"ID", "Titre", "Lieu", "Date début", "Date fin", "Description"};
+                List<String[]> data = new ArrayList<>();
+                for (SchoolEvent event : eventsToExport) {
+                    String[] row = {
+                            String.valueOf(event.getId()), event.getTitle(),
+                            event.getLocation() != null ? event.getLocation() : "",
+                            event.getStartDate() != null ? event.getStartDate().format(dateFormatter) : "",
+                            event.getEndDate() != null ? event.getEndDate().format(dateFormatter) : "",
+                            event.getDescription() != null ? event.getDescription().replace("\n", " ").replace("\r", "") : ""
+                    };
+                    data.add(row);
+                }
+                CSVExporter.exporter(data, headers, file.getAbsolutePath());
+                showAlert("Export réussi", "✅ " + eventsToExport.size() + " événement(s) exporté(s) vers " + file.getName());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Erreur", "❌ Erreur lors de l'export: " + e.getMessage());
         }
     }
 

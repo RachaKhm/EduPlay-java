@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.effect.DropShadow?>
+
+<ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.eduplay.controllers.ResourceIndexController">
+    <VBox spacing="24" style="-fx-padding: 30; -fx-background-color: #F8FAFC;">
+        
+        <!-- HEADER AVEC BACKGROUND GRADIENT -->
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: linear-gradient(to right, #8B5CF6, #7C3AED); -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);">
+            <VBox HBox.hgrow="ALWAYS" spacing="8">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="📚" style="-fx-font-size: 32px;"/>
+                    <Label text="Gestion des Ressources" style="-fx-text-fill: white; -fx-font-size: 32px; -fx-font-weight: bold;"/>
+                </HBox>
+                <Label text="Explorez, recherchez et gérez votre collection de ressources" style="-fx-text-fill: #E0E7FF; -fx-font-size: 16px;"/>
+            </VBox>
+            
+            <HBox spacing="16" alignment="CENTER">
+                <!-- Bouton Livres demandés -->
+                <Button onAction="#showBookRequests" 
+                        style="-fx-background-color: #F97316; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 12 24; -fx-background-radius: 12; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
+                    <graphic>
+                        <HBox spacing="8" alignment="CENTER">
+                            <Label text="🔔" style="-fx-text-fill: white;"/>
+                            <Label text="🔔 Livres demandés" style="-fx-text-fill: white;"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+                <!-- Bouton Ajouter -->
+                <Button text="+ Nouvelle Ressource" onAction="#addResource" 
+                        style="-fx-background-color: white; -fx-text-fill: #4F46E5; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 12 24; -fx-background-radius: 12; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);"/>
+            </HBox>
+        </HBox>
+
+        <!-- RECHERCHE VOCALE -->
+        <VBox spacing="16" style="-fx-background-color: #EEF2FF; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 24; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4);">
+            <HBox spacing="16" alignment="CENTER_LEFT">
+                <StackPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-min-width: 48; -fx-min-height: 48;">
+                    <Label text="🎤" style="-fx-font-size: 20px; -fx-text-fill: #8B5CF6;"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="🎤 Recherche Vocale" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #4C1D95;"/>
+                    <Label text="Parlez pour rechercher un livre instantanément" style="-fx-text-fill: #8B5CF6; -fx-font-size: 12px;"/>
+                </VBox>
+            </HBox>
+            <Button text="🎙 Parler" 
+                    style="-fx-background-color: #8B5CF6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10 24; -fx-cursor: hand; -fx-max-width: 150;">
+                <effect>
+                    <DropShadow color="#8B5CF644" radius="10" offsetY="4"/>
+                </effect>
+            </Button>
+        </VBox>
+
+        <!-- FILTRES & RECHERCHE -->
+        <VBox spacing="20" style="-fx-background-color: white; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 24; -fx-border-color: #F1F5F9; -fx-border-width: 2; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);">
+            <HBox spacing="16" alignment="CENTER_LEFT">
+                <StackPane style="-fx-background-color: #EEF2FF; -fx-background-radius: 12; -fx-min-width: 48; -fx-min-height: 48;">
+                    <Label text="🔍" style="-fx-font-size: 20px;"/>
+                </StackPane>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Filtres &amp; Recherche" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                    <Label text="Affinez votre recherche avec les critères ci-dessous" style="-fx-text-fill: #64748B; -fx-font-size: 12px;"/>
+                </VBox>
+            </HBox>
+
+            <Separator style="-fx-background-color: #F8FAFC;"/>
+
+            <HBox spacing="20">
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Titre uniquement" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 13px;"/>
+                    <TextField fx:id="txtSearchTitle" promptText="🔍 Rechercher par titre..." style="-fx-padding: 12; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white;"/>
+                </VBox>
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Auteur uniquement" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 13px;"/>
+                    <TextField fx:id="txtSearchAuthor" promptText="👤 Rechercher par auteur..." style="-fx-padding: 12; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white;"/>
+                </VBox>
+                <VBox spacing="8" prefWidth="250">
+                    <Label text="Trier par" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 13px;"/>
+                    <ComboBox fx:id="comboSearchType" prefWidth="250" promptText="Sélectionnez un tri" style="-fx-padding: 6; -fx-background-radius: 12; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-color: white;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <!-- HEADER RÉSULTATS -->
+        <HBox alignment="CENTER_LEFT">
+            <Label text="Résultats de votre recherche" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Label fx:id="lblResourceCountAlt" text="0 résultats" style="-fx-background-color: #f0fdf4; -fx-text-fill: #15803d; -fx-font-weight: bold; -fx-font-size: 13px; -fx-background-radius: 8; -fx-padding: 6 14; -fx-border-color: #bbf7d0; -fx-border-width: 1; -fx-border-radius: 8;"/>
+        </HBox>
+
+        <!-- GRILLE DE CARTES -->
+        <FlowPane fx:id="gridResources" hgap="24" vgap="24" alignment="TOP_LEFT" />
+
+    </VBox>
+</ScrollPane>

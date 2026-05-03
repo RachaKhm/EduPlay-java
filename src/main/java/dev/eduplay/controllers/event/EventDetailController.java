@@ -20,7 +20,8 @@ public class EventDetailController {
     @FXML private Button editBtn;
     @FXML private Button deleteBtn;
     @FXML private Button resourcesBtn;
-    @FXML private Label eventTitleLabel;
+
+    // Labels pour les informations
     @FXML private Label titleValue;
     @FXML private Label locationValue;
     @FXML private Label startDateValue;
@@ -28,7 +29,11 @@ public class EventDetailController {
     @FXML private Label createdAtValue;
     @FXML private Label latitudeValue;
     @FXML private Label longitudeValue;
-    @FXML private TextArea descriptionValue;
+    @FXML private Label descriptionValue;
+    @FXML private Label capacityValue;
+    @FXML private Label registrationsCountValue;
+
+    // Image
     @FXML private ImageView eventImageView;
     @FXML private Label noImageLabel;
     @FXML private StackPane imageContainer;
@@ -64,6 +69,8 @@ public class EventDetailController {
         this.currentEvent = event;
         System.out.println("=== Affichage des détails ===");
         System.out.println("Titre: " + event.getTitle());
+        System.out.println("Capacité max: " + event.getMaxCapacity());
+        System.out.println("Inscrits: " + event.getCurrentRegistrations());
         displayEventDetails();
     }
 
@@ -92,37 +99,109 @@ public class EventDetailController {
             return;
         }
 
-        eventTitleLabel.setText("📌 " + currentEvent.getTitle());
+        System.out.println("=== Début displayEventDetails ===");
+
+        // Titre
         titleValue.setText(currentEvent.getTitle());
+
+        // Lieu
         locationValue.setText(currentEvent.getLocation() != null ? currentEvent.getLocation() : "Non spécifié");
 
+        // Dates
         if (currentEvent.getStartDate() != null) {
             startDateValue.setText(currentEvent.getStartDate().format(dateFormatter));
+        } else {
+            startDateValue.setText("Non spécifiée");
         }
+
         if (currentEvent.getEndDate() != null) {
             endDateValue.setText(currentEvent.getEndDate().format(dateFormatter));
+        } else {
+            endDateValue.setText("Non spécifiée");
         }
+
         if (currentEvent.getCreatedAt() != null) {
             createdAtValue.setText(currentEvent.getCreatedAt().format(dateFormatter));
+        } else {
+            createdAtValue.setText("Non spécifiée");
         }
 
+        // Description
         descriptionValue.setText(currentEvent.getDescription() != null ? currentEvent.getDescription() : "Aucune description");
 
+        // ✅ Affichage de la capacité
+        displayCapacity();
+
+        // Localisation
         if (currentEvent.getLatitude() != null && currentEvent.getLongitude() != null &&
-                !currentEvent.getLatitude().isEmpty() && !currentEvent.getLongitude().isEmpty()) {
+                !currentEvent.getLatitude().isEmpty() && !currentEvent.getLongitude().isEmpty() &&
+                !currentEvent.getLatitude().equals("null") && !currentEvent.getLongitude().equals("null")) {
             latitudeValue.setText(currentEvent.getLatitude());
             longitudeValue.setText(currentEvent.getLongitude());
             locationBox.setVisible(true);
             locationBox.setManaged(true);
+        } else {
+            locationBox.setVisible(false);
+            locationBox.setManaged(false);
         }
 
         loadImage();
+
+        System.out.println("=== Fin displayEventDetails ===");
+    }
+
+    private void displayCapacity() {
+        int maxCapacity = currentEvent.getMaxCapacity();
+        int currentRegs = currentEvent.getCurrentRegistrations();
+        int remaining = maxCapacity - currentRegs;
+
+        System.out.println("Affichage capacité - Max: " + maxCapacity + ", Inscrits: " + currentRegs);
+
+        if (capacityValue == null) {
+            System.err.println("capacityValue est null !");
+            return;
+        }
+        if (registrationsCountValue == null) {
+            System.err.println("registrationsCountValue est null !");
+            return;
+        }
+
+        capacityValue.setText("🎟️ Capacité: " + maxCapacity + " places");
+        registrationsCountValue.setText("📊 Inscrits: " + currentRegs + " / " + maxCapacity);
+
+        capacityValue.setVisible(true);
+        registrationsCountValue.setVisible(true);
+
+        if (remaining <= 0) {
+            String style = "-fx-text-fill: #ef4444; -fx-font-weight: bold; -fx-font-size: 14px;";
+            capacityValue.setStyle(style);
+            registrationsCountValue.setStyle(style);
+        } else if (remaining <= 10) {
+            String style = "-fx-text-fill: #f59e0b; -fx-font-weight: bold; -fx-font-size: 14px;";
+            capacityValue.setStyle(style);
+            registrationsCountValue.setStyle(style);
+        } else {
+            capacityValue.setStyle("-fx-text-fill: #10b981; -fx-font-weight: bold; -fx-font-size: 14px;");
+            registrationsCountValue.setStyle("-fx-text-fill: #3b82f6; -fx-font-weight: bold; -fx-font-size: 14px;");
+        }
     }
 
     private void loadImage() {
         String imagePath = currentEvent.getImagePath();
-        if (imagePath != null && !imagePath.isEmpty()) {
-            File imageFile = new File("uploads/events/" + imagePath);
+        System.out.println("Chargement image: " + imagePath);
+
+        if (imagePath != null && !imagePath.isEmpty() && !imagePath.equals("null")) {
+            String fileName = imagePath;
+            if (imagePath.contains("/")) {
+                fileName = imagePath.substring(imagePath.lastIndexOf("/") + 1);
+            }
+            if (imagePath.contains("\\")) {
+                fileName = imagePath.substring(imagePath.lastIndexOf("\\") + 1);
+            }
+
+            File imageFile = new File("uploads/events/" + fileName);
+            System.out.println("Chemin image: " + imageFile.getAbsolutePath());
+
             if (imageFile.exists()) {
                 try {
                     Image image = new Image(imageFile.toURI().toString());
@@ -130,15 +209,14 @@ public class EventDetailController {
                     eventImageView.setVisible(true);
                     noImageLabel.setVisible(false);
                     System.out.println("✅ Image chargée!");
+                    return;
                 } catch (Exception e) {
-                    showNoImage();
+                    System.err.println("Erreur chargement image: " + e.getMessage());
                 }
-            } else {
-                showNoImage();
             }
-        } else {
-            showNoImage();
         }
+
+        showNoImage();
     }
 
     private void showNoImage() {
@@ -152,7 +230,6 @@ public class EventDetailController {
         Router.go("event_list");
     }
 
-    // ✅ CORRIGÉ : Utilise edit_event au lieu de add_event
     private void goToEdit() {
         if (currentEvent != null) {
             Router.go("edit_event", currentEvent);

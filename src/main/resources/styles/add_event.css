@@ -1,0 +1,132 @@
+/* Modern Add Event Styles */
+.root-container {
+    -fx-background-color: linear-gradient(to bottom right, #f8fafc, #f1f5f9);
+}
+
+.form-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 20, 0, 0, 10);
+    -fx-padding: 30;
+    -fx-max-width: 700;
+}
+
+.title-label {
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+    -fx-font-size: 26px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #1e293b;
+    -fx-padding: 0 0 10 0;
+}
+
+.subtitle-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748b;
+    -fx-padding: 0 0 20 0;
+}
+
+.field-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #334155;
+}
+
+.text-input {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1.5;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10;
+    -fx-font-size: 14px;
+    -fx-transition: all 0.2s ease-in-out;
+}
+
+.text-input:focused {
+    -fx-background-color: white;
+    -fx-border-color: #6366f1;
+    -fx-effect: dropshadow(three-pass-box, rgba(99, 102, 241, 0.1), 8, 0, 0, 0);
+}
+
+.combo-box {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 2;
+}
+
+.date-picker {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.date-picker .text-field {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+.ai-button {
+    -fx-background-color: linear-gradient(to right, #8b5cf6, #6366f1);
+    -fx-text-fill: white;
+    -fx-font-weight: 800;
+    -fx-padding: 10 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(139, 92, 246, 0.3), 10, 0, 0, 4);
+}
+
+.ai-button:hover {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.btn-choose {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #475569;
+    -fx-font-weight: 600;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16;
+}
+
+.btn-submit {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-font-weight: 800;
+    -fx-font-size: 15px;
+    -fx-padding: 12 40;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(16, 185, 129, 0.3), 12, 0, 0, 5);
+}
+
+.btn-submit:hover {
+    -fx-background-color: #059669;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+.btn-cancel {
+    -fx-background-color: transparent;
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 1.5;
+    -fx-text-fill: #64748b;
+    -fx-font-weight: 600;
+    -fx-font-size: 14px;
+    -fx-padding: 11 30;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+}
+
+.btn-cancel:hover {
+    -fx-background-color: #f1f5f9;
+}
+
+.section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #475569;
+    -fx-padding: 20 0 10 0;
+}

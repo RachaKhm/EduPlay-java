@@ -1,101 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.image.ImageView?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dev.eduplay.controllers.event.EventDetailController"
-            style="-fx-background-color: #f3f4f6; -fx-background: #f3f4f6;"
+            style="-fx-background-color: #f8f9fa; -fx-background: #f8f9fa;"
             fitToWidth="true" fitToHeight="false">
 
     <content>
-        <VBox spacing="20" style="-fx-background-color: #f3f4f6;" alignment="TOP_CENTER">
+        <VBox spacing="20" style="-fx-background-color: #f8f9fa;" alignment="TOP_CENTER">
 
             <padding>
                 <Insets top="25" right="35" bottom="25" left="35"/>
             </padding>
 
             <children>
-                <!-- En-tête avec bouton retour -->
-                <HBox alignment="CENTER_LEFT" spacing="15">
-                    <Button fx:id="backBtn" text="← Retour à la liste" style="-fx-background-color: #e2e8f0; -fx-text-fill: #1e293b; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;"/>
-                    <Label fx:id="eventTitleLabel" text="Détails de l'événement" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1e293b;" HBox.hgrow="ALWAYS"/>
+                <!-- Retour -->
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Button fx:id="backBtn" text="← Retour à la liste"
+                            style="-fx-background-color: #e2e8f0; -fx-text-fill: #475569; -fx-padding: 10 20; -fx-background-radius: 25; -fx-cursor: hand; -fx-font-weight: bold;"/>
                 </HBox>
 
                 <!-- Carte principale -->
-                <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
-                    <padding>
-                        <Insets top="25" right="25" bottom="25" left="25"/>
-                    </padding>
+                <VBox spacing="0" style="-fx-background-color: white; -fx-background-radius: 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
 
-                    <children>
-                        <!-- Image de l'événement -->
-                        <VBox spacing="5" VBox.vgrow="NEVER">
-                            <Label text="📸 Image de l'événement" style="-fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-size: 14px;"/>
-                            <StackPane fx:id="imageContainer" prefHeight="250" style="-fx-background-color: #f8fafc; -fx-background-radius: 12; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-border-width: 1;">
-                                <ImageView fx:id="eventImageView" fitHeight="250" fitWidth="600" preserveRatio="true" style="-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);"/>
-                                <Label fx:id="noImageLabel" text="🖼️ Aucune image disponible" style="-fx-text-fill: #94a3b8; -fx-font-size: 14px;" visible="false"/>
-                            </StackPane>
-                        </VBox>
+                    <!-- Image -->
+                    <ImageView fx:id="eventImageView" fitHeight="280" fitWidth="Infinity" preserveRatio="false" style="-fx-background-color: #e2e8f0;"/>
+                    <Label fx:id="noImageLabel" text="🖼️ Aucune image disponible" style="-fx-text-fill: #94a3b8; -fx-font-size: 14px; -fx-padding: 20; -fx-alignment: center;" visible="false" managed="false"/>
 
-                        <!-- Séparateur -->
-                        <Separator/>
+                    <!-- Contenu -->
+                    <VBox spacing="16" style="-fx-padding: 24;">
 
-                        <!-- Informations principales -->
-                        <GridPane hgap="20" vgap="15">
-                            <columnConstraints>
-                                <ColumnConstraints minWidth="120" prefWidth="120"/>
-                                <ColumnConstraints minWidth="300" prefWidth="400"/>
-                            </columnConstraints>
+                        <!-- Titre -->
+                        <Label fx:id="titleValue" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1e293b;" wrapText="true"/>
 
-                            <children>
-                                <Label text="📌 Titre" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                                <Label fx:id="titleValue" text="-" style="-fx-text-fill: #1e293b; -fx-font-size: 14px; -fx-wrap-text: true;" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                        <!-- Infos (date, lieu) -->
+                        <HBox spacing="16">
+                            <Label fx:id="startDateValue" style="-fx-font-size: 14px; -fx-text-fill: #8b5cf6; -fx-font-weight: bold;"/>
+                            <Label fx:id="endDateValue" style="-fx-font-size: 14px; -fx-text-fill: #8b5cf6; -fx-font-weight: bold;"/>
+                            <Label fx:id="locationValue" style="-fx-font-size: 14px; -fx-text-fill: #8b5cf6; -fx-font-weight: bold;"/>
+                        </HBox>
 
-                                <Label text="📍 Lieu" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                                <Label fx:id="locationValue" text="-" style="-fx-text-fill: #1e293b; -fx-font-size: 14px;" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                        <!-- Capacité -->
+                        <HBox spacing="16">
+                            <Label fx:id="capacityValue" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                            <Label fx:id="registrationsCountValue" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+                        </HBox>
 
-                                <Label text="📅 Date de début" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                                <Label fx:id="startDateValue" text="-" style="-fx-text-fill: #1e293b; -fx-font-size: 14px;" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
-
-                                <Label text="📅 Date de fin" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                                <Label fx:id="endDateValue" text="-" style="-fx-text-fill: #1e293b; -fx-font-size: 14px;" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
-
-                                <Label text="🕒 Créé le" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                                <Label fx:id="createdAtValue" text="-" style="-fx-text-fill: #1e293b; -fx-font-size: 14px;" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-                            </children>
-                        </GridPane>
-
-                        <!-- Séparateur -->
                         <Separator/>
 
                         <!-- Description -->
-                        <VBox spacing="5">
-                            <Label text="📝 Description" style="-fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-size: 14px;"/>
-                            <TextArea fx:id="descriptionValue" editable="false" wrapText="true" prefHeight="150" style="-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-padding: 12; -fx-font-size: 14px;"/>
-                        </VBox>
+                        <Label text="📝 Description" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                        <Label fx:id="descriptionValue" style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
 
-                        <!-- Localisation (si latitude/longitude existent) -->
+                        <Separator/>
+
+                        <!-- Créé le -->
+                        <Label text="📅 Créé le" style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
+                        <Label fx:id="createdAtValue" style="-fx-font-size: 13px; -fx-text-fill: #6b7280;"/>
+
+                        <!-- Localisation -->
                         <VBox fx:id="locationBox" spacing="5" visible="false" managed="false">
-                            <Label text="🗺️ Localisation" style="-fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-size: 14px;"/>
+                            <Label text="🗺️ Localisation" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
                             <HBox spacing="10">
                                 <Label text="Latitude:" style="-fx-text-fill: #64748b;"/>
-                                <Label fx:id="latitudeValue" text="-" style="-fx-text-fill: #1e293b;"/>
+                                <Label fx:id="latitudeValue" style="-fx-text-fill: #1e293b;"/>
                                 <Label text="Longitude:" style="-fx-text-fill: #64748b;"/>
-                                <Label fx:id="longitudeValue" text="-" style="-fx-text-fill: #1e293b;"/>
+                                <Label fx:id="longitudeValue" style="-fx-text-fill: #1e293b;"/>
                             </HBox>
                         </VBox>
 
                         <!-- Boutons d'action -->
-                        <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+                        <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 20 0 0 0;">
                             <Button fx:id="editBtn" text="✏️ Modifier" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;"/>
                             <Button fx:id="deleteBtn" text="🗑️ Supprimer" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;"/>
                             <Button fx:id="resourcesBtn" text="📚 Voir les ressources" style="-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;"/>
                         </HBox>
-                    </children>
+                    </VBox>
                 </VBox>
             </children>
         </VBox>
