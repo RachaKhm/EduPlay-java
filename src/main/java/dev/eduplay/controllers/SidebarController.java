@@ -201,7 +201,7 @@ public class SidebarController {
     @FXML private void showAdminCourses() { Router.go("library"); }
     @FXML private void showLibrary() { Router.go("library_index"); }
     @FXML private void showBookRequests() { Router.go("book_requests_index"); }
-    @FXML private void showResource() { Router.go("admin_resource_index"); }
+    @FXML private void showResource() { Router.go("resource"); }
     @FXML private void showEventList() { Router.go("event_list"); }
     @FXML private void showAddEvent() { Router.go("add_event"); }
     @FXML private void showRegistrationList() { Router.go("registration_list"); }
@@ -260,7 +260,7 @@ public class SidebarController {
             case "library" -> btnAdminCourses;
             case "library_index" -> btnLibrary;
             case "book_requests_index" -> btnBookRequests;
-            case "admin_resource_index" -> btnResource;
+            case "resource" -> btnResource;
             case "event_list" -> btnEventList;
             case "add_event" -> btnAddEvent;
             case "registration_list" -> btnRegistrationList;
