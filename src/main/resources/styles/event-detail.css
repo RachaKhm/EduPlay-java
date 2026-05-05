@@ -1,0 +1,148 @@
+/* event-detail.css - Style pour les pages détail d'événement */
+
+/* Conteneur principal */
+.detail-container {
+    -fx-background-color: #f8f9fa;
+}
+
+/* Carte principale */
+.detail-card {
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);
+}
+
+/* Image */
+.event-image {
+    -fx-background-color: #e2e8f0;
+}
+
+/* Titre */
+.event-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+/* Section title */
+.section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+/* Valeurs en surbrillance */
+.info-value-highlight {
+    -fx-font-size: 14px;
+    -fx-text-fill: #8b5cf6;
+    -fx-font-weight: bold;
+}
+
+/* Valeurs normales */
+.info-value {
+    -fx-font-size: 14px;
+    -fx-text-fill: #1e293b;
+}
+
+/* Description */
+.description-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748b;
+}
+
+/* Bouton retour */
+.back-btn {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #475569;
+    -fx-padding: 10 20;
+    -fx-background-radius: 25;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.back-btn:hover {
+    -fx-background-color: #cbd5e1;
+}
+
+/* Bouton modifier */
+.edit-btn {
+    -fx-background-color: #3b82f6;
+    -fx-text-fill: white;
+    -fx-padding: 10 25;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.edit-btn:hover {
+    -fx-background-color: #2563eb;
+}
+
+/* Bouton supprimer */
+.delete-btn {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-padding: 10 25;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.delete-btn:hover {
+    -fx-background-color: #dc2626;
+}
+
+/* Bouton ressources */
+.resources-btn {
+    -fx-background-color: #8b5cf6;
+    -fx-text-fill: white;
+    -fx-padding: 10 25;
+    -fx-background-radius: 8;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.resources-btn:hover {
+    -fx-background-color: #7c3aed;
+}
+
+/* Bouton inscription parent */
+.register-btn {
+    -fx-background-color: #f59e0b;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 12 24;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+    -fx-font-size: 16px;
+}
+
+.register-btn:hover {
+    -fx-background-color: #d97706;
+}
+
+/* Badge */
+.badge-available {
+    -fx-background-color: #dbeafe;
+    -fx-text-fill: #1e40af;
+    -fx-padding: 4 12;
+    -fx-background-radius: 20;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+/* Séparateur */
+.separator .line {
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1;
+}
+
+/* ScrollPane */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}

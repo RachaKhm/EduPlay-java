@@ -1,0 +1,167 @@
+/* parent-registration.css */
+
+/* Conteneur principal */
+.registration-container {
+    -fx-background-color: #f8f9fa;
+}
+
+/* Carte blanche */
+.form-card {
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);
+    -fx-padding: 24;
+}
+
+/* Titre principal */
+.form-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+/* Sous-titre */
+.form-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #8b5cf6;
+    -fx-font-weight: bold;
+}
+
+/* Labels des champs */
+.field-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #475569;
+    -fx-font-size: 13px;
+}
+
+/* Champs de saisie */
+.input-field {
+    -fx-padding: 12;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #e2e8f0;
+    -fx-background-color: white;
+}
+
+.input-field:focused {
+    -fx-border-color: #8b5cf6;
+    -fx-border-width: 2;
+}
+
+/* Bouton retour */
+.back-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #8b5cf6;
+    -fx-font-weight: bold;
+    -fx-padding: 8 0;
+    -fx-cursor: hand;
+}
+
+.back-btn:hover {
+    -fx-text-fill: #6d28d9;
+}
+
+/* Bouton ajouter (vert) */
+.add-btn {
+    -fx-background-color: #10b981;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+}
+
+.add-btn:hover {
+    -fx-background-color: #059669;
+}
+
+/* Bouton retirer (rouge) */
+.remove-btn {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+}
+
+.remove-btn:hover {
+    -fx-background-color: #dc2626;
+}
+
+/* Bouton submit (orange) */
+.submit-btn {
+    -fx-background-color: #f59e0b;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 12 24;
+    -fx-background-radius: 30;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+}
+
+.submit-btn:hover {
+    -fx-background-color: #d97706;
+}
+
+.submit-btn:disabled {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #94a3b8;
+}
+
+/* ComboBox */
+.combo-box {
+    -fx-padding: 10;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #e2e8f0;
+}
+
+.combo-box .list-cell {
+    -fx-padding: 8;
+}
+
+/* ListView */
+.list-view {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #e2e8f0;
+}
+
+.list-view .list-cell {
+    -fx-padding: 8;
+}
+
+.list-view .list-cell:selected {
+    -fx-background-color: #e0e7ff;
+}
+
+/* TextArea */
+.text-area {
+    -fx-padding: 8;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #e2e8f0;
+}
+
+.text-area:focused {
+    -fx-border-color: #8b5cf6;
+    -fx-border-width: 2;
+}
+
+/* Messages */
+.error-message {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 13px;
+}
+
+.success-message {
+    -fx-text-fill: #27ae60;
+    -fx-font-size: 13px;
+}
+
+/* Séparateur */
+.separator .line {
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1;
+}

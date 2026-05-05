@@ -3,63 +3,75 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.text.Font?>
 <?import javafx.scene.image.ImageView?>
 
-<ScrollPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<ScrollPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dev.eduplay.controllers.parent.ParentEventDetailController"
-            style="-fx-background-color: #f8f9fa; -fx-background: #f8f9fa;"
             fitToWidth="true" fitToHeight="false">
 
     <content>
-        <VBox spacing="20" style="-fx-background-color: #f8f9fa;" alignment="TOP_CENTER">
+        <VBox spacing="20" alignment="TOP_CENTER" style="-fx-background-color: #f8f9fa;">
 
             <padding>
                 <Insets top="25" right="35" bottom="25" left="35"/>
             </padding>
 
             <children>
-                <HBox alignment="CENTER_LEFT">
-                    <Button fx:id="backBtn" text="◀  Retour aux événements"
-                            style="-fx-background-color: #e2e8f0; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 25; -fx-cursor: hand;"/>
-                </HBox>
+                <!-- Retour -->
+                <Button fx:id="backBtn" text="← Retour aux événements"
+                        style="-fx-background-color: #e2e8f0; -fx-text-fill: #475569; -fx-padding: 10 20; -fx-background-radius: 25; -fx-font-weight: bold; -fx-cursor: hand;"/>
 
+                <!-- Carte principale -->
                 <VBox spacing="0" style="-fx-background-color: white; -fx-background-radius: 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
+
+                    <!-- Image -->
                     <ImageView fx:id="eventImageView" fitHeight="280" fitWidth="Infinity" preserveRatio="false" style="-fx-background-color: #e2e8f0;"/>
 
+                    <!-- Contenu -->
                     <VBox spacing="16" style="-fx-padding: 24;">
+
+                        <!-- Titre -->
                         <Label fx:id="titleLabel" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #1e293b;" wrapText="true"/>
 
+                        <!-- Infos -->
                         <HBox spacing="16">
                             <Label fx:id="startDateLabel" style="-fx-font-size: 14px; -fx-text-fill: #8b5cf6; -fx-font-weight: bold;"/>
                             <Label fx:id="endDateLabel" style="-fx-font-size: 14px; -fx-text-fill: #8b5cf6; -fx-font-weight: bold;"/>
                             <Label fx:id="locationLabel" style="-fx-font-size: 14px; -fx-text-fill: #8b5cf6; -fx-font-weight: bold;"/>
                         </HBox>
 
-                        <!-- ✅ AFFICHAGE DES PLACES DISPONIBLES AJOUTÉ ICI -->
-                        <Label fx:id="placesLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 4 0 0 0;"/>
+                        <!-- Places -->
+                        <Label fx:id="placesLabel" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #10b981;"/>
 
-                        <Separator/>
+                        <Separator style="-fx-border-color: #e2e8f0;"/>
 
+                        <!-- Description -->
                         <Label text="📝 Description" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
                         <Label fx:id="descriptionLabel" wrapText="true" style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
 
-                        <Separator/>
+                        <Separator style="-fx-border-color: #e2e8f0;"/>
 
+                        <!-- Ressources -->
                         <Label text="📚 Ressources" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
                         <VBox fx:id="resourcesContainer" spacing="10"/>
 
-                        <Separator/>
+                        <Separator style="-fx-border-color: #e2e8f0;"/>
 
+                        <!-- Checklist -->
                         <Label text="📋 Checklist" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
                         <VBox fx:id="checklistContainer" spacing="8"/>
 
-                        <Separator/>
+                        <Separator style="-fx-border-color: #e2e8f0;"/>
 
+                        <!-- Planning -->
                         <Label text="📅 Planning" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
                         <VBox fx:id="planningContainer" spacing="8"/>
 
-                        <Button fx:id="registerBtn" text="S'inscrire" style="-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 30; -fx-cursor: hand; -fx-font-size: 16px;" maxWidth="200"/>
+                        <!-- Bouton inscription -->
+                        <Button fx:id="registerBtn" text="S'inscrire" maxWidth="200"
+                                style="-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12 24; -fx-background-radius: 30; -fx-cursor: hand; -fx-font-size: 16px;"/>
+
                     </VBox>
                 </VBox>
             </children>
