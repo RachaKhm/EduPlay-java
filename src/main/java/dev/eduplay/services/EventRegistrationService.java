@@ -33,9 +33,13 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
             int maxCapacity = rs.getInt("max_capacity");
             int currentRegs = rs.getInt("current_registrations");
 
+            System.out.println("🔍 Vérification capacité - Max: " + maxCapacity + " / Actuel: " + currentRegs);
+
             if (currentRegs >= maxCapacity) {
                 throw new SQLException("❌ Désolé, cet événement a atteint sa capacité maximale de " + maxCapacity + " participants");
             }
+        } else {
+            System.out.println("⚠️ Événement non trouvé pour la vérification de capacité");
         }
 
         // Vérifier si le parent a déjà inscrit le même enfant
@@ -51,7 +55,7 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
             throw new SQLException("❌ Ce parent a déjà inscrit l'enfant '" + registration.getChildFullName() + "' à cet événement");
         }
 
-        // ========== 1. D'abord, insérer sans QR code ==========
+        // ========== 1. Insérer l'inscription ==========
         String sql = "INSERT INTO event_registration(event_id, parent_id, registered_at, child_full_name, parent_phone, child_class_level, medical_notes, emergency_contact_name, emergency_contact_phone, notes, scanned_at, reminder_sent, reminder_sent_at) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         PreparedStatement ps = cn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
@@ -69,7 +73,8 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         ps.setBoolean(12, registration.isReminderSent());
         ps.setTimestamp(13, registration.getReminderSentAt() != null ? Timestamp.valueOf(registration.getReminderSentAt()) : null);
 
-        ps.executeUpdate();
+        int inserted = ps.executeUpdate();
+        System.out.println("📝 Insertion inscription - Lignes insérées: " + inserted);
 
         // Récupérer l'ID généré
         ResultSet generatedKeys = ps.getGeneratedKeys();
@@ -80,16 +85,12 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
             System.out.println("✅ Inscription ajoutée avec ID: " + registrationId);
         }
 
-        // ========== 2. Générer le QR code avec l'ID réel ==========
+        // ========== 2. Générer le QR code ==========
         String qrCodeValue = "REG_ID:" + registrationId;
         String qrCodePath = QRCodeGenerator.generateQRCode(qrCodeValue, "ticket_" + registrationId);
 
         registration.setTicketQrCode(qrCodeValue);
         registration.setQrCodePath(qrCodePath);
-
-        System.out.println("✅ QR Code généré automatiquement avec l'ID: " + registrationId);
-        System.out.println("   Valeur QR: " + qrCodeValue);
-        System.out.println("   Chemin: " + qrCodePath);
 
         // ========== 3. Mettre à jour l'inscription avec le QR code ==========
         String updateQrSql = "UPDATE event_registration SET ticket_qr_code = ?, qr_code_path = ? WHERE id = ?";
@@ -99,13 +100,23 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
         updatePs.setInt(3, registrationId);
         updatePs.executeUpdate();
 
-        // Incrémenter le compteur d'inscriptions
+        // ========== 4. ✅ INCÉMENTER LE COMPTEUR D'INSCRIPTIONS ==========
         String updateCapacitySql = "UPDATE school_event SET current_registrations = current_registrations + 1 WHERE id = ?";
         PreparedStatement updateSt = cn.prepareStatement(updateCapacitySql);
         updateSt.setInt(1, registration.getEvent().getId());
-        updateSt.executeUpdate();
+        int updated = updateSt.executeUpdate();
+        System.out.println("✅ Mise à jour capacité - Lignes affectées: " + updated);
 
-        // ========== 4. ENVOI DE L'EMAIL DE CONFIRMATION ==========
+        // Vérifier la nouvelle valeur
+        String checkNewSql = "SELECT current_registrations FROM school_event WHERE id = ?";
+        PreparedStatement checkNewSt = cn.prepareStatement(checkNewSql);
+        checkNewSt.setInt(1, registration.getEvent().getId());
+        ResultSet rsNew = checkNewSt.executeQuery();
+        if (rsNew.next()) {
+            System.out.println("📊 Nouveau nombre d'inscriptions: " + rsNew.getInt("current_registrations"));
+        }
+
+        // ========== 5. ENVOI DE L'EMAIL DE CONFIRMATION ==========
         if (registrationId > 0 && registration.getParent() != null && registration.getParent().getEmail() != null) {
             try {
                 EmailService emailService = new EmailService();
@@ -129,14 +140,12 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
                 System.out.println("📧 Email de confirmation envoyé à: " + registration.getParent().getEmail());
             } catch (Exception e) {
                 System.err.println("⚠️ Erreur envoi email confirmation: " + e.getMessage());
-                e.printStackTrace();
             }
         }
     }
 
     @Override
     public void supprimer(EventRegistration registration) throws SQLException {
-        // Récupérer l'event_id avant suppression
         String getEventIdSql = "SELECT event_id FROM event_registration WHERE id = ?";
         PreparedStatement getEventSt = cn.prepareStatement(getEventIdSql);
         getEventSt.setInt(1, registration.getId());
@@ -147,18 +156,17 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
             eventId = rs.getInt("event_id");
         }
 
-        // Supprimer l'inscription
         String sql = "DELETE FROM event_registration WHERE id = ?";
         PreparedStatement pst = cn.prepareStatement(sql);
         pst.setInt(1, registration.getId());
         pst.executeUpdate();
 
-        // Décrémenter le compteur d'inscriptions
         if (eventId != -1) {
             String updateCapacitySql = "UPDATE school_event SET current_registrations = current_registrations - 1 WHERE id = ?";
             PreparedStatement updateSt = cn.prepareStatement(updateCapacitySql);
             updateSt.setInt(1, eventId);
             updateSt.executeUpdate();
+            System.out.println("📉 Compteur d'inscriptions décrémenté pour l'événement ID: " + eventId);
         }
     }
 
@@ -193,7 +201,7 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
 
     @Override
     public List<EventRegistration> recuperer() throws SQLException {
-        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location, " +
+        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location, se.max_capacity, se.current_registrations, " +
                 "u.id as parent_user_id, u.first_name as parent_first_name, u.last_name as parent_last_name, u.email as parent_email " +
                 "FROM event_registration er " +
                 "LEFT JOIN school_event se ON er.event_id = se.id " +
@@ -210,7 +218,7 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
     }
 
     public List<EventRegistration> recupererParEventId(int eventId) throws SQLException {
-        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location, " +
+        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location, se.max_capacity, se.current_registrations, " +
                 "u.id as parent_user_id, u.first_name as parent_first_name, u.last_name as parent_last_name, u.email as parent_email " +
                 "FROM event_registration er " +
                 "LEFT JOIN school_event se ON er.event_id = se.id " +
@@ -229,7 +237,7 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
     }
 
     public List<EventRegistration> recupererParParentId(int parentId) throws SQLException {
-        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location, " +
+        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location, se.max_capacity, se.current_registrations, " +
                 "u.id as parent_user_id, u.first_name as parent_first_name, u.last_name as parent_last_name, u.email as parent_email " +
                 "FROM event_registration er " +
                 "LEFT JOIN school_event se ON er.event_id = se.id " +
@@ -248,7 +256,7 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
     }
 
     public EventRegistration recupererParId(int id) throws SQLException {
-        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location, " +
+        String sql = "SELECT er.*, se.title as event_title, se.start_date, se.end_date, se.location, se.max_capacity, se.current_registrations, " +
                 "u.id as parent_user_id, u.first_name as parent_first_name, u.last_name as parent_last_name, u.email as parent_email " +
                 "FROM event_registration er " +
                 "LEFT JOIN school_event se ON er.event_id = se.id " +
@@ -320,17 +328,12 @@ public class EventRegistrationService implements IGeneralService<EventRegistrati
             event.setEndDate(rs.getTimestamp("end_date").toLocalDateTime());
         }
         event.setLocation(rs.getString("location") != null ? rs.getString("location") : "");
-
-        try {
-            event.setMaxCapacity(rs.getInt("max_capacity"));
-        } catch (SQLException e) {}
-        try {
-            event.setCurrentRegistrations(rs.getInt("current_registrations"));
-        } catch (SQLException e) {}
+        event.setMaxCapacity(rs.getInt("max_capacity"));
+        event.setCurrentRegistrations(rs.getInt("current_registrations"));
 
         registration.setEvent(event);
 
-        // ✅ CHARGER LE PARENT (version corrigée pour User)
+        // Charger le parent
         int parentId = rs.getInt("parent_user_id");
         if (parentId > 0) {
             User parent = new User();

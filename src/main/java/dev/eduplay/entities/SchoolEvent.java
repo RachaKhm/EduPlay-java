@@ -18,15 +18,11 @@ public class SchoolEvent {
     private List<EventResource> resources;
     private List<EventRegistration> registrations;
 
-    // ✅ Nouveaux champs
-    private int maxCapacity;           // Capacité maximale
-    private int currentRegistrations;  // Nombre d'inscriptions actuelles
+    private int maxCapacity = 50;
+    private int currentRegistrations = 0;
 
     // Constructeurs
-    public SchoolEvent() {
-        this.maxCapacity = 50;
-        this.currentRegistrations = 0;
-    }
+    public SchoolEvent() {}
 
     public SchoolEvent(int id, String title, String description, LocalDateTime startDate,
                        LocalDateTime endDate, String location, String imagePath,
@@ -44,8 +40,6 @@ public class SchoolEvent {
         this.longitude = longitude;
         this.resources = resources;
         this.registrations = registrations;
-        this.maxCapacity = 50;
-        this.currentRegistrations = 0;
     }
 
     public SchoolEvent(int id, String title, String description, LocalDateTime startDate,
@@ -61,8 +55,6 @@ public class SchoolEvent {
         this.createdAt = createdAt;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.maxCapacity = 50;
-        this.currentRegistrations = 0;
     }
 
     // Getters et Setters
@@ -102,16 +94,20 @@ public class SchoolEvent {
     public List<EventRegistration> getRegistrations() { return registrations; }
     public void setRegistrations(List<EventRegistration> registrations) { this.registrations = registrations; }
 
-    // ✅ Nouveaux getters/setters
     public int getMaxCapacity() { return maxCapacity; }
-    public void setMaxCapacity(int maxCapacity) { this.maxCapacity = maxCapacity; }
+    public void setMaxCapacity(int maxCapacity) {
+        this.maxCapacity = maxCapacity;
+    }
 
     public int getCurrentRegistrations() { return currentRegistrations; }
-    public void setCurrentRegistrations(int currentRegistrations) { this.currentRegistrations = currentRegistrations; }
+    public void setCurrentRegistrations(int currentRegistrations) {
+        this.currentRegistrations = currentRegistrations;
+    }
 
-    // ✅ Méthodes utilitaires
     public boolean hasAvailableSpaces() {
-        return currentRegistrations < maxCapacity;
+        boolean available = currentRegistrations < maxCapacity;
+        System.out.println("🔍 Vérification capacité - Actuel: " + currentRegistrations + " / Max: " + maxCapacity + " - Places dispo: " + available);
+        return available;
     }
 
     public int getRemainingSpaces() {
