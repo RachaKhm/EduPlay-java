@@ -1,4 +1,6 @@
 package dev.eduplay.controllers;
+import dev.eduplay.core.AppContext;
+import dev.eduplay.entities.User;
 import dev.eduplay.services.OllamaServiceGame;
 import dev.eduplay.entities.Game;
 import dev.eduplay.entities.Level;
@@ -27,6 +29,8 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ResourceBundle;
 
 public class ChildGamesController implements Initializable {
@@ -100,7 +104,7 @@ public class ChildGamesController implements Initializable {
         card.setSpacing(10);
         card.setPadding(new Insets(15));
         card.setPrefWidth(250);
-        card.setPrefHeight(300);
+        card.setPrefHeight(480);
 
         // Style de la carte
         card.setStyle("-fx-background-color: white; " +
@@ -186,7 +190,20 @@ public class ChildGamesController implements Initializable {
         Label levelLabel = new Label("🎓 " + (level != null ? level.getName() : "Débutant") + " " + getStars(level));
         levelLabel.setStyle("-fx-font-size: 11px; -fx-text-fill: #E94560; -fx-font-weight: bold;");
 
-        // Bouton Jouer
+
+        // ========== BOUTONS ==========
+        VBox buttonsBox = new VBox(8);
+        buttonsBox.setAlignment(Pos.CENTER);
+        buttonsBox.setPadding(new Insets(5, 0, 5, 0));
+
+        // Bouton Voir description (AJOUTÉ)
+        Button detailsBtn = new Button("📖 Voir description");
+        detailsBtn.setStyle("-fx-background-color: #3498DB; -fx-text-fill: white; " +
+                "-fx-font-size: 11px; -fx-padding: 6 12; -fx-background-radius: 15; -fx-cursor: hand;");
+        detailsBtn.setMaxWidth(Double.MAX_VALUE);
+        detailsBtn.setOnAction(e -> showGameDetails(game));
+
+        // Bouton Jouer maintenant (existant)
         Button playBtn = new Button("Jouer maintenant 🎮");
         playBtn.setStyle("-fx-background-color: linear-gradient(to right, #E94560, #FF6B6B); " +
                 "-fx-text-fill: white; -fx-font-size: 12px; -fx-font-weight: bold; " +
@@ -194,8 +211,12 @@ public class ChildGamesController implements Initializable {
         playBtn.setMaxWidth(Double.MAX_VALUE);
         playBtn.setOnAction(e -> playGame(game));
 
+        buttonsBox.getChildren().addAll(detailsBtn, playBtn);
+
+        // ... ajouter buttonsBox dans card.getChildren()
         card.getChildren().addAll(imageContainer, typeBadge, nameLabel, descLabel,
-                actionButtons, levelLabel, playBtn);
+                translationButtons, levelLabel, buttonsBox);
+
         return card;
     }
 
@@ -289,6 +310,10 @@ public class ChildGamesController implements Initializable {
 
             } else if (game.getType().equals("BrickBreaker")) {
                 loader = new FXMLLoader(getClass().getResource("/views/child/game/BrickBreakerView.fxml"));
+            }else if (game.getType().equals("Puzzle")) {
+                loader = new FXMLLoader(getClass().getResource("/views/child/game/SlidingPuzzleView.fxml"));
+            }else if (game.getType().equals("Aventure") ) {
+                loader = new FXMLLoader(getClass().getResource("/views/child/game/AdventureGameView.fxml"));
             }else {
                 showAlert("Jeu", "Le jeu '" + game.getName() + "' va commencer !");
                 return;
@@ -388,11 +413,222 @@ public class ChildGamesController implements Initializable {
     }
 
     private int getChildAge() {
-        // À adapter selon comment vous stockez l'âge de l'enfant
-        // Exemple: return AppContext.getCurrentUser().getAge();
-        // Ou depuis la base de données
-        return 8; // Valeur par défaut pour test
+        // Récupérer l'utilisateur connecté depuis AppContext
+        User currentUser = AppContext.getCurrentUser();
+
+        if (currentUser != null && currentUser.getBirthDate() != null) {
+            // Calculer l'âge à partir de la date de naissance
+            LocalDate birthDate = currentUser.getBirthDate();
+            LocalDate today = LocalDate.now();
+            int age = Period.between(birthDate, today).getYears();
+            System.out.println("Âge de l'enfant: " + age);
+            return age;
+        }
+
+        System.out.println("Âge non trouvé, valeur par défaut: 8");
+        return 8; // Valeur par défaut
     }
+
+    private void showGameDetails(Game game) {
+        Level level = game.getId_level();
+        int childAge = getChildAge();
+
+        Stage detailStage = new Stage();
+        detailStage.setTitle("📖 Détails du jeu - " + game.getName());
+        detailStage.setResizable(true);
+        detailStage.setMinWidth(550);
+        detailStage.setMinHeight(650);
+
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+        scrollPane.setFitToWidth(true);
+
+        VBox container = new VBox(15);
+        container.setAlignment(Pos.TOP_CENTER);
+        container.setStyle("-fx-background-color: linear-gradient(to bottom, #1A1A2E, #16213E); -fx-padding: 25;");
+
+        // Titre
+        Label titleLabel = new Label(game.getName());
+        titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #E94560;");
+
+        // Type
+        HBox typeBox = new HBox(10);
+        typeBox.setAlignment(Pos.CENTER_LEFT);
+        Label typeIcon = new Label(getGameEmoji(game.getType()));
+        typeIcon.setStyle("-fx-font-size: 20px;");
+        Label typeLabel = new Label("Type: " + game.getType());
+        typeLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #F39C12; -fx-font-weight: bold;");
+        typeBox.getChildren().addAll(typeIcon, typeLabel);
+
+        // Niveau
+        HBox levelBox = new HBox(10);
+        levelBox.setAlignment(Pos.CENTER_LEFT);
+        Label levelIcon = new Label("🎓");
+        levelIcon.setStyle("-fx-font-size: 20px;");
+        String levelName = level != null ? level.getName() : "Non défini";
+        String stars = getStars(level);
+        Label levelLabel = new Label("Niveau: " + levelName + " " + stars);
+        levelLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #2E9E6E; -fx-font-weight: bold;");
+        levelBox.getChildren().addAll(levelIcon, levelLabel);
+
+        // Âge recommandé
+        HBox ageBox = new HBox(10);
+        ageBox.setAlignment(Pos.CENTER_LEFT);
+        Label ageIcon = new Label("📅");
+        ageIcon.setStyle("-fx-font-size: 20px;");
+        String ageRange = "";
+        if (level != null) {
+            ageRange = level.getMinAge() + " - " + level.getMaxAge() + " ans";
+        } else {
+            ageRange = "Non spécifié";
+        }
+        Label ageLabel = new Label("Âge recommandé: " + ageRange);
+        ageLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #3498DB; -fx-font-weight: bold;");
+        ageBox.getChildren().addAll(ageIcon, ageLabel);
+
+        // Difficulté
+        HBox diffBox = new HBox(10);
+        diffBox.setAlignment(Pos.CENTER_LEFT);
+        Label diffIcon = new Label("🎯");
+        diffIcon.setStyle("-fx-font-size: 20px;");
+        String difficulty = level != null ? getDifficultyString(level.getDifficulty()) : "Moyen";
+        Label diffLabel = new Label("Difficulté: " + difficulty);
+        diffLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #9B59B6; -fx-font-weight: bold;");
+        diffBox.getChildren().addAll(diffIcon, diffLabel);
+
+        // Description originale
+        Label descTitle = new Label("📝 Description originale:");
+        descTitle.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #E94560; -fx-padding: 10 0 5 0;");
+
+        TextArea descArea = new TextArea(game.getDescription());
+        descArea.setWrapText(true);
+        descArea.setEditable(false);
+        descArea.setPrefHeight(100);
+        descArea.setStyle("-fx-background-color: #0F0F23; -fx-text-fill: white; -fx-font-size: 13px; " +
+                "-fx-control-inner-background: #0F0F23; -fx-border-color: #E94560; -fx-border-radius: 10;");
+
+        // ========== SECTION TRADUCTION ==========
+        Label translateTitle = new Label("🌐 Traduire la description:");
+        translateTitle.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #2E9E6E; -fx-padding: 15 0 10 0;");
+
+        HBox translateBox = new HBox(15);
+        translateBox.setAlignment(Pos.CENTER);
+
+        TextArea translationArea = new TextArea();
+        translationArea.setWrapText(true);
+        translationArea.setEditable(false);
+        translationArea.setPrefHeight(80);
+        translationArea.setPromptText("La traduction apparaîtra ici...");
+        translationArea.setStyle("-fx-background-color: #0F0F23; -fx-text-fill: white; -fx-font-size: 13px; " +
+                "-fx-control-inner-background: #0F0F23; -fx-border-color: #2E9E6E; -fx-border-radius: 10;");
+
+        TranslationServiceGame translationService = new TranslationServiceGame();
+
+
+
+        Button englishBtn = new Button("🇬🇧 Traduire en Anglais");
+        englishBtn.setStyle("-fx-background-color: #3498DB; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 8 15; -fx-background-radius: 15; -fx-cursor: hand;");
+        englishBtn.setOnAction(e -> {
+            translationArea.setText("⏳ Traduction en cours...");
+            new Thread(() -> {
+                String translated = translationService.translateToEnglish(game.getDescription());
+                Platform.runLater(() -> translationArea.setText(translated));
+            }).start();
+        });
+
+        translateBox.getChildren().addAll( englishBtn);
+
+        // ========== SECTION IA SIMPLIFICATION ==========
+        Label aiTitle = new Label("🤖 IA - Simplifier la description:");
+        aiTitle.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #9B59B6; -fx-padding: 15 0 10 0;");
+
+        TextArea aiArea = new TextArea();
+        aiArea.setWrapText(true);
+        aiArea.setEditable(false);
+        aiArea.setPrefHeight(80);
+        aiArea.setPromptText("La description simplifiée apparaîtra ici...");
+        aiArea.setStyle("-fx-background-color: #0F0F23; -fx-text-fill: #F39C12; -fx-font-size: 13px; " +
+                "-fx-control-inner-background: #0F0F23; -fx-border-color: #9B59B6; -fx-border-radius: 10;");
+
+        OllamaServiceGame ollamaService = new OllamaServiceGame();
+
+        Button simplifyBtn = new Button("✨ Simplifier pour mon âge (" + childAge + " ans)");
+        simplifyBtn.setStyle("-fx-background-color: #9B59B6; -fx-text-fill: white; -fx-font-size: 12px; -fx-padding: 8 15; -fx-background-radius: 15; -fx-cursor: hand;");
+        simplifyBtn.setOnAction(e -> {
+            if (!ollamaService.isOllamaRunning()) {
+                aiArea.setText("❌ Service Ollama non démarré. Lancez 'ollama serve'");
+                return;
+            }
+            aiArea.setText("🤖 Génération en cours...");
+            new Thread(() -> {
+                String simplified = ollamaService.simplifyDescription(game.getDescription(), childAge);
+                Platform.runLater(() -> aiArea.setText(simplified));
+            }).start();
+        });
+
+        // Séparateur
+        Separator separator = new Separator();
+        separator.setStyle("-fx-background-color: #E94560;");
+
+        // Objectif pédagogique
+        Label objectiveTitle = new Label("🎯 Objectif pédagogique:");
+        objectiveTitle.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #F39C12; -fx-padding: 10 0 5 0;");
+
+        Label objectiveLabel = new Label();
+        if (level != null && level.getPedagGoal() != null && !level.getPedagGoal().isEmpty()) {
+            objectiveLabel.setText(level.getPedagGoal());
+        } else {
+            objectiveLabel.setText("Développer les compétences cognitives et la logique à travers le jeu");
+        }
+        objectiveLabel.setStyle("-fx-font-size: 13px; -fx-text-fill: #AAAAAA; -fx-wrap-text: true;");
+        objectiveLabel.setWrapText(true);
+
+        // Boutons Jouer et Fermer
+        HBox buttonBox = new HBox(15);
+        buttonBox.setAlignment(Pos.CENTER);
+        buttonBox.setPadding(new Insets(20, 0, 0, 0));
+
+        Button playBtn = new Button("🎮 Jouer maintenant");
+        playBtn.setStyle("-fx-background-color: linear-gradient(to right, #E94560, #FF6B6B); -fx-text-fill: white; " +
+                "-fx-font-size: 14px; -fx-font-weight: bold; -fx-padding: 10 25; -fx-background-radius: 25; -fx-cursor: hand;");
+        playBtn.setOnAction(e -> {
+            detailStage.close();
+            playGame(game);
+        });
+
+        Button closeBtn = new Button("🔒 Fermer");
+        closeBtn.setStyle("-fx-background-color: #34495E; -fx-text-fill: white; -fx-font-size: 14px; " +
+                "-fx-padding: 10 25; -fx-background-radius: 25; -fx-cursor: hand;");
+        closeBtn.setOnAction(e -> detailStage.close());
+
+        buttonBox.getChildren().addAll(playBtn, closeBtn);
+
+        // Ajouter tous les éléments
+        container.getChildren().addAll(
+                titleLabel, typeBox, levelBox, ageBox, diffBox,
+                descTitle, descArea,
+                translateTitle, translateBox, translationArea,
+                aiTitle, simplifyBtn, aiArea,
+                separator, objectiveTitle, objectiveLabel,
+                buttonBox
+        );
+
+        scrollPane.setContent(container);
+        Scene scene = new Scene(scrollPane, 580, 750);
+        detailStage.setScene(scene);
+        detailStage.showAndWait();
+    }
+
+    private String getDifficultyString(int difficulty) {
+        switch (difficulty) {
+            case 1: return "Facile ⭐";
+            case 2: return "Moyen ⭐⭐";
+            case 3: return "Difficile ⭐⭐⭐";
+            case 4: return "Expert ⭐⭐⭐⭐";
+            default: return "Moyen ⭐⭐";
+        }
+    }
+
 
 
 }

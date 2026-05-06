@@ -128,15 +128,6 @@ public class Level {
 
     @Override
     public String toString() {
-        return "Level{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", difficulty=" + difficulty +
-                ", minAge=" + minAge +
-                ", maxAge=" + maxAge +
-                ", pedagGoal='" + pedagGoal + '\'' +
-
-                '}';
+        return name;
     }
 }
