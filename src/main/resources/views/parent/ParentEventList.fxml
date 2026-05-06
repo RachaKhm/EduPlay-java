@@ -3,48 +3,79 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
 
-<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<VBox xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="dev.eduplay.controllers.parent.ParentEventListController"
-      spacing="20" alignment="TOP_CENTER"
-      style="-fx-background-color: #f8f9fa;">
-
-    <padding>
-        <Insets top="25" right="35" bottom="25" left="35"/>
-    </padding>
+      spacing="0" alignment="TOP_CENTER"
+      style="-fx-background-color: #f8fafc;">
 
     <children>
-        <!-- Header -->
-        <HBox alignment="CENTER_LEFT" spacing="20">
-            <VBox HBox.hgrow="ALWAYS">
-                <Label text="🎉 Événements" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #22223A;"/>
+
+        <!-- HEADER GRADIENT -->
+        <VBox style="-fx-background-color: linear-gradient(to right, #6366F1, #9333EA); -fx-padding: 30 35 40 35;">
+            <VBox spacing="12">
+                <Label text="🎉 Événements"
+                       style="-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: white; -fx-opacity: 0.95;"/>
                 <Label text="Découvrez les prochains événements et inscrivez vos enfants !"
-                       style="-fx-text-fill: #9999BB; -fx-font-size: 14px; -fx-padding: 5 0 0 0;"/>
+                       style="-fx-text-fill: #E0E7FF; -fx-font-size: 14px; -fx-opacity: 0.85;"/>
             </VBox>
-        </HBox>
+        </VBox>
 
-        <!-- Barre de filtres -->
-        <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-background-color: white; -fx-padding: 15 20; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);">
-            <TextField fx:id="searchField" promptText="🔍 Rechercher un événement..." prefWidth="250" style="-fx-padding: 10 15; -fx-background-radius: 25; -fx-border-color: #e2e8f0; -fx-border-radius: 25;"/>
-            <ComboBox fx:id="sortCombo" prefWidth="150" promptText="Trier par" style="-fx-padding: 8; -fx-background-radius: 25; -fx-border-color: #e2e8f0; -fx-border-radius: 25;"/>
-            <ToggleButton fx:id="orderToggle" text="⬇️ Desc" style="-fx-background-radius: 25; -fx-padding: 8 15;"/>
-            <Button fx:id="resetBtn" text="🔄 Réinitialiser" style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-padding: 8 16; -fx-background-radius: 25; -fx-cursor: hand;"/>
-            <Label fx:id="resultCountLabel" text="0 résultat(s)" style="-fx-text-fill: #6b7280; -fx-font-size: 13px;"/>
-        </HBox>
+        <!-- FILTERS CARD -->
+        <VBox spacing="16" style="-fx-background-color: white; -fx-padding: 20 30; -fx-background-radius: 20 20 0 0;
+                                   -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);"
+              VBox.vgrow="NEVER">
 
-        <!-- GridView pour les cartes -->
-        <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;">
-            <content>
-                <VBox spacing="20">
-                    <!-- Grille dynamique avec FlowPane (3 colonnes) -->
-                    <FlowPane fx:id="eventsGrid" hgap="20" vgap="20" alignment="TOP_CENTER"/>
-                    <HBox fx:id="paginationBox" spacing="10" alignment="CENTER" visible="false" managed="false">
-                        <Button fx:id="prevBtn" text="◀ Précédent" style="-fx-background-color: #f1f5f9; -fx-padding: 8 16; -fx-background-radius: 25; -fx-cursor: hand;"/>
-                        <Label fx:id="pageInfo" text="Page 1 sur 1" style="-fx-text-fill: #6b7280;"/>
-                        <Button fx:id="nextBtn" text="Suivant ▶" style="-fx-background-color: #f1f5f9; -fx-padding: 8 16; -fx-background-radius: 25; -fx-cursor: hand;"/>
-                    </HBox>
-                </VBox>
-            </content>
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <TextField fx:id="searchField" promptText="🔍 Rechercher un événement..." HBox.hgrow="ALWAYS"
+                           style="-fx-padding: 12 18; -fx-background-radius: 30; -fx-border-color: #e2e8f0;
+                                  -fx-border-radius: 30; -fx-background-color: white; -fx-font-size: 13px;"/>
+
+                <ComboBox fx:id="sortCombo" prefWidth="140" promptText="Trier par"
+                          style="-fx-padding: 6; -fx-background-radius: 30; -fx-border-color: #e2e8f0;
+                                 -fx-border-radius: 30; -fx-background-color: white;"/>
+
+                <ToggleButton fx:id="orderToggle" text="⬇️ Desc"
+                              style="-fx-background-radius: 30; -fx-padding: 8 18; -fx-background-color: #f1f5f9;"/>
+
+                <Button fx:id="resetBtn" text="🔄 Réinitialiser"
+                        style="-fx-background-color: #f1f5f9; -fx-text-fill: #475569; -fx-padding: 8 18;
+                               -fx-background-radius: 30; -fx-cursor: hand;"/>
+
+                <Label fx:id="resultCountLabel" text="0 résultat(s)"
+                       style="-fx-text-fill: #64748b; -fx-font-size: 12px; -fx-background-color: #f8fafc;
+                              -fx-padding: 6 14; -fx-background-radius: 20;"/>
+            </HBox>
+        </VBox>
+
+        <!-- CONTENT AREA -->
+        <ScrollPane VBox.vgrow="ALWAYS" fitToWidth="true"
+                    style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 0 35 35 35;">
+
+            <VBox spacing="25" style="-fx-padding: 25 0 0 0;">
+
+                <!-- Grille d'événements -->
+                <FlowPane fx:id="eventsGrid" hgap="25" vgap="25" alignment="TOP_CENTER"
+                          style="-fx-padding: 0 0 20 0;"/>
+
+                <!-- Pagination -->
+                <HBox fx:id="paginationBox" spacing="15" alignment="CENTER" visible="false" managed="false">
+                    <Button fx:id="prevBtn" text="◀ Précédent"
+                            style="-fx-background-color: white; -fx-padding: 10 20; -fx-background-radius: 30;
+                                   -fx-border-color: #e2e8f0; -fx-border-radius: 30; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                    <Label fx:id="pageInfo" text="Page 1 sur 1"
+                           style="-fx-text-fill: #64748b; -fx-font-weight: 500; -fx-padding: 8 16;
+                                  -fx-background-color: #f1f5f9; -fx-background-radius: 20;"/>
+                    <Button fx:id="nextBtn" text="Suivant ▶"
+                            style="-fx-background-color: white; -fx-padding: 10 20; -fx-background-radius: 30;
+                                   -fx-border-color: #e2e8f0; -fx-border-radius: 30; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                </HBox>
+
+            </VBox>
         </ScrollPane>
     </children>
 </VBox>
