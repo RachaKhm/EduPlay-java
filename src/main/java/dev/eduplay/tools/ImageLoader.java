@@ -11,9 +11,11 @@ public class ImageLoader {
 
     private static final String[] SEARCH_DIRS = {
             "src/main/resources/uploads/",
+            "src/main/resources/uploads/events/",
             "src/main/resources/images/",
             "src/main/resources/",
             "uploads/",
+            "uploads/events/",
             System.getProperty("user.home") + "/Pictures/",
             System.getProperty("user.home") + "/Downloads/",
             System.getProperty("user.home") + "/Desktop/",
