@@ -46,6 +46,7 @@ public class SidebarController {
     @FXML private Node btnAdminCourses;
     @FXML private Node btnLibrary;
     @FXML private Node btnBookRequests;
+    @FXML private Node btnAdminResources;
     @FXML private Node btnResource;
     
     @FXML private Node sectionEventsBox;
@@ -87,7 +88,7 @@ public class SidebarController {
         // Initialize the list of all buttons for highlighting logic
         allNavButtons = Arrays.asList(
                 btnDashboard,
-                btnUsers, btnTeachers, btnParents, btnAdminCourses, btnLibrary, btnBookRequests, btnResource, btnEventList, btnAddEvent, btnRegistrationList, 
+                btnUsers, btnTeachers, btnParents, btnAdminCourses, btnLibrary, btnBookRequests, btnAdminResources, btnResource, btnEventList, btnAddEvent, btnRegistrationList, 
                 btnScanner, btnStatistics, btnCalendar,
                 btnCourses, btnLevel, btnGamesTeacher, btnSeances,
                 btnChildren, btnParentEventList, btnParentSeances, btnParentRegistrations,
@@ -200,6 +201,7 @@ public class SidebarController {
     @FXML private void showParents() { Router.go("parents"); }
     @FXML private void showAdminCourses() { Router.go("library"); }
     @FXML private void showLibrary() { Router.go("library_index"); }
+    @FXML private void showAdminResources() { Router.go("admin_resource_index"); }
     @FXML private void showBookRequests() { Router.go("book_requests_index"); }
     @FXML private void showResource() { Router.go("resource"); }
     @FXML private void showEventList() { Router.go("event_list"); }
@@ -259,6 +261,7 @@ public class SidebarController {
             case "parents" -> btnParents;
             case "library" -> btnAdminCourses;
             case "library_index" -> btnLibrary;
+            case "admin_resource_index" -> btnAdminResources;
             case "book_requests_index" -> btnBookRequests;
             case "resource" -> btnResource;
             case "event_list" -> btnEventList;
@@ -298,6 +301,7 @@ public class SidebarController {
         setVisible(btnAdminCourses, false);
         setVisible(btnLibrary, false);
         setVisible(btnBookRequests, false);
+        setVisible(btnAdminResources, false);
         setVisible(btnResource, false);
         setVisible(sectionEventsBox, false);
         setVisible(btnEventList, false);
@@ -340,6 +344,7 @@ public class SidebarController {
                 setVisible(btnAdminCourses, true);
                 setVisible(btnLibrary, true);
                 setVisible(btnBookRequests, true);
+                setVisible(btnAdminResources, true);
                 setVisible(btnResource, true);
                 setVisible(sectionEventsBox, true);
                 setVisible(btnEventList, true);

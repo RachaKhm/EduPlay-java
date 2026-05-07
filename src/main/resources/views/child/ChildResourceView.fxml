@@ -47,10 +47,23 @@
                             <Label fx:id="lblVoiceStatus" text="Dis le nom d'un livre pour le trouver !" style="-fx-text-fill: #8B5CF6; -fx-font-size: 12px;"/>
                         </VBox>
                     </HBox>
-                    <Button fx:id="btnVoiceSearch" text="🎙 Parler" onAction="#handleVoiceSearch"
-                            style="-fx-background-color: #8B5CF6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10 24; -fx-cursor: hand; -fx-max-width: 150;">
-                        <effect><DropShadow color="#8B5CF644" radius="10" offsetY="4"/></effect>
-                    </Button>
+                    
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Button fx:id="btnVoiceSearch" text="🎙 Parler" onAction="#handleVoiceSearch"
+                                style="-fx-background-color: #8B5CF6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10 24; -fx-cursor: hand;">
+                            <effect><DropShadow color="#8B5CF644" radius="10" offsetY="4"/></effect>
+                        </Button>
+                        
+                        <Button fx:id="btnStopVoice" text="⏹ Fin de vocal" onAction="#handleStopVoiceSearch" visible="false" managed="false"
+                                style="-fx-background-color: #EF4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10 24; -fx-cursor: hand;">
+                            <effect><DropShadow color="#EF444444" radius="10" offsetY="4"/></effect>
+                        </Button>
+
+                        <Button text="📄 Afficher tout" onAction="#handleShowAll"
+                                style="-fx-background-color: white; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-border-color: #E2E8F0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 24; -fx-cursor: hand;">
+                            <effect><DropShadow color="#00000011" radius="5" offsetY="2"/></effect>
+                        </Button>
+                    </HBox>
                 </VBox>
 
                 <!-- NOTIFICATIONS & REQUEST SECTION -->

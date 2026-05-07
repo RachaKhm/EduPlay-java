@@ -46,7 +46,10 @@ public class ChildResourceController {
     @FXML private VBox libraryImageContainer;
     
     @FXML private Button btnVoiceSearch;
+    @FXML private Button btnStopVoice;
     @FXML private Label lblVoiceStatus;
+
+    private Process voiceProcess;
     
     // Notifications & Requests
     @FXML private Label lblWelcomeRequest;
@@ -99,6 +102,9 @@ public class ChildResourceController {
         }
 
         for (BookRequest br : list) {
+            // Trigger automatic popup for each unread notification
+            showPremiumPopup("Nouveau livre !", "Le livre « " + br.getBookTitle() + " » est maintenant disponible ! 📚", "#10B981");
+
             HBox item = new HBox(16);
             item.setAlignment(Pos.CENTER_LEFT);
             item.setStyle("-fx-background-color: linear-gradient(to right, #F0FDF4, #FFFFFF); " +
@@ -410,19 +416,31 @@ public class ChildResourceController {
 
     @FXML
     private void handleVoiceSearch() {
-        lblVoiceStatus.setText("Préparation du micro...");
+        lblVoiceStatus.setText("🎤 Écoute en cours...");
         btnVoiceSearch.setDisable(true);
+        if (btnStopVoice != null) {
+            btnStopVoice.setVisible(true);
+            btnStopVoice.setManaged(true);
+        }
+        
         new Thread(() -> {
             try {
                 String pythonPath = "C:\\Users\\user\\anaconda3\\python.exe";
                 String scriptPath = "src/main/resources/tools/voice_search.py";
                 ProcessBuilder pb = new ProcessBuilder(pythonPath, scriptPath);
-                Process process = pb.start();
-                java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(process.getInputStream()));
+                voiceProcess = pb.start();
+                
+                java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.InputStreamReader(voiceProcess.getInputStream()));
                 String result = reader.readLine();
-                process.waitFor();
+                voiceProcess.waitFor();
+                
                 Platform.runLater(() -> {
                     btnVoiceSearch.setDisable(false);
+                    if (btnStopVoice != null) {
+                        btnStopVoice.setVisible(false);
+                        btnStopVoice.setManaged(false);
+                    }
+                    
                     if (result != null && !result.trim().isEmpty()) {
                         lblVoiceStatus.setText("Résultat : " + result);
                         filterByVoice(result);
@@ -431,9 +449,35 @@ public class ChildResourceController {
                     }
                 });
             } catch (Exception e) {
-                Platform.runLater(() -> { btnVoiceSearch.setDisable(false); lblVoiceStatus.setText("Erreur micro."); });
+                Platform.runLater(() -> { 
+                    btnVoiceSearch.setDisable(false); 
+                    if (btnStopVoice != null) {
+                        btnStopVoice.setVisible(false);
+                        btnStopVoice.setManaged(false);
+                    }
+                    lblVoiceStatus.setText("Erreur micro."); 
+                });
             }
         }).start();
+    }
+
+    @FXML
+    private void handleStopVoiceSearch() {
+        if (voiceProcess != null && voiceProcess.isAlive()) {
+            voiceProcess.destroy();
+            lblVoiceStatus.setText("Recherche vocale arrêtée.");
+            btnVoiceSearch.setDisable(false);
+            if (btnStopVoice != null) {
+                btnStopVoice.setVisible(false);
+                btnStopVoice.setManaged(false);
+            }
+        }
+    }
+
+    @FXML
+    private void handleShowAll() {
+        lblVoiceStatus.setText("Dis le nom d'un livre pour le trouver !");
+        loadResources(); // Reload original list for this library
     }
 
     private void filterByVoice(String text) {

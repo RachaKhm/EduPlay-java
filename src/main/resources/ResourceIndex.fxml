@@ -27,7 +27,6 @@
                         style="-fx-background-color: #F97316; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 12 24; -fx-background-radius: 12; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);">
                     <graphic>
                         <HBox spacing="8" alignment="CENTER">
-                            <Label text="🔔" style="-fx-text-fill: white;"/>
                             <Label text="🔔 Livres demandés" style="-fx-text-fill: white;"/>
                         </HBox>
                     </graphic>
@@ -49,12 +48,31 @@
                     <Label text="Parlez pour rechercher un livre instantanément" style="-fx-text-fill: #8B5CF6; -fx-font-size: 12px;"/>
                 </VBox>
             </HBox>
-            <Button text="🎙 Parler" 
-                    style="-fx-background-color: #8B5CF6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10 24; -fx-cursor: hand; -fx-max-width: 150;">
-                <effect>
-                    <DropShadow color="#8B5CF644" radius="10" offsetY="4"/>
-                </effect>
-            </Button>
+            
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Button fx:id="btnStartVoice" text="🎙 Parler" onAction="#handleVoiceSearch"
+                        style="-fx-background-color: #8B5CF6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10 24; -fx-cursor: hand;">
+                    <effect>
+                        <DropShadow color="#8B5CF644" radius="10" offsetY="4"/>
+                    </effect>
+                </Button>
+                
+                <Button fx:id="btnStopVoice" text="⏹ Fin de vocal" onAction="#handleStopVoiceSearch" visible="false" managed="false"
+                        style="-fx-background-color: #EF4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10 24; -fx-cursor: hand;">
+                    <effect>
+                        <DropShadow color="#EF444444" radius="10" offsetY="4"/>
+                    </effect>
+                </Button>
+
+                <Button text="📄 Afficher tout" onAction="#handleShowAll"
+                        style="-fx-background-color: white; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-border-color: #E2E8F0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 24; -fx-cursor: hand;">
+                    <effect>
+                        <DropShadow color="#00000011" radius="5" offsetY="2"/>
+                    </effect>
+                </Button>
+                
+                <Label fx:id="lblVoiceStatus" text="" style="-fx-text-fill: #6366F1; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+            </HBox>
         </VBox>
 
         <!-- FILTRES & RECHERCHE -->

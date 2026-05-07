@@ -123,7 +123,18 @@
                 </VBox>
             </HBox>
 
-            <!-- BOOK REQUESTS -->
+            <!-- GESTION RESSOURCES (New) -->
+            <HBox fx:id="btnAdminResources"
+                  onMouseClicked="#showAdminResources"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="📂 Gestion Ressources" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- BOOK REQUESTS (Restored) -->
             <HBox fx:id="btnBookRequests"
                   onMouseClicked="#showBookRequests"
                   alignment="CENTER_LEFT"
@@ -247,8 +258,6 @@
                 </VBox>
             </HBox>
 
-
-
             <HBox fx:id="btnSeances"
                   onMouseClicked="#showTeacherSeances"
                   alignment="CENTER_LEFT"
@@ -309,7 +318,6 @@
                 </VBox>
             </HBox>
 
-
             <!-- CHILD SECTION -->
             <HBox fx:id="sectionChildBox" styleClass="section-header-box">
                 <Label fx:id="sectionChild" text="APPRENTISSAGE" styleClass="section-label"/>
@@ -334,8 +342,6 @@
                     <Label text="🎮 Jeux" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
-
-
 
             <!-- CHILD LIBRARY SECTION -->
             <HBox fx:id="sectionChildLibraryBox" spacing="8" styleClass="section-header-box">

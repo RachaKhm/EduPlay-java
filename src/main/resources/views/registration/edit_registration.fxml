@@ -4,7 +4,6 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.Font?>
-<?import javafx.collections.FXCollections?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dev.eduplay.controllers.event.EditRegistrationController"
@@ -26,7 +25,7 @@
                             <Label text="✏️ Modifier l'inscription" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;">
                                 <font><Font name="System Bold" size="24"/></font>
                             </Label>
-                            <Label fx:id="subtitleLabel" text="Modifier le statut ou les informations" style="-fx-text-fill: #fde68a; -fx-font-size: 13px; -fx-padding: 5 0 0 0;"/>
+                            <Label fx:id="subtitleLabel" text="Modifier les notes ou informations" style="-fx-text-fill: #fde68a; -fx-font-size: 13px; -fx-padding: 5 0 0 0;"/>
                         </VBox>
                         <Button fx:id="cancelBtn" text="← Retour" style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 12; -fx-cursor: hand;"/>
                     </HBox>
@@ -39,6 +38,7 @@
                     </padding>
 
                     <children>
+                        <!-- Enfant -->
                         <VBox spacing="5">
                             <Label text="👶 Enfant" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
                             <Label fx:id="childNameLabel" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
@@ -46,6 +46,7 @@
 
                         <Separator/>
 
+                        <!-- Téléphone parent -->
                         <VBox spacing="5">
                             <Label text="📞 Téléphone parent" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
                             <Label fx:id="parentPhoneLabel" style="-fx-font-size: 14px; -fx-text-fill: #1e293b;"/>
@@ -53,6 +54,7 @@
 
                         <Separator/>
 
+                        <!-- Événement -->
                         <VBox spacing="5">
                             <Label text="📅 Événement" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
                             <Label fx:id="eventTitleLabel" style="-fx-font-size: 14px; -fx-text-fill: #1e293b;"/>
@@ -60,22 +62,31 @@
 
                         <Separator/>
 
+                        <!-- Statut du scan -->
                         <VBox spacing="5">
-                            <Label text="🏷️ Statut *" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
-                            <ComboBox fx:id="statusCombo" prefWidth="200" style="-fx-padding: 10; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8;"/>
+                            <Label text="🎫 Statut du scan" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
+                            <Label fx:id="scanStatusLabel" text="⏳ Chargement..." style="-fx-font-size: 13px; -fx-text-fill: #f59e0b; -fx-font-weight: bold;"/>
+                            <Button fx:id="resetScanBtn" text="🔄 Annuler le scan (rendre le ticket à nouveau valide)"
+                                    style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 16; -fx-background-radius: 12; -fx-cursor: hand;"
+                                    visible="false" managed="false"/>
                         </VBox>
 
                         <Separator/>
 
+                        <!-- Notes supplémentaires -->
                         <VBox spacing="5">
                             <Label text="📝 Notes supplémentaires" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;"/>
-                            <TextArea fx:id="notesArea" promptText="Ajouter des notes..." prefHeight="100" wrapText="true" style="-fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-background-color: white; -fx-font-size: 14px;"/>
+                            <TextArea fx:id="notesArea" promptText="Ajouter des notes..." prefHeight="100" wrapText="true"
+                                      style="-fx-padding: 12; -fx-background-radius: 8; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-background-color: white; -fx-font-size: 14px;"/>
                         </VBox>
 
+                        <!-- Message -->
                         <Label fx:id="messageLabel" wrapText="true" style="-fx-font-size: 13px;"/>
 
+                        <!-- Boutons -->
                         <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
-                            <Button fx:id="submitBtn" text="✅ Enregistrer les modifications" style="-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-padding: 12 30; -fx-background-radius: 25; -fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 14px;"/>
+                            <Button fx:id="submitBtn" text="✅ Enregistrer les modifications"
+                                    style="-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-padding: 12 30; -fx-background-radius: 25; -fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 14px;"/>
                         </HBox>
                     </children>
                 </VBox>

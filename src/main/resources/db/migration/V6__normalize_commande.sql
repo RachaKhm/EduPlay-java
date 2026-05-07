@@ -1,13 +1,54 @@
 -- Flyway migration: normalize commande schema
--- Adds canonical columns used by the application with safe defaults so INSERTS won't fail
+-- Uses a stored procedure to safely add columns if they don't exist (MySQL 8.0/8.4 compatibility)
 
-ALTER TABLE commande
-  ADD COLUMN IF NOT EXISTS total_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00,
-  ADD COLUMN IF NOT EXISTS user_id INT NULL,
-  ADD COLUMN IF NOT EXISTS is_paid TINYINT(1) NOT NULL DEFAULT 0,
-  ADD COLUMN IF NOT EXISTS created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+DROP PROCEDURE IF EXISTS AddColumnIfNotNull;
 
--- Note: this migration simply ensures canonical columns exist with safe defaults.
--- If you want to migrate values from legacy columns (e.g. montant_total -> total_amount),
--- do that in a separate migration that can assume a specific MySQL version or run a small script.
+DELIMITER //
 
+CREATE PROCEDURE AddColumnIfNotNull()
+BEGIN
+    -- Add total_amount
+    IF NOT EXISTS (
+        SELECT * FROM information_schema.COLUMNS 
+        WHERE TABLE_SCHEMA = DATABASE() 
+        AND TABLE_NAME = 'commande' 
+        AND COLUMN_NAME = 'total_amount'
+    ) THEN
+        ALTER TABLE commande ADD COLUMN total_amount DECIMAL(12,2) NOT NULL DEFAULT 0.00;
+    END IF;
+
+    -- Add user_id
+    IF NOT EXISTS (
+        SELECT * FROM information_schema.COLUMNS 
+        WHERE TABLE_SCHEMA = DATABASE() 
+        AND TABLE_NAME = 'commande' 
+        AND COLUMN_NAME = 'user_id'
+    ) THEN
+        ALTER TABLE commande ADD COLUMN user_id INT NULL;
+    END IF;
+
+    -- Add is_paid
+    IF NOT EXISTS (
+        SELECT * FROM information_schema.COLUMNS 
+        WHERE TABLE_SCHEMA = DATABASE() 
+        AND TABLE_NAME = 'commande' 
+        AND COLUMN_NAME = 'is_paid'
+    ) THEN
+        ALTER TABLE commande ADD COLUMN is_paid TINYINT(1) NOT NULL DEFAULT 0;
+    END IF;
+
+    -- Add created_at
+    IF NOT EXISTS (
+        SELECT * FROM information_schema.COLUMNS 
+        WHERE TABLE_SCHEMA = DATABASE() 
+        AND TABLE_NAME = 'commande' 
+        AND COLUMN_NAME = 'created_at'
+    ) THEN
+        ALTER TABLE commande ADD COLUMN created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+    END IF;
+END //
+
+DELIMITER ;
+
+CALL AddColumnIfNotNull();
+DROP PROCEDURE AddColumnIfNotNull;

@@ -3,6 +3,7 @@ package dev.eduplay.controllers;
 import dev.eduplay.core.Router;
 import dev.eduplay.entities.Resource;
 import dev.eduplay.services.ResourceService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -25,6 +26,11 @@ public class ResourceIndexController {
     @FXML private TextField txtSearchTitle;
     @FXML private TextField txtSearchAuthor;
     @FXML private ComboBox<String> comboSearchType;
+    @FXML private Label lblVoiceStatus;
+    @FXML private Button btnStartVoice;
+    @FXML private Button btnStopVoice;
+
+    private Process voiceProcess;
 
     private final ResourceService resourceService = new ResourceService();
     private List<Resource> allResources;
@@ -132,7 +138,7 @@ public class ResourceIndexController {
         btnVoir.setStyle("-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-cursor: hand;");
         btnVoir.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(btnVoir, Priority.ALWAYS);
-        btnVoir.setOnAction(e -> Router.reload("admin_resource_show", res)); // Passing object to show view!
+        btnVoir.setOnAction(e -> Router.reload("admin_resource_show", res));
 
         Button btnEditer = new Button("Éditer");
         btnEditer.setStyle("-fx-background-color: #EEF2FF; -fx-border-color: #C7D2FE; -fx-border-radius: 8; -fx-text-fill: #4F46E5; -fx-font-weight: bold; -fx-cursor: hand;");
@@ -156,12 +162,77 @@ public class ResourceIndexController {
     }
 
     @FXML
+    private void handleVoiceSearch() {
+        if (lblVoiceStatus != null) lblVoiceStatus.setText("🎤 Écoute en cours...");
+        btnStartVoice.setDisable(true);
+        btnStopVoice.setVisible(true);
+        btnStopVoice.setManaged(true);
+
+        new Thread(() -> {
+            try {
+                String pythonPath = "C:\\Users\\user\\anaconda3\\python.exe";
+                String scriptPath = "src/main/resources/tools/voice_search.py";
+                
+                ProcessBuilder pb = new ProcessBuilder(pythonPath, scriptPath);
+                voiceProcess = pb.start();
+                
+                java.io.BufferedReader reader = new java.io.BufferedReader(
+                    new java.io.InputStreamReader(voiceProcess.getInputStream())
+                );
+                String result = reader.readLine();
+                voiceProcess.waitFor();
+                
+                Platform.runLater(() -> {
+                    btnStartVoice.setDisable(false);
+                    btnStopVoice.setVisible(false);
+                    btnStopVoice.setManaged(false);
+                    
+                    if (result != null && !result.trim().isEmpty()) {
+                        lblVoiceStatus.setText("Résultat : " + result);
+                        txtSearchTitle.setText(result);
+                        filterResources();
+                    } else {
+                        lblVoiceStatus.setText("Je n'ai pas compris.");
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    btnStartVoice.setDisable(false);
+                    btnStopVoice.setVisible(false);
+                    btnStopVoice.setManaged(false);
+                    lblVoiceStatus.setText("Erreur micro.");
+                });
+            }
+        }).start();
+    }
+
+    @FXML
+    private void handleStopVoiceSearch() {
+        if (voiceProcess != null && voiceProcess.isAlive()) {
+            voiceProcess.destroy();
+            if (lblVoiceStatus != null) lblVoiceStatus.setText("Recherche vocale arrêtée.");
+            btnStartVoice.setDisable(false);
+            btnStopVoice.setVisible(false);
+            btnStopVoice.setManaged(false);
+        }
+    }
+
+    @FXML
+    private void handleShowAll() {
+        txtSearchTitle.clear();
+        txtSearchAuthor.clear();
+        comboSearchType.getSelectionModel().selectFirst();
+        if (lblVoiceStatus != null) lblVoiceStatus.setText("");
+        filterResources();
+    }
+
+    @FXML
     private void showBookRequests() {
         Router.go("book_requests_index");
     }
 
     @FXML
     private void addResource() {
-        Router.reload("admin_resource_form", null); // Edit form with null = create new
+        Router.reload("admin_resource_form", null);
     }
 }
