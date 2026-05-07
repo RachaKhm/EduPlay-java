@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.eduplay.controllers.ProductFormController" spacing="12" style="-fx-padding:16;">
+
+    <Label fx:id="lblHeaderTitle" text="➕ Nouveau produit" style="-fx-font-size:18px;-fx-font-weight:bold;" />
+
+    <GridPane hgap="8" vgap="8">
+        <Label text="Nom:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <TextField fx:id="txtName" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+        <Label text="Prix:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+        <TextField fx:id="txtPrice" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+        <Label text="Description:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+        <TextArea fx:id="txtDescription" prefRowCount="4" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+        <Label text="Disponible:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+        <CheckBox fx:id="chkAvailability" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+        <Label text="Image:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+        <HBox spacing="8" GridPane.rowIndex="4" GridPane.columnIndex="1">
+            <Button text="Choisir..." onAction="#handleChooseImage" />
+            <Label fx:id="lblImageName" text="Aucune" />
+        </HBox>
+    </GridPane>
+
+    <HBox spacing="8">
+        <Region HBox.hgrow="ALWAYS" />
+        <Button text="Annuler" onAction="#handleCancel" />
+        <Button text="Enregistrer" onAction="#handleSave" />
+    </HBox>
+
+</VBox>
+

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.eduplay.controllers.parent.ParentOrdersController"
+      spacing="12" alignment="TOP_CENTER" style="-fx-background-color: #f8f9fa; -fx-padding: 20;">
+
+    <Label text="🧾 Mes commandes" style="-fx-font-size:20px; -fx-font-weight:bold;" />
+
+    <ListView fx:id="ordersList" VBox.vgrow="ALWAYS" prefWidth="700" />
+
+    <HBox spacing="8" alignment="CENTER_RIGHT">
+        <Button text="Rafraîchir" onAction="#handleRefresh" />
+        <Button text="Retour" onAction="#handleBack" />
+    </HBox>
+
+</VBox>
+
