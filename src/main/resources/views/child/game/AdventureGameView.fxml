@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.AdventureGameController"
+            prefWidth="800" prefHeight="500">
+    <top>
+        <HBox alignment="CENTER" spacing="25" style="-fx-padding: 15; -fx-background-color: #0F0F23; -fx-border-color: #E94560; -fx-border-width: 0 0 2 0;">
+            <Label fx:id="scoreLabel" text="🏆 0" style="-fx-font-size: 16px; -fx-text-fill: #F39C12; -fx-font-weight: bold;"/>
+            <Label fx:id="levelLabel" text="🎮 Lvl: 1" style="-fx-font-size: 16px; -fx-text-fill: #2E9E6E;"/>
+            <Label fx:id="livesLabel" text="❤️ 3" style="-fx-font-size: 16px; -fx-text-fill: #E94560;"/>
+            <StackPane>
+                <ProgressBar fx:id="healthBar" progress="1.0" prefWidth="150" prefHeight="20" style="-fx-accent: #2E9E6E;"/>
+            </StackPane>
+            <Label fx:id="speedLabel" text="⚡ 5.0" style="-fx-font-size: 16px; -fx-text-fill: #3498DB;"/>
+            <Button text="Quitter" focusTraversable="false" onAction="#closeGame" style="-fx-background-color: #E94560; -fx-text-fill: white; -fx-cursor: hand; -fx-background-radius: 10;"/>
+        </HBox>
+    </top>
+    <center>
+        <Pane fx:id="gamePane" style="-fx-background-color: #1A1A2E;" />
+    </center>
+</BorderPane>

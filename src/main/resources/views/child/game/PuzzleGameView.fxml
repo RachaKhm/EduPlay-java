@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.PuzzleGameController"
+            style="-fx-background-color: linear-gradient(to bottom, #1A1A2E, #16213E);">
+
+    <top>
+        <HBox alignment="CENTER" spacing="20" style="-fx-padding: 15; -fx-background-color: #0F0F23;">
+            <Label text="🧩 JEU DE PAIRE" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #E94560;"/>
+            <Label fx:id="scoreLabel" text="🎯 Score: 0" style="-fx-font-size: 14px; -fx-text-fill: #2E9E6E; -fx-font-weight: bold;"/>
+            <Label fx:id="movesLabel" text="🔄 Mouvements: 0" style="-fx-font-size: 14px; -fx-text-fill: #F39C12; -fx-font-weight: bold;"/>
+            <Label fx:id="timeLabel" text="⏱️ 00:00" style="-fx-font-size: 14px; -fx-text-fill: #3498DB; -fx-font-weight: bold;"/>
+            <Label fx:id="pairsLabel" text="🔗 Paires: 0/8" style="-fx-font-size: 14px; -fx-text-fill: #9B59B6; -fx-font-weight: bold;"/>
+            <Button text="🔄 Nouveau" onAction="#resetGame" style="-fx-background-color: #3498DB; -fx-text-fill: white; -fx-padding: 5 15; -fx-background-radius: 20; -fx-cursor: hand;"/>
+            <Button text="❌ Quitter" onAction="#closeGame" style="-fx-background-color: #E94560; -fx-text-fill: white; -fx-padding: 5 15; -fx-background-radius: 20; -fx-cursor: hand;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <GridPane fx:id="gridPane" alignment="CENTER" hgap="10" vgap="10" style="-fx-padding: 20;">
+        </GridPane>
+    </center>
+
+</BorderPane>

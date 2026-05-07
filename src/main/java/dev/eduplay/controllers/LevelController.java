@@ -48,7 +48,7 @@ public class LevelController implements Initializable {
     @FXML private Spinner<Integer> minAgeSpinner;
     @FXML private Spinner<Integer> maxAgeSpinner;
     @FXML private TextArea pedagogGoalField;
-   //statistiques
+    //statistiques
     @FXML private Label statTotalLevels;
     @FXML private Label statEasyLevels;
     @FXML private Label statMediumLevels;
@@ -88,7 +88,7 @@ public class LevelController implements Initializable {
 
     // Dans GameController
     private ObservableList<Game> gameList;        // ← Pour la liste originale
-        // ← Pour la liste filtrée
+    // ← Pour la liste filtrée
     @FXML private TableView<Game> gameTable;      // ← Pour le tableau
 
     @Override
@@ -186,7 +186,9 @@ public class LevelController implements Initializable {
             }
             showSuccessAlert("Niveau \"" + level.getName() + "\" a été créé avec succès !");
 
-            Router.go("levels_list");
+            Router.reload("levels_list");
+            clearAllFeedbacks();
+
 
 
         } catch (Exception e) {
