@@ -2,6 +2,7 @@ package dev.eduplay.controllers;
 
 import dev.eduplay.entities.User;
 import dev.eduplay.services.UserService;
+import dev.eduplay.tools.MyDataBase;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -9,6 +10,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -33,35 +36,88 @@ public class ParentSignupController {
     @FXML private Label passwordError;
     @FXML private Label confirmPasswordError;
     @FXML private Label successLabel;
+    @FXML private javafx.scene.control.Button signupButton;
 
     private final UserService userService = new UserService();
+
 
     private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@(.+)$";
 
     @FXML
     public void handleSignup() {
+        System.out.println("ParentSignupController.handleSignup called");
         clearErrors();
 
-        if (!validateInput()) {
+        // Check DB connection early and show a helpful message if not connected
+        try {
+            if (!userService.isConnected()) {
+                String last = MyDataBase.getInstance().getLastErrorMessage();
+                String detail = (last != null) ? last : "Impossible de se connecter à la base de données.";
+                Alert a = new Alert(Alert.AlertType.ERROR, detail + "\nVoir la console pour la stack complète.", ButtonType.OK);
+                a.setHeaderText("Erreur connexion base de données");
+                a.showAndWait();
+                return;
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Alert a = new Alert(Alert.AlertType.ERROR, "Erreur interne: " + ex.getMessage(), ButtonType.OK);
+            a.setHeaderText("Erreur création compte");
+            a.showAndWait();
             return;
         }
 
-        User parent = new User();
-        parent.setLastName(lastNameField.getText().trim());
-        parent.setFirstName(firstNameField.getText().trim());
-        parent.setEmail(emailField.getText().trim());
-        parent.setTelephone(phoneField.getText().trim());
-        parent.setAdresse(addressField.getText().trim());
-        parent.setType("parent");
-        parent.setActive(true);
+        try {
+            if (!validateInput()) {
+                return;
+            }
 
-        String hashedPw = BCrypt.hashpw(passwordField.getText(), BCrypt.gensalt());
-        parent.setPassword(hashedPw);
+            User parent = new User();
+            parent.setLastName(lastNameField.getText().trim());
+            parent.setFirstName(firstNameField.getText().trim());
+            parent.setEmail(emailField.getText().trim());
+            parent.setTelephone(phoneField.getText().trim());
+            parent.setAdresse(addressField.getText().trim());
+            parent.setType("parent");
+            parent.setActive(true);
 
-        userService.ajouter(parent);
+            String hashedPw = BCrypt.hashpw(passwordField.getText(), BCrypt.gensalt());
+            parent.setPassword(hashedPw);
 
-        successLabel.setText("Compte parent créé avec succès ! Vous pouvez vous connecter.");
-        clearForm();
+            userService.ajouter(parent);
+
+            successLabel.setText("Compte parent créé avec succès ! Vous pouvez vous connecter.");
+            clearForm();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Show error to user with expandable stacktrace for debugging
+            Alert a = new Alert(Alert.AlertType.ERROR);
+            a.setTitle("Erreur");
+            a.setHeaderText("Erreur création compte");
+            a.setContentText("Une erreur est survenue lors de la création du compte: " + e.getMessage());
+
+            // Create expandable Exception details.
+            StringBuilder sb = new StringBuilder();
+            for (StackTraceElement ste : e.getStackTrace()) {
+                sb.append(ste.toString()).append("\n");
+            }
+            javafx.scene.control.TextArea ta = new javafx.scene.control.TextArea(sb.toString());
+            ta.setEditable(false);
+            ta.setWrapText(false);
+            ta.setMaxWidth(Double.MAX_VALUE);
+            ta.setMaxHeight(Double.MAX_VALUE);
+            a.getDialogPane().setExpandableContent(ta);
+
+            a.showAndWait();
+        }
+    }
+
+    @FXML
+    public void initialize() {
+        // Ensure button has handler in case FXML onAction failed to wire in some environments
+        try {
+            if (signupButton != null) signupButton.setOnAction(e -> handleSignup());
+        } catch (Exception ignored) {}
     }
 
     private boolean validateInput() {

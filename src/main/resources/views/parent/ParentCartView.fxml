@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.eduplay.controllers.parent.ParentCartController"
+      spacing="0" style="-fx-background-color: #F8FAFC;">
+
+    <VBox style="-fx-background-color: linear-gradient(to right, #06B6D4, #8B5CF6); -fx-padding: 24 28 20 28;">
+        <HBox alignment="CENTER_LEFT" spacing="16">
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="🧺 Mon panier" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                <Label fx:id="subtitleLabel" text="Vérifiez vos articles" style="-fx-font-size: 13px; -fx-text-fill: rgba(255,255,255,0.85);"/>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+        <VBox fx:id="cartContainer" spacing="12" style="-fx-padding: 20;">
+            <Label text="Votre panier est vide." style="-fx-text-fill: #94A3B8; -fx-font-size: 14px;"/>
+        </VBox>
+    </ScrollPane>
+
+    <HBox spacing="8" alignment="CENTER_RIGHT" style="-fx-padding: 12 20 18 20;">
+        <Button text="Vider le panier" onAction="#handleClearCart" />
+        <Button text="Passer la commande" onAction="#handleCheckout" />
+    </HBox>
+
+</VBox>
+

@@ -85,7 +85,7 @@
                    styleClass="signup-success-label"/>
 
             <!-- Bouton -->
-            <Button text="Créer mon compte" onAction="#handleSignup"
+            <Button fx:id="signupButton" text="Créer mon compte" onAction="#handleSignup"
                     maxWidth="Infinity"
                     styleClass="auth-primary-button" style="-fx-margin: 20 0 0 0;"/>
 

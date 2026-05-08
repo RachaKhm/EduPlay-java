@@ -39,6 +39,36 @@ public class AppContext {
     // --- Champs rajoutés pour la navigation ---
     private static Integer childBrowsingCourseId;
     private static Integer parentBrowsingCourseId;
+    // --- Panier (cart) en mémoire pour la session courant ---
+    private static final java.util.List<dev.eduplay.entities.CartItem> cart = new java.util.ArrayList<>();
+
+    public static java.util.List<dev.eduplay.entities.CartItem> getCart() { return java.util.Collections.unmodifiableList(cart); }
+
+    public static void clearCart() { cart.clear(); }
+
+    public static void addToCart(dev.eduplay.entities.CartItem item) {
+        if (item == null || item.getProduct() == null) return;
+        int pid = item.getProduct().getId();
+        for (dev.eduplay.entities.CartItem it : cart) {
+            if (it.getProduct().getId() == pid) {
+                it.setQuantity(it.getQuantity() + item.getQuantity());
+                return;
+            }
+        }
+        cart.add(item);
+    }
+
+    public static void removeFromCart(int productId) {
+        cart.removeIf(i -> i.getProduct() != null && i.getProduct().getId() == productId);
+    }
+
+    public static double getCartTotal() {
+        double s = 0.0;
+        for (dev.eduplay.entities.CartItem it : cart) {
+            if (it.getProduct() != null) s += it.getProduct().getPrice() * it.getQuantity();
+        }
+        return s;
+    }
 
     public static Integer getChildBrowsingCourseId() { return childBrowsingCourseId; }
     public static void setChildBrowsingCourseId(int id) { childBrowsingCourseId = id; }

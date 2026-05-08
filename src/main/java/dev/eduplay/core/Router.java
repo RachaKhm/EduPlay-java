@@ -41,9 +41,15 @@ public class Router {
     private static void registerRoutes() {
         // Admin
         routes.put("admin_dashboard", "/views/admin/DashboardView.fxml");
+        // Product management (admin)
+        // ProductIndex.fxml and ProductForm.fxml are placed at the project resources root
+        routes.put("admin_product_index", "/ProductIndex.fxml");
+        routes.put("admin_product_form",  "/ProductForm.fxml");
         routes.put("users",           "/views/admin/UserListView.fxml");
         routes.put("teachers",        "/views/admin/UserListView.fxml");
         routes.put("parents",         "/views/admin/UserListView.fxml");
+        // Alias route used by UserListController to open the shared user form (admin context)
+        routes.put("admin_user_form", "/views/child/UserFormView.fxml");
         routes.put("statistics",      "/views/admin/StatisticsView.fxml");
         routes.put("library",         "/views/admin/AdminCoursesView.fxml");
         routes.put("resource",        "/views/admin/AdminSeancesView.fxml");
@@ -81,6 +87,11 @@ public class Router {
         routes.put("parent_registration_detail","/views/parent/ParentRegistrationDetail.fxml");
         routes.put("parent_courses",            "/views/parent/ParentCoursesView.fxml");
         routes.put("parent_seances",            "/views/parent/ParentSeancesView.fxml");
+        routes.put("parent_marketplace",        "/views/parent/ParentMarketplaceView.fxml");
+        routes.put("parent_order_form",         "/views/parent/ParentOrderForm.fxml");
+        routes.put("parent_orders",             "/views/parent/ParentOrdersView.fxml");
+        routes.put("parent_cart",               "/views/parent/ParentCartView.fxml");
+        routes.put("parent_chat",               "/views/parent/ParentChatView.fxml");
 
         // Enfant
         routes.put("child_dashboard",  "/views/child/ChildDashboardView.fxml");

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.eduplay.controllers.ProductIndexController"
+      spacing="16" styleClass="root" stylesheets="@/styles/admin.css">
+
+    <HBox alignment="CENTER_LEFT" spacing="16" style="-fx-padding: 0 0 8 0;">
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="Gestion des produits" styleClass="page-title"/>
+            <Label fx:id="pageSubtitle" text="" styleClass="page-subtitle"/>
+        </VBox>
+
+        <Button fx:id="addButton" text=" + Ajouter" onAction="#addProduct" styleClass="btn-danger"/>
+    </HBox>
+
+    <HBox spacing="12" alignment="CENTER_LEFT" styleClass="card">
+
+        <TextField fx:id="searchField" promptText="Rechercher (nom, description…)" HBox.hgrow="ALWAYS" styleClass="search-field"/>
+
+        <ComboBox fx:id="sortBy" prefWidth="180" styleClass="form-field"/>
+
+        <Region HBox.hgrow="ALWAYS" />
+
+        <Label fx:id="countLabel" text="0 produits" />
+    </HBox>
+
+    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" VBox.vgrow="ALWAYS">
+        <content>
+            <FlowPane fx:id="cardsPane" hgap="14" vgap="14" prefWrapLength="900" style="-fx-padding: 2 2 16 2;"/>
+        </content>
+    </ScrollPane>
+
+</VBox>
+

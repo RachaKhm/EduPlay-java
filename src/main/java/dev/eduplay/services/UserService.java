@@ -20,11 +20,26 @@ public class UserService implements IGeneralService<User> {
         cnx = MyDataBase.getInstance().getCnx();
     }
 
+    /**
+     * Vérifie rapidement si la connexion à la base de données est initialisée.
+     * Utilisé par les contrôleurs pour afficher un message lisible si la DB n'est pas disponible.
+     */
+    public boolean isConnected() {
+        return cnx != null;
+    }
+
+    private void ensureConnected() {
+        if (cnx == null) {
+            String msg = "Base de données non connectée. Vérifiez MyDataBase (url/user/mdp) et que MySQL tourne.";
+            throw new IllegalStateException(msg);
+        }
+    }
+
     @Override
     public void ajouter(User user) {
+        ensureConnected();
         String query = "INSERT INTO user (first_name, last_name, email, type, telephone, adresse, active, created_at, password, username, birth_date, specialite, niveau, roles, parent_id) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?)";
-
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setString(1, user.getFirstName());
             ps.setString(2, user.getLastName());
@@ -39,7 +54,8 @@ public class UserService implements IGeneralService<User> {
             ps.setString(11, user.getSpecialite());
             ps.setString(12, user.getNiveau());
             ps.setString(13, "[\"ROLE_" + (user.getType() != null ? user.getType().toUpperCase() : "USER") + "\"]");
-            if (user.getParentId() > 0) {
+            // parentId is Integer (nullable). Guard against null to avoid NPE on unboxing.
+            if (user.getParentId() != null && user.getParentId() > 0) {
                 ps.setInt(14, user.getParentId());
             } else {
                 ps.setNull(14, java.sql.Types.INTEGER);
@@ -47,7 +63,8 @@ public class UserService implements IGeneralService<User> {
             ps.executeUpdate();
             System.out.println("User added successfully: " + user.getFullName());
         } catch (SQLException e) {
-            System.err.println("Error adding user: " + e.getMessage());
+            // Rethrow as runtime so controllers can handle and show a helpful message
+            throw new RuntimeException("Erreur base de données lors de l'ajout de l'utilisateur: " + e.getMessage(), e);
         }
     }
 
@@ -161,6 +178,7 @@ public class UserService implements IGeneralService<User> {
     }
 
     public User findByLogin(String login) {
+        ensureConnected();
         String query = "SELECT * FROM user WHERE email = ? OR username = ?";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setString(1, login.trim());
@@ -168,19 +186,20 @@ public class UserService implements IGeneralService<User> {
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return extractUserFromResultSet(rs);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Erreur base de données lors de la recherche de connexion: " + e.getMessage(), e);
         }
         return null;
     }
 
     public User findByEmail(String email) {
+        ensureConnected();
         String query = "SELECT * FROM user WHERE email = ?";
         try (PreparedStatement ps = cnx.prepareStatement(query)) {
             ps.setString(1, email.trim());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return extractUserFromResultSet(rs);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException("Erreur base de données lors de la recherche d'email: " + e.getMessage(), e);
         }
         return null;
     }

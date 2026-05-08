@@ -1,0 +1,102 @@
+/* Marketplace page styles - modern clean look */
+
+.marketplace-root {
+    -fx-background-color: linear-gradient(#f8fafc, #f3f4f6);
+    -fx-font-family: "Inter", "Segoe UI", sans-serif;
+}
+
+.market-header {
+    -fx-padding: 18 0 8 0;
+}
+
+.market-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f172a;
+}
+
+.market-subtitle {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6b7280;
+}
+
+.market-search {
+    -fx-background-color: white;
+    -fx-border-radius: 28;
+    -fx-background-radius: 28;
+    -fx-padding: 10 14;
+    -fx-effect: dropshadow(three-pass-box, rgba(2,6,23,0.06), 12, 0, 0, 6);
+}
+
+.market-search .text-field {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+/* Products grid */
+.products-grid {
+    -fx-padding: 18 10 30 10;
+}
+
+.product-card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-padding: 12;
+    -fx-effect: dropshadow(three-pass-box, rgba(2,6,23,0.04), 10, 0, 0, 6);
+    -fx-pref-width: 300px;
+}
+
+.product-image {
+    -fx-min-height: 140px;
+    -fx-max-height: 160px;
+    -fx-alignment: center;
+}
+
+.product-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #0f172a;
+}
+
+.product-desc {
+    -fx-font-size: 12px;
+    -fx-text-fill: #475569;
+}
+
+.product-price {
+    -fx-font-weight: 800;
+    -fx-text-fill: #059669;
+}
+
+.product-actions {
+    -fx-spacing: 8;
+}
+
+.btn-primary {
+    -fx-background-color: linear-gradient(#6366f1, #7c3aed);
+    -fx-text-fill: white;
+    -fx-font-weight: 700;
+    -fx-background-radius: 10;
+    -fx-padding: 8 14;
+}
+
+.btn-outline {
+    -fx-background-color: transparent;
+    -fx-border-color: #e5e7eb;
+    -fx-text-fill: #374151;
+    -fx-background-radius: 10;
+    -fx-padding: 8 12;
+}
+
+/* small helpers */
+.muted {
+    -fx-text-fill: #9ca3af;
+    -fx-font-size: 12px;
+}
+
+/* Responsive hint: FlowPane will wrap cards. Increase spacing */
+.flow-pane {
+    -fx-hgap: 20;
+    -fx-vgap: 20;
+}
+

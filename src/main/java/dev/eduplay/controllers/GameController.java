@@ -170,8 +170,7 @@ public class GameController implements Initializable {
                 closeForm();
             }
             showSuccessAlert("Jeu \"" + game.getName() + "\" a été sauvegardé avec succès !");
-            Router.reload("games_list");
-            clearAllFeedbacks();
+            Router.go("games_list");
 
         } catch (Exception e) {
 

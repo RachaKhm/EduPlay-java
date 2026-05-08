@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.eduplay.controllers.parent.ParentChatController"
+      spacing="8" style="-fx-background-color: #F8FAFC; -fx-padding: 16;">
+
+    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding: 8 0 8 0;">
+        <Label text="💬 Assistance" style="-fx-font-size:18px; -fx-font-weight:bold;"/>
+        <HBox HBox.hgrow="ALWAYS" />
+        <Button text="Retour" onAction="#handleBack" />
+    </HBox>
+
+    <ListView fx:id="messagesList" VBox.vgrow="ALWAYS" prefHeight="360" style="-fx-background-radius:10; -fx-padding:8;"/>
+
+    <HBox spacing="8" alignment="CENTER_LEFT">
+        <TextField fx:id="inputField" promptText="Posez votre question au chatbot..." HBox.hgrow="ALWAYS"/>
+        <Button text="Envoyer" onAction="#handleSend" />
+    </HBox>
+
+</VBox>
+

@@ -11,17 +11,46 @@ import java.util.List;
 
 public class GameService {
     private Connection cnx;
+    private String tableName = "game";
+    private String levelColumn = null; // actual FK column name in game table
 
     public GameService() throws SQLException {
         cnx = MyDataBase.getInstance().getCnx();
+        // detect actual table name (game or games)
+        try {
+            DatabaseMetaData md = cnx.getMetaData();
+            try (ResultSet t = md.getTables(null, null, "game", null)) {
+                if (!t.next()) {
+                    try (ResultSet t2 = md.getTables(null, null, "games", null)) {
+                        if (t2.next()) tableName = "games";
+                    }
+                }
+            }
+            // detect level FK column name
+            try (ResultSet cols = md.getColumns(null, null, tableName, null)) {
+                while (cols.next()) {
+                    String c = cols.getString("COLUMN_NAME");
+                    if (c == null) continue;
+                    String lc = c.toLowerCase();
+                    if (lc.contains("level") || lc.contains("id_level")) {
+                        levelColumn = c;
+                        break;
+                    }
+                }
+            }
+            if (levelColumn == null) levelColumn = "id_level_id"; // fallback
+        } catch (SQLException ex) {
+            // ignore, we'll use defaults
+        }
     }
 
     public void add(Game game) {
-        String sql = "insert into game (id_level_id,name,type,description,image) values (?,?,?,?,?)";
+        String sql = "insert into " + tableName + " (" + levelColumn + ", name, type, description, image) values (?,?,?,?,?)";
         PreparedStatement ps = null;
         try {
             ps = cnx.prepareStatement(sql);
-            ps.setInt(1, game.getId_level().getId());
+            Level lvl = game.getId_level();
+            ps.setInt(1, lvl != null ? lvl.getId() : 0);
             ps.setString(2, game.getName());
             ps.setString(3, game.getType());
             ps.setString(4, game.getDescription());
@@ -43,14 +72,15 @@ public class GameService {
     }
 
     public void update(Game game) throws SQLException {
-        String sql = "update game set name=?,type=?,description=?,image=? ,id_level_id=? where id=?";
+        String sql = "update " + tableName + " set name=?, type=?, description=?, image=?, " + levelColumn + "=? where id=?";
         PreparedStatement ps = cnx.prepareStatement(sql);
 
         ps.setString(1, game.getName());
         ps.setString(2, game.getType());
         ps.setString(3, game.getDescription());
         ps.setString(4, game.getImage());
-        ps.setInt(5, game.getId_level().getId());
+        Level lvl = game.getId_level();
+        ps.setInt(5, lvl != null ? lvl.getId() : 0);
         ps.setInt(6, game.getId());
 
         ps.executeUpdate();
@@ -63,8 +93,8 @@ public class GameService {
         String sql = "SELECT g.*, l.id as level_id, l.name as level_name, " +
                 "l.description as level_desc, l.difficulty, " +
                 "l.min_age, l.max_age, l.pedag_goal " +
-                "FROM game g " +
-                "INNER JOIN level l ON g.id_level_id = l.id";
+                "FROM " + tableName + " g " +
+                "LEFT JOIN level l ON g." + levelColumn + " = l.id";
 
         try (Statement st = cnx.createStatement();
                 ResultSet rs = st.executeQuery(sql)) {
