@@ -112,6 +112,7 @@ public class Router {
         routes.put("reset-password",  "/views/auth/reset-password.fxml");
         routes.put("face-login", "/views/auth/face-login.fxml");
         routes.put("login", "/views/auth/LoginView.fxml");
+        routes.put("admin_user_form", "/views/admin/UserFormView.fxml");
     }
 
     public static void go(String route, Object... params) {

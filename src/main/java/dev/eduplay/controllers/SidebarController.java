@@ -15,6 +15,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -233,10 +234,22 @@ public class SidebarController {
 
     @FXML
     private void handleLogout() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
-                "Voulez-vous vraiment vous déconnecter ?",
-                ButtonType.YES, ButtonType.NO);
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("EduPlay - Déconnexion");
         confirm.setHeaderText("Déconnexion");
+        confirm.setContentText("Voulez-vous vraiment vous déconnecter ?");
+
+        // Custom Buttons
+        confirm.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
+
+        // Styling the Dialog
+        DialogPane dialogPane = confirm.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("/styles/app.css").toExternalForm());
+        dialogPane.getStyleClass().add("modern-dialog");
+
+        // Set Stage icon/title if needed, but Alert handles most
+        Stage stage = (Stage) dialogPane.getScene().getWindow();
+        stage.setAlwaysOnTop(true);
 
         confirm.showAndWait().ifPresent(btn -> {
             if (btn == ButtonType.YES) {

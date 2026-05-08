@@ -29,7 +29,7 @@
         </VBox>
 
         <!-- ═══ CARTES STATISTIQUES ═══ -->
-        <GridPane hgap="16" vgap="16">
+        <GridPane hgap="24" vgap="24">
             <columnConstraints>
                 <ColumnConstraints percentWidth="33.33"/>
                 <ColumnConstraints percentWidth="33.33"/>
@@ -37,65 +37,63 @@
             </columnConstraints>
 
             <!-- Total utilisateurs -->
-            <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" spacing="6" styleClass="stat-card">
-                <Label text="Total utilisateurs" styleClass="stat-label"/>
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" spacing="12" styleClass="stat-card, admin-stat-card-total">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="👤" style="-fx-font-size: 24px;"/>
+                    <Label text="Utilisateurs" styleClass="stat-label"/>
+                </HBox>
                 <Label fx:id="totalUsersLabel" text="—" styleClass="stat-value"/>
-                <Label text="sur la plateforme"  styleClass="stat-sublabel"/>
+                <Label text="Inscriptions totales"  styleClass="stat-sublabel"/>
             </VBox>
 
             <!-- Enseignants -->
-            <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" spacing="6"
-                  styleClass="admin-stat-card-teachers">
-                <Label text="Enseignants"
-                       styleClass="admin-stat-label-teachers"/>
-                <Label fx:id="totalEnseignantsLabel" text="—"
-                       styleClass="admin-stat-value-teachers"/>
-                <Label text="actifs dans le système"
-                       styleClass="admin-stat-label-teachers" style="-fx-font-size: 11px;"/>
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" spacing="12" styleClass="stat-card, admin-stat-card-teachers">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="👨‍🏫" style="-fx-font-size: 24px;"/>
+                    <Label text="Enseignants" styleClass="stat-label"/>
+                </HBox>
+                <Label fx:id="totalEnseignantsLabel" text="—" styleClass="stat-value"/>
+                <Label text="Membres du corps professoral" styleClass="stat-sublabel"/>
             </VBox>
 
             <!-- Parents -->
-            <VBox GridPane.columnIndex="2" GridPane.rowIndex="0" spacing="6"
-                  styleClass="admin-stat-card-parents">
-                <Label text="Parents"
-                       styleClass="admin-stat-label-parents"/>
-                <Label fx:id="totalParentsLabel" text="—"
-                       styleClass="admin-stat-value-parents"/>
-                <Label text="comptes vérifiés"
-                       styleClass="admin-stat-label-parents" style="-fx-font-size: 11px;"/>
+            <VBox GridPane.columnIndex="2" GridPane.rowIndex="0" spacing="12" styleClass="stat-card, admin-stat-card-parents">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="👪" style="-fx-font-size: 24px;"/>
+                    <Label text="Parents" styleClass="stat-label"/>
+                </HBox>
+                <Label fx:id="totalParentsLabel" text="—" styleClass="stat-value"/>
+                <Label text="Comptes familles actifs" styleClass="stat-sublabel"/>
             </VBox>
 
             <!-- Enfants -->
-            <VBox GridPane.columnIndex="0" GridPane.rowIndex="1" spacing="6"
-                  styleClass="admin-stat-card-children">
-                <Label text="Enfants"
-                       styleClass="admin-stat-label-children"/>
-                <Label fx:id="totalEnfantsLabel" text="—"
-                       styleClass="admin-stat-value-children"/>
-                <Label text="élèves inscrits"
-                       styleClass="admin-stat-label-children" style="-fx-font-size: 11px;"/>
+            <VBox GridPane.columnIndex="0" GridPane.rowIndex="1" spacing="12" styleClass="stat-card, admin-stat-card-children">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="👶" style="-fx-font-size: 24px;"/>
+                    <Label text="Enfants" styleClass="stat-label"/>
+                </HBox>
+                <Label fx:id="totalEnfantsLabel" text="—" styleClass="stat-value"/>
+                <Label text="Élèves inscrits" styleClass="stat-sublabel"/>
             </VBox>
 
             <!-- Cours -->
-            <VBox GridPane.columnIndex="1" GridPane.rowIndex="1" spacing="6"
-                  styleClass="stat-card">
-                <Label text="Cours"
-                       styleClass="stat-label"/>
-                <Label fx:id="totalCoursesLabel" text="—"
-                       styleClass="stat-value" style="-fx-text-fill: #8E24AA;"/>
-                <Label text="créés"
-                       styleClass="stat-sublabel"/>
+            <VBox GridPane.columnIndex="1" GridPane.rowIndex="1" spacing="12" styleClass="stat-card, admin-stat-card-courses">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="📚" style="-fx-font-size: 24px;"/>
+                    <Label text="Cours" styleClass="stat-label"/>
+                </HBox>
+                <Label fx:id="totalCoursesLabel" text="—" styleClass="stat-value"/>
+                <Label text="Modules d'apprentissage" styleClass="stat-sublabel"/>
             </VBox>
 
             <!-- Séances -->
-            <VBox GridPane.columnIndex="2" GridPane.rowIndex="1" spacing="6"
-                  styleClass="stat-card">
-                <Label text="Séances"
-                       styleClass="stat-label"/>
-                <Label fx:id="totalSeancesLabel" text="—"
-                       styleClass="stat-value" style="-fx-text-fill: #F4511E;"/>
-                <Label text="planifiées"
-                       styleClass="stat-sublabel"/>
+            <VBox GridPane.columnIndex="2" GridPane.rowIndex="1" spacing="12" styleClass="stat-card, admin-stat-card-seances">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label text="🗓️" style="-fx-font-size: 24px;"/>
+                    <Label text="Séances" styleClass="stat-label"/>
+                </HBox>
+                <Label fx:id="totalSeancesLabel" text="—" styleClass="stat-value"/>
+                <Label text="Sessions programmées" styleClass="stat-sublabel"/>
             </VBox>
         </GridPane>
 

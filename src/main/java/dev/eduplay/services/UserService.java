@@ -40,7 +40,7 @@ public class UserService implements IGeneralService<User> {
             ps.setString(11, user.getSpecialite());
             ps.setString(12, user.getNiveau());
             ps.setString(13, "[\"ROLE_" + (user.getType() != null ? user.getType().toUpperCase() : "USER") + "\"]");
-            if (user.getParentId() > 0) {
+            if (user.getParentId() != null && user.getParentId() > 0) {
                 ps.setInt(14, user.getParentId());
             } else {
                 ps.setNull(14, java.sql.Types.INTEGER);
@@ -428,7 +428,8 @@ public class UserService implements IGeneralService<User> {
         user.setUsername(rs.getString("username"));
         user.setSpecialite(rs.getString("specialite"));
         user.setNiveau(rs.getString("niveau"));
-        user.setParentId(rs.getInt("parent_id"));
+        int parentId = rs.getInt("parent_id");
+        user.setParentId(rs.wasNull() ? null : parentId);
 
         // Lire profile_picture si la colonne existe
         try {

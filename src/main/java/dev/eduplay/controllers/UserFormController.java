@@ -6,6 +6,7 @@ import dev.eduplay.services.UserService;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class UserFormController {
@@ -24,9 +25,9 @@ public class UserFormController {
     @FXML private CheckBox activeCheck;
 
     // Champs conditionnels
-    @FXML private HBox specialiteBox;
+    @FXML private VBox specialiteBox;
     @FXML private TextField specialiteField;
-    @FXML private HBox niveauBox;
+    @FXML private VBox niveauBox;
     @FXML private ComboBox<String> niveauCombo;
     @FXML private TextField usernameField;
 
