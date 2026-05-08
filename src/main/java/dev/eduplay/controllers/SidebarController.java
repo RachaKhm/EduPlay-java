@@ -46,8 +46,9 @@ public class SidebarController {
     @FXML private Node btnParents;
     @FXML private Node btnAdminCourses;
     @FXML private Node btnLibrary;
+    @FXML private Node btnProducts;
+    @FXML private Node btnGamesAdmin;
     @FXML private Node btnBookRequests;
-    @FXML private Node btnAdminResources;
     @FXML private Node btnResource;
     
     @FXML private Node sectionEventsBox;
@@ -68,6 +69,10 @@ public class SidebarController {
     /* ── PARENT ─────────────────────────────── */
     @FXML private Node sectionParentBox;
     @FXML private Node btnChildren;
+    @FXML private Node btnParentChat;
+    @FXML private Node btnParentOrders;
+    @FXML private Node btnMarketplaceParent;
+    @FXML private Node btnParentCart;
     
     @FXML private Node sectionParentEventsBox;
     @FXML private Node btnParentEventList;
@@ -89,10 +94,12 @@ public class SidebarController {
         // Initialize the list of all buttons for highlighting logic
         allNavButtons = Arrays.asList(
                 btnDashboard,
-                btnUsers, btnTeachers, btnParents, btnAdminCourses, btnLibrary, btnBookRequests, btnAdminResources, btnResource, btnEventList, btnAddEvent, btnRegistrationList, 
+                btnUsers, btnTeachers, btnParents, btnAdminCourses, btnLibrary, btnProducts, btnBookRequests, btnResource, btnEventList, btnAddEvent, btnRegistrationList, 
                 btnScanner, btnStatistics, btnCalendar,
                 btnCourses, btnLevel, btnGamesTeacher, btnSeances,
                 btnChildren, btnParentEventList, btnParentSeances, btnParentRegistrations,
+                btnMarketplaceParent, btnParentCart, btnParentOrders, btnParentChat,
+                btnGamesAdmin,
                 btnMyCoursesChild, btnGames, btnChildLibrary, btnEvents, btnLogout
         ).stream().filter(Objects::nonNull).collect(Collectors.toList());
 
@@ -202,7 +209,7 @@ public class SidebarController {
     @FXML private void showParents() { Router.go("parents"); }
     @FXML private void showAdminCourses() { Router.go("library"); }
     @FXML private void showLibrary() { Router.go("library_index"); }
-    @FXML private void showAdminResources() { Router.go("admin_resource_index"); }
+    @FXML private void showProducts() { Router.go("admin_product_index"); }
     @FXML private void showBookRequests() { Router.go("book_requests_index"); }
     @FXML private void showResource() { Router.go("resource"); }
     @FXML private void showEventList() { Router.go("event_list"); }
@@ -223,6 +230,13 @@ public class SidebarController {
     @FXML private void showParentEventList() { Router.go("parent_event_list"); }
     @FXML private void showParentSeances() { Router.go("parent_seances"); }
     @FXML private void showParentRegistrations() { Router.go("parent_registrations"); }
+    @FXML private void showParentMarketplace() { Router.go("parent_marketplace"); }
+    @FXML private void showParentOrders() { Router.go("parent_orders"); }
+    @FXML private void showParentCart() { Router.go("parent_cart"); }
+    @FXML private void showParentChat() { Router.go("parent_chat"); }
+
+    // ADMIN - games
+    @FXML private void showGamesAdmin() { Router.go("games_list"); }
 
     // CHILD
     @FXML private void showMyCoursesChild() { Router.go("child_courses"); }
@@ -274,7 +288,7 @@ public class SidebarController {
             case "parents" -> btnParents;
             case "library" -> btnAdminCourses;
             case "library_index" -> btnLibrary;
-            case "admin_resource_index" -> btnAdminResources;
+            case "admin_product_index" -> btnProducts;
             case "book_requests_index" -> btnBookRequests;
             case "resource" -> btnResource;
             case "event_list" -> btnEventList;
@@ -285,12 +299,15 @@ public class SidebarController {
             case "admin_calendar" -> btnCalendar;
             case "teacher_courses" -> btnCourses;
             case "levels_list" -> btnLevel;
-            case "games_list" -> btnGamesTeacher;
+            case "games_list" -> (btnGamesAdmin != null ? btnGamesAdmin : btnGamesTeacher);
             case "teacher_seances" -> btnSeances;
             case "parent_children" -> btnChildren;
             case "parent_event_list" -> btnParentEventList;
             case "parent_seances" -> btnParentSeances;
             case "parent_registrations" -> btnParentRegistrations;
+            case "parent_marketplace" -> btnMarketplaceParent;
+            case "parent_cart" -> btnParentCart;
+            case "parent_chat" -> btnParentChat;
             case "child_courses" -> btnMyCoursesChild;
             case "child_games" -> btnGames;
             case "child_library" -> btnChildLibrary;
@@ -313,8 +330,8 @@ public class SidebarController {
         setVisible(btnParents, false);
         setVisible(btnAdminCourses, false);
         setVisible(btnLibrary, false);
+        setVisible(btnProducts, false);
         setVisible(btnBookRequests, false);
-        setVisible(btnAdminResources, false);
         setVisible(btnResource, false);
         setVisible(sectionEventsBox, false);
         setVisible(btnEventList, false);
@@ -336,6 +353,11 @@ public class SidebarController {
         setVisible(btnParentEventList, false);
         setVisible(btnParentSeances, false);
         setVisible(btnParentRegistrations, false);
+        
+        setVisible(btnMarketplaceParent, false);
+        setVisible(btnParentCart, false);
+        setVisible(btnParentOrders, false);
+        setVisible(btnParentChat, false);
 
         setVisible(sectionChildBox, false);
         setVisible(sectionChildLibraryBox, false);
@@ -356,8 +378,9 @@ public class SidebarController {
                 setVisible(btnParents, true);
                 setVisible(btnAdminCourses, true);
                 setVisible(btnLibrary, true);
+                setVisible(btnProducts, true);
+                setVisible(btnGamesAdmin, true);
                 setVisible(btnBookRequests, true);
-                setVisible(btnAdminResources, true);
                 setVisible(btnResource, true);
                 setVisible(sectionEventsBox, true);
                 setVisible(btnEventList, true);
@@ -381,6 +404,10 @@ public class SidebarController {
                 setVisible(btnParentEventList, true);
                 setVisible(btnParentSeances, true);
                 setVisible(btnParentRegistrations, true);
+                setVisible(btnMarketplaceParent, true);
+                setVisible(btnParentCart, true);
+                setVisible(btnParentChat, true);
+                setVisible(btnParentOrders, true);
             }
             case "enfant" -> {
                 setVisible(sectionChildBox, true);

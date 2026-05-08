@@ -7,12 +7,17 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 
+import java.io.File;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,41 +42,103 @@ public class ProductIndexController {
     }
 
     private void filterProducts() {
-        String q = txtSearchName.getText() == null ? "" : txtSearchName.getText().toLowerCase();
+        String q = (txtSearchName.getText() == null) ? "" : txtSearchName.getText().toLowerCase();
         List<Product> filtered = allProducts.stream().filter(p -> {
-            boolean matchName = p.getName() != null && p.getName().toLowerCase().contains(q);
-            return matchName;
+            return p.getName() != null && p.getName().toLowerCase().contains(q);
         }).collect(Collectors.toList());
 
         lblProductCount.setText(filtered.size() + " résultats");
         gridProducts.getChildren().clear();
-        for (Product p : filtered) gridProducts.getChildren().add(createProductCard(p));
+        for (Product p : filtered) {
+            gridProducts.getChildren().add(createProductCard(p));
+        }
     }
 
     private VBox createProductCard(Product p) {
-        VBox card = new VBox(8);
-        card.setStyle("-fx-background-color: white; -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 12;");
-        card.setPrefWidth(300);
+        VBox card = new VBox(12);
+        card.getStyleClass().add("product-card");
+        card.setPrefWidth(280);
+        card.setMaxWidth(280);
 
-        HBox header = new HBox(8);
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        Label name = new Label(p.getName());
-        name.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
-        Label price = new Label("€ " + p.getPrice());
-        header.getChildren().addAll(name, spacer, price);
+        // --- IMAGE AREA ---
+        StackPane imgContainer = new StackPane();
+        imgContainer.setPrefHeight(150);
+        imgContainer.setStyle("-fx-background-color: #F8FAFC; -fx-background-radius: 12;");
+        
+        ImageView iv = new ImageView();
+        iv.setFitHeight(130);
+        iv.setFitWidth(240);
+        iv.setPreserveRatio(true);
 
-        Label desc = new Label(p.getDescription() != null ? p.getDescription() : "");
+        boolean imageSet = false;
+        if (p.getPicture() != null && !p.getPicture().isEmpty()) {
+            try {
+                File file = new File(p.getPicture());
+                if (file.exists()) {
+                    iv.setImage(new Image(file.toURI().toString()));
+                    imageSet = true;
+                }
+            } catch (Exception ignored) {}
+        }
+
+        if (!imageSet) {
+            // Placeholder icon or text
+            Label placeholder = new Label("📦");
+            placeholder.setStyle("-fx-font-size: 40px;");
+            imgContainer.getChildren().add(placeholder);
+        } else {
+            imgContainer.getChildren().add(iv);
+        }
+
+        // --- INFO AREA ---
+        VBox info = new VBox(6);
+        
+        HBox titlePrice = new HBox(8);
+        Label title = new Label(p.getName());
+        title.getStyleClass().add("product-card-title");
+        title.setWrapText(true);
+        HBox.setHgrow(title, Priority.ALWAYS);
+        
+        Label price = new Label(String.format("%.3f DT", p.getPrice()));
+        price.getStyleClass().add("product-card-price");
+        
+        titlePrice.getChildren().addAll(title, price);
+
+        Label desc = new Label(p.getDescription() != null ? p.getDescription() : "Aucune description");
+        desc.getStyleClass().add("product-card-desc");
         desc.setWrapText(true);
+        desc.setMinHeight(40);
+        desc.setMaxHeight(40);
 
+        Label badge = new Label(p.isAvailability() ? "EN STOCK" : "RUPTURE");
+        badge.getStyleClass().add("product-card-badge");
+        if (!p.isAvailability()) {
+            badge.getStyleClass().add("product-card-badge-unavailable");
+        }
+
+        info.getChildren().addAll(titlePrice, desc, badge);
+
+        // --- ACTIONS ---
         HBox actions = new HBox(8);
-        Button btnEdit = new Button("Éditer");
+        actions.setStyle("-fx-padding: 8 0 0 0;");
+        
+        Button btnEdit = new Button("Modifier");
+        btnEdit.getStyleClass().add("admin-btn-action-blue");
+        btnEdit.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(btnEdit, Priority.ALWAYS);
         btnEdit.setOnAction(e -> Router.reload("admin_product_form", p));
-        Button btnDel = new Button("Supprimer");
-        btnDel.setOnAction(e -> { productService.supprimer(p.getId()); loadProducts(); });
+
+        Button btnDel = new Button("🗑");
+        btnDel.getStyleClass().add("btn-icon-delete");
+        btnDel.setPrefWidth(40);
+        btnDel.setOnAction(e -> {
+            productService.supprimer(p.getId());
+            loadProducts();
+        });
+
         actions.getChildren().addAll(btnEdit, btnDel);
 
-        card.getChildren().addAll(header, desc, actions);
+        card.getChildren().addAll(imgContainer, info, actions);
         return card;
     }
 
@@ -80,4 +147,3 @@ public class ProductIndexController {
         Router.reload("admin_product_form", null);
     }
 }
-

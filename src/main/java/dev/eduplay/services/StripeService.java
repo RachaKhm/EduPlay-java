@@ -1,19 +1,42 @@
 package dev.eduplay.services;
 
+import com.stripe.Stripe;
+import io.github.cdimascio.dotenv.Dotenv;
+
 /**
- * StripeService removed / disabled.
- * This stub keeps the class available to avoid compilation errors elsewhere, but always reports
- * that Stripe is not configured. If you want to re-enable Stripe, restore a proper implementation.
+ * Service to manage Stripe configuration and initialization.
  */
 public class StripeService {
 
+    private static StripeService instance;
+    private final String apiKey;
+
     public StripeService() {
-        // intentionally empty
+        Dotenv dotenv = Dotenv.configure()
+                .ignoreIfMissing()
+                .load();
+        
+        // Search for STRIPE_SECRET_KEY in .env or environment variables
+        this.apiKey = dotenv.get("STRIPE_SECRET_KEY");
+        
+        if (apiKey != null && !apiKey.isEmpty()) {
+            Stripe.apiKey = apiKey;
+            System.out.println("[StripeService] Stripe initialized with key from .env");
+        } else {
+            System.err.println("[StripeService] WARNING: STRIPE_SECRET_KEY not found in .env");
+        }
     }
 
-    /**
-     * Always false: Stripe integration is disabled in this build.
-     */
-    public boolean isConfigured() { return false; }
-}
+    public static StripeService getInstance() {
+        if (instance == null) instance = new StripeService();
+        return instance;
+    }
 
+    public boolean isConfigured() {
+        return apiKey != null && !apiKey.isEmpty();
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+}

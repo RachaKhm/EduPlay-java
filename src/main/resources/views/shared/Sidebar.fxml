@@ -123,18 +123,29 @@
                 </VBox>
             </HBox>
 
-            <!-- GESTION RESSOURCES (New) -->
-            <HBox fx:id="btnAdminResources"
-                  onMouseClicked="#showAdminResources"
+            <!-- PRODUCTS (MARKETPLACE) -->
+            <HBox fx:id="btnProducts"
+                  onMouseClicked="#showProducts"
                   alignment="CENTER_LEFT"
                   spacing="12"
                   styleClass="modern-nav-btn">
                 <VBox alignment="CENTER_LEFT">
-                    <Label text="📂 Gestion Ressources" styleClass="nav-btn-label"/>
+                    <Label text="🛒 Gestion des produits" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
 
-            <!-- BOOK REQUESTS (Restored) -->
+            <!-- GAMES (ADMIN) -->
+            <HBox fx:id="btnGamesAdmin"
+                  onMouseClicked="#showGamesAdmin"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="🎮 Gestion des jeux" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- BOOK REQUESTS -->
             <HBox fx:id="btnBookRequests"
                   onMouseClicked="#showBookRequests"
                   alignment="CENTER_LEFT"
@@ -258,6 +269,8 @@
                 </VBox>
             </HBox>
 
+
+
             <HBox fx:id="btnSeances"
                   onMouseClicked="#showTeacherSeances"
                   alignment="CENTER_LEFT"
@@ -318,6 +331,49 @@
                 </VBox>
             </HBox>
 
+            <!-- PARENT MARKETPLACE -->
+            <HBox fx:id="btnMarketplaceParent"
+                  onMouseClicked="#showParentMarketplace"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="🛒 Marketplace" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="btnParentCart"
+                  onMouseClicked="#showParentCart"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="🧺 Mon panier" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <!-- PARENT ORDERS -->
+            <HBox fx:id="btnParentChat"
+                  onMouseClicked="#showParentChat"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="💬 Chat" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+            <HBox fx:id="btnParentOrders"
+                  onMouseClicked="#showParentOrders"
+                  alignment="CENTER_LEFT"
+                  spacing="12"
+                  styleClass="modern-nav-btn">
+                <VBox alignment="CENTER_LEFT">
+                    <Label text="🧾 Mes commandes" styleClass="nav-btn-label"/>
+                </VBox>
+            </HBox>
+
+
             <!-- CHILD SECTION -->
             <HBox fx:id="sectionChildBox" styleClass="section-header-box">
                 <Label fx:id="sectionChild" text="APPRENTISSAGE" styleClass="section-label"/>
@@ -342,6 +398,8 @@
                     <Label text="🎮 Jeux" styleClass="nav-btn-label"/>
                 </VBox>
             </HBox>
+
+
 
             <!-- CHILD LIBRARY SECTION -->
             <HBox fx:id="sectionChildLibraryBox" spacing="8" styleClass="section-header-box">

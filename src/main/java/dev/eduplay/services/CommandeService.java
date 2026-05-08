@@ -38,7 +38,8 @@ public class CommandeService {
                 List<String> colsList = new ArrayList<>();
                 List<Object> values = new ArrayList<>();
                 colsList.add("product_id"); values.add(c.getProductId());
-                colsList.add(parentCol); values.add(c.getParentId());
+                if (hasColumn("commande", "parent_id")) { colsList.add("parent_id"); values.add(c.getParentId()); }
+                if (hasColumn("commande", "user_id")) { colsList.add("user_id"); values.add(c.getParentId()); }
                 colsList.add("quantity"); values.add(c.getQuantity());
                 colsList.add(totalCol); values.add(c.getTotalPrice());
                 if (hasStatus) { colsList.add("status"); values.add(c.getStatus()); }
@@ -123,6 +124,33 @@ public class CommandeService {
                 try { return ajouter(c); } catch (RuntimeException ex) { throw ex; }
             }
             throw new RuntimeException("Erreur insertion commande: " + e.getMessage());
+        }
+    }
+
+    public void modifier(Commande c) {
+        String totalCol = findExistingColumn("commande", "total_price", "total_amount", "montant_total", "total", "amount");
+        if (totalCol == null) totalCol = "total_price";
+        
+        String sql = "UPDATE commande SET quantity=?, " + totalCol + "=?, status=? WHERE id=?";
+        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
+            ps.setInt(1, c.getQuantity());
+            ps.setDouble(2, c.getTotalPrice());
+            ps.setString(3, c.getStatus());
+            ps.setInt(4, c.getId());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException("Erreur modification commande: " + e.getMessage());
+        }
+    }
+
+    public void supprimer(int id) {
+        try (PreparedStatement ps = cnx.prepareStatement("DELETE FROM commande WHERE id=?")) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException("Erreur suppression commande: " + e.getMessage());
         }
     }
 

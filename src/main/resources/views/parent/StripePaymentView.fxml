@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.eduplay.controllers.parent.StripePaymentController"
+      spacing="0"
+      prefWidth="450"
+      style="-fx-background-color: white; -fx-background-radius: 16; -fx-border-color: #E2E8F0; -fx-border-radius: 16;">
+
+    <!-- STRIPE HEADER -->
+    <VBox spacing="10" style="-fx-background-color: #635BFF; -fx-padding: 30; -fx-background-radius: 16 16 0 0;">
+        <Label text="EduPlay Marketplace" style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-opacity: 0.8;"/>
+        <HBox alignment="CENTER_LEFT" spacing="10">
+            <Label fx:id="lblAmount" text="0.000 DT" style="-fx-text-fill: white; -fx-font-size: 32px; -fx-font-weight: 900;"/>
+        </HBox>
+        <Label fx:id="lblProduct" text="Commande #123" style="-fx-text-fill: white; -fx-font-size: 14px; -fx-opacity: 0.9;"/>
+    </VBox>
+
+    <!-- PAYMENT FORM -->
+    <VBox spacing="20" style="-fx-padding: 30;">
+        
+        <VBox spacing="8">
+            <Label text="Informations de paiement" style="-fx-font-weight: bold; -fx-font-size: 15px; -fx-text-fill: #1E293B;"/>
+            
+            <VBox spacing="12">
+                <!-- Card Number -->
+                <VBox spacing="4">
+                    <Label text="Numéro de carte" style="-fx-font-size: 12px; -fx-text-fill: #64748B; -fx-font-weight: bold;"/>
+                    <TextField fx:id="txtCardNumber" promptText="1234 5678 1234 5678" 
+                               style="-fx-padding: 12; -fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8;"/>
+                </VBox>
+
+                <HBox spacing="12">
+                    <!-- Expiry -->
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Expiration" style="-fx-font-size: 12px; -fx-text-fill: #64748B; -fx-font-weight: bold;"/>
+                        <TextField fx:id="txtExpiry" promptText="MM / YY" 
+                                   style="-fx-padding: 12; -fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8;"/>
+                    </VBox>
+                    <!-- CVC -->
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="CVC" style="-fx-font-size: 12px; -fx-text-fill: #64748B; -fx-font-weight: bold;"/>
+                        <TextField fx:id="txtCvc" promptText="123" 
+                                   style="-fx-padding: 12; -fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Card Holder -->
+                <VBox spacing="4">
+                    <Label text="Nom sur la carte" style="-fx-font-size: 12px; -fx-text-fill: #64748B; -fx-font-weight: bold;"/>
+                    <TextField fx:id="txtHolder" promptText="Nom Complet" 
+                               style="-fx-padding: 12; -fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-background-radius: 8;"/>
+                </VBox>
+            </VBox>
+        </VBox>
+
+        <Separator />
+
+        <Button fx:id="btnPay" onAction="#handlePayment" text="Payer maintenant" 
+                maxWidth="Infinity" 
+                style="-fx-background-color: #635BFF; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 15px; -fx-padding: 14; -fx-background-radius: 8; -fx-cursor: hand;"/>
+        
+        <Button onAction="#handleCancel" text="Annuler" 
+                maxWidth="Infinity" 
+                style="-fx-background-color: transparent; -fx-text-fill: #64748B; -fx-font-size: 13px; -fx-cursor: hand;"/>
+
+        <HBox alignment="CENTER" spacing="5">
+            <Label text="Powered by" style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+            <Label text="Stripe" style="-fx-font-size: 12px; -fx-font-weight: 900; -fx-text-fill: #635BFF;"/>
+        </HBox>
+    </VBox>
+
+</VBox>

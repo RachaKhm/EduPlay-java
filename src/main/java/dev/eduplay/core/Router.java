@@ -113,6 +113,16 @@ public class Router {
         routes.put("face-login", "/views/auth/face-login.fxml");
         routes.put("login", "/views/auth/LoginView.fxml");
         routes.put("admin_user_form", "/views/admin/UserFormView.fxml");
+
+        // Produits & Marketplace
+        routes.put("admin_product_index", "/ProductIndex.fxml");
+        routes.put("admin_product_form",  "/ProductForm.fxml");
+        routes.put("parent_marketplace",  "/views/parent/ParentMarketplaceView.fxml");
+        routes.put("parent_cart",         "/views/parent/ParentCartView.fxml");
+        routes.put("parent_orders",       "/views/parent/ParentOrdersView.fxml");
+        routes.put("parent_chat",         "/views/parent/ParentChatView.fxml");
+        routes.put("parent_order_form",   "/views/parent/ParentOrderForm.fxml");
+        routes.put("parent_stripe_payment", "/views/parent/StripePaymentView.fxml");
     }
 
     public static void go(String route, Object... params) {
@@ -160,6 +170,7 @@ public class Router {
                     route.equals("add_resource") ||
                     route.equals("edit_resource") ||
                     route.equals("add_event") ||
+                    route.equals("parent_stripe_payment") ||
                     route.equals("scanner") ||
                     route.equals("statistics");
 
