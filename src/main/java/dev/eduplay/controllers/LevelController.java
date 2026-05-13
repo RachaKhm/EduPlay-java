@@ -186,7 +186,8 @@ public class LevelController implements Initializable {
             }
             showSuccessAlert("Niveau \"" + level.getName() + "\" a été créé avec succès !");
 
-            Router.go("levels_list");
+            Router.reload("levels_list");
+            clearAllFeedbacks();
 
 
         } catch (Exception e) {
