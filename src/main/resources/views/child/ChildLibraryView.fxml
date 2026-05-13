@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.effect.GaussianBlur?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.paint.Color?>
+
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.eduplay.controllers.ChildLibraryController" style="-fx-background-color: #F8FAFC;">
+    
+    <!-- Organic Background Shapes (Restricted within StackPane boundaries) -->
+    <Pane style="-fx-background-color: transparent;" StackPane.alignment="CENTER">
+        <Circle radius="150" fill="#f9a8d4" opacity="0.3" centerX="150" centerY="150">
+            <effect><GaussianBlur radius="80"/></effect>
+        </Circle>
+        <Circle radius="200" fill="#93c5fd" opacity="0.3" centerX="800" centerY="500">
+            <effect><GaussianBlur radius="80"/></effect>
+        </Circle>
+    </Pane>
+
+    <ScrollPane fx:id="scrollPane" fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+        <VBox alignment="TOP_CENTER" spacing="0">
+            <!-- Main Content -->
+            <VBox alignment="TOP_CENTER" spacing="40" maxWidth="1200" style="-fx-padding: 30 30 60 30;">
+                
+                <!-- Navbar / Header du Dashboard -->
+                <HBox alignment="CENTER_LEFT" maxWidth="1200" style="-fx-padding: 0 0 10 0;">
+                    <VBox spacing="4">
+                        <Label text="Bibliothèque" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #22223A;"/>
+                        <Label text="Explore tes livres préférés" style="-fx-font-size: 13px; -fx-text-fill: #9999BB;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Hero Section (Recherche) -->
+                <VBox alignment="CENTER" spacing="24" maxWidth="800" style="-fx-padding: 20 0 20 0;">
+                    <Label text="Explorez Votre Bibliothèque" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #111418;"/>
+                    <Label text="Découvrez des histoires incroyables, résolvez des énigmes mathématiques et explorez les merveilles de l'univers !" style="-fx-font-size: 16px; -fx-text-fill: #64748B; -fx-wrap-text: true; -fx-text-alignment: center;" maxWidth="600"/>
+                    
+                    <HBox maxWidth="600" spacing="12" alignment="CENTER">
+                        <TextField fx:id="searchField" promptText="🔍 Que voulez-vous apprendre aujourd'hui ?" HBox.hgrow="ALWAYS" style="-fx-background-color: white; -fx-font-size: 16px; -fx-padding: 16 24; -fx-background-radius: 16; -fx-border-color: #E2E8F0; -fx-border-radius: 16; -fx-border-width: 0; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);"/>
+                    </HBox>
+                </VBox>
+                
+                <!-- Grille -->
+                <FlowPane fx:id="libraryContainer" hgap="24" vgap="24" alignment="TOP_CENTER" maxWidth="1200" />
+                
+                <!-- Filtrage par Thème -->
+                <VBox maxWidth="1200" spacing="16" style="-fx-padding: 30 0 0 0;">
+                    <Label text="Parcourir par Thème" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #111418;"/>
+                    <FlowPane fx:id="themeFilterContainer" hgap="10" vgap="10" />
+                </VBox>
+
+                <!-- Récemment Ajouté -->
+                <VBox maxWidth="1200" spacing="16" style="-fx-padding: 30 0 0 0;">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Récemment Ajouté" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #111418;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label text="Voir Tout ➔" style="-fx-text-fill: #2B7CEE; -fx-font-weight: bold; -fx-font-size: 13px; -fx-cursor: hand;"/>
+                    </HBox>
+                    <FlowPane fx:id="recentContainer" hgap="16" vgap="16" />
+                </VBox>
+                
+            </VBox>
+        </VBox>
+    </ScrollPane>
+</StackPane>

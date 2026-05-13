@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.ProductFormController"
+            prefWidth="500"
+            stylesheets="@/styles/user_form.css"
+            styleClass="form-root">
+
+    <!-- HEADER -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="12" styleClass="form-header">
+            <Label fx:id="lblHeaderTitle"
+                   text="➕ Nouveau Produit"
+                   styleClass="form-header-title"/>
+            <HBox HBox.hgrow="ALWAYS"/>
+            <Button text="✕" onAction="#handleCancel" styleClass="form-close-btn"/>
+        </HBox>
+    </top>
+
+    <!-- CONTENT -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="form-scroll-pane">
+            <VBox spacing="0" styleClass="form-content">
+                
+                <Label text="Détails du produit" styleClass="form-section-label"/>
+
+                <!-- Nom du produit -->
+                <VBox spacing="4" styleClass="field-container">
+                    <Label text="Nom du produit *" styleClass="form-label"/>
+                    <TextField fx:id="txtName"
+                               promptText="ex: Cahier de dessin, Kit scientifique..."
+                               styleClass="form-input"/>
+                </VBox>
+
+                <!-- Prix -->
+                <VBox spacing="4" styleClass="field-container">
+                    <Label text="Prix (DT) *" styleClass="form-label"/>
+                    <TextField fx:id="txtPrice"
+                               promptText="ex: 25.500"
+                               styleClass="form-input"/>
+                </VBox>
+
+                <!-- Description -->
+                <VBox spacing="4" styleClass="field-container">
+                    <Label text="Description" styleClass="form-label"/>
+                    <TextArea fx:id="txtDescription"
+                              prefRowCount="4"
+                              promptText="Décrivez brièvement le produit..."
+                              wrapText="true"
+                              styleClass="form-input"/>
+                </VBox>
+
+                <!-- Disponibilité & Image -->
+                <HBox spacing="30">
+                    <!-- Disponibilité -->
+                    <VBox spacing="10" HBox.hgrow="ALWAYS">
+                        <Label text="Disponibilité" styleClass="form-label"/>
+                        <CheckBox fx:id="chkAvailability"
+                                  text="Produit disponible à la vente"
+                                  selected="true"
+                                  styleClass="form-label"
+                                  style="-fx-font-weight: normal;"/>
+                    </VBox>
+
+                    <!-- Image Section -->
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" alignment="TOP_RIGHT">
+                        <Label text="Image du produit" styleClass="form-label"/>
+                        <HBox spacing="10" alignment="CENTER_RIGHT">
+                            <Button text="Choisir..."
+                                    onAction="#handleChooseImage"
+                                    styleClass="btn-cancel"
+                                    style="-fx-padding: 8 16;"/>
+                            <Label fx:id="lblImageName"
+                                   text="Aucune image"
+                                   styleClass="form-label"
+                                   style="-fx-font-weight: normal; -fx-text-fill: #94A3B8;"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+
+                <!-- Footer Buttons -->
+                <HBox spacing="16" alignment="CENTER_RIGHT" styleClass="form-button-container">
+                    <Button text="Annuler"
+                            onAction="#handleCancel"
+                            styleClass="btn-cancel"/>
+                    <Button text="Enregistrer le produit"
+                            onAction="#handleSave"
+                            styleClass="btn-save"/>
+                </HBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

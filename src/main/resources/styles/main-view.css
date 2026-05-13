@@ -1,129 +1,168 @@
-/* ==================== MAIN VIEW STYLESHEET ==================== */
+/* ══════════════════════════════════════════════════════
+   main-view.css  —  Styles modern, pro & kid-friendly
+   ══════════════════════════════════════════════════════ */
 
-/* ── Root ─────────────────────────────────────────────────────── */
+/* ── Racine ────────────────────────────────────────── */
 .main-root {
-    -fx-background-color: #F8FAFC;
+    -fx-background-color: #F8FAFC; /* Slate 50 */
 }
 
-/* ── Topbar ───────────────────────────────────────────────────── */
+/* ── Topbar ────────────────────────────────────────── */
 .topbar {
-    -fx-background-color: #FFFFFF;
-    -fx-padding: 12 24;
-    -fx-border-color: #F1F5F9;
-    -fx-border-width: 0 0 1 0;
-    -fx-min-height: 64px;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 8, 0, 0, 2);
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-padding: 16 32;
+    -fx-border-color: transparent;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.04), 20, 0, 0, 4);
 }
 
-/* ── Search ───────────────────────────────────────────────────── */
+/* ── Barre de recherche ────────────────────────────── */
 .search-box {
-    -fx-background-color: #F1F5F9;
-    -fx-background-radius: 10;
-    -fx-padding: 8 14;
-    -fx-max-width: 320;
-    -fx-min-width: 200;
+    -fx-background-color: white;
+    -fx-background-radius: 100; /* Fully rounded */
+    -fx-padding: 0 20;
+    -fx-pref-height: 48;
+    -fx-pref-width: 380;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 2;
+    -fx-border-radius: 100;
+}
+
+.search-box:focused {
+    -fx-border-color: #3B82F6; /* Blue ring */
 }
 
 .search-icon {
-    -fx-font-size: 14px;
     -fx-text-fill: #94A3B8;
+    -fx-font-size: 16px;
 }
 
 .search-field {
     -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-font-size: 13px;
     -fx-text-fill: #334155;
-    -fx-prompt-text-fill: #94A3B8;
-    -fx-pref-width: 240;
+    -fx-pref-width: 320;
+    -fx-border-width: 0;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
 }
 
-/* ── Icon Buttons ─────────────────────────────────────────────── */
+/* ── Bouton icon générique (facial, cloche) ─────────── */
 .icon-btn {
-    -fx-background-color: #F8FAFC;
-    -fx-background-radius: 10;
+    -fx-background-color: white;
+    -fx-background-radius: 100;
+    -fx-min-width: 48;
+    -fx-min-height: 48;
+    -fx-max-width: 48;
+    -fx-max-height: 48;
     -fx-cursor: hand;
-    -fx-min-width: 40;
-    -fx-min-height: 40;
-    -fx-max-width: 40;
-    -fx-max-height: 40;
     -fx-border-color: #E2E8F0;
-    -fx-border-radius: 10;
-    -fx-border-width: 1;
+    -fx-border-width: 2;
+    -fx-border-radius: 100;
+    -fx-transition-duration: 200ms;
 }
 
 .icon-btn:hover {
     -fx-background-color: #F1F5F9;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
 }
 
 .icon-label {
-    -fx-font-size: 16px;
-    -fx-alignment: center;
+    -fx-font-size: 20px;
 }
 
-/* ── Notification Badge ───────────────────────────────────────── */
-.notif-badge {
-    -fx-background-color: #EF4444;
-    -fx-text-fill: white;
-    -fx-font-size: 9px;
-    -fx-font-weight: bold;
-    -fx-background-radius: 8;
-    -fx-min-width: 16;
-    -fx-min-height: 16;
-    -fx-max-width: 16;
-    -fx-max-height: 16;
-    -fx-alignment: center;
-    -fx-translate-x: 10;
-    -fx-translate-y: -10;
-}
-
-/* ── Profile button ───────────────────────────────────────────── */
-.profile-btn {
-    -fx-background-color: #F8FAFC;
-    -fx-background-radius: 12;
-    -fx-padding: 6 12;
-    -fx-cursor: hand;
+/* ── Bouton Face ID Capsule ─────────────────────────── */
+.face-id-capsule {
+    -fx-background-color: white;
+    -fx-padding: 8 16;
+    -fx-background-radius: 100;
     -fx-border-color: #E2E8F0;
+    -fx-border-width: 2;
+    -fx-border-radius: 100;
+    -fx-cursor: hand;
+    -fx-transition-duration: 200ms;
+}
+
+.face-id-capsule:hover {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #3B82F6;
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+}
+
+.face-id-capsule:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+.face-id-icon {
+    -fx-font-size: 16px;
+}
+
+.face-id-text {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+}
+
+/* ── Badge notification ────────────────────────────── */
+.notif-badge {
+    -fx-background-color: #EF4444; /* Vibrant Red */
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: 900;
+    -fx-padding: 2 6;
+    -fx-background-radius: 12;
+    -fx-translate-x: 12;
+    -fx-translate-y: -12;
+    -fx-border-color: white;
+    -fx-border-width: 2;
     -fx-border-radius: 12;
-    -fx-border-width: 1;
+}
+
+/* ── Bouton Profil ─────────────────────────────────── */
+.profile-btn {
+    -fx-background-color: linear-gradient(to right bottom, #3B82F6, #8B5CF6);
+    -fx-padding: 6 24 6 6;
+    -fx-background-radius: 100;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(59,130,246,0.3), 10, 0, 0, 4);
+    -fx-transition-duration: 200ms;
 }
 
 .profile-btn:hover {
-    -fx-background-color: #F1F5F9;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
 }
 
 .profile-avatar {
-    -fx-background-color: linear-gradient(to bottom right, #3B82F6, #4F46E5);
-    -fx-background-radius: 20;
-    -fx-min-width: 36;
-    -fx-min-height: 36;
-    -fx-max-width: 36;
-    -fx-max-height: 36;
+    -fx-background-color: rgba(255,255,255,0.25);
+    -fx-background-radius: 100;
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-max-width: 40;
+    -fx-max-height: 40;
 }
 
 .profile-initials {
-    -fx-font-family: "Segoe UI", "Inter", sans-serif;
-    -fx-font-size: 14px;
-    -fx-font-weight: 800;
     -fx-text-fill: white;
-    -fx-alignment: center;
+    -fx-font-weight: 900;
+    -fx-font-size: 16px;
 }
 
 .profile-name {
-    -fx-font-family: "Segoe UI", "Inter", sans-serif;
-    -fx-font-size: 13px;
-    -fx-font-weight: 700;
-    -fx-text-fill: #1E293B;
+    -fx-text-fill: white;
+    -fx-font-weight: 800;
+    -fx-font-size: 14px;
 }
 
 .profile-role {
-    -fx-font-family: "Segoe UI", "Inter", sans-serif;
+    -fx-text-fill: rgba(255,255,255,0.9);
     -fx-font-size: 11px;
-    -fx-text-fill: #64748B;
+    -fx-font-weight: bold;
 }
 
-/* ── Content Area ─────────────────────────────────────────────── */
+/* ── Zone de contenu dynamique ─────────────────────── */
 .content-area {
-    -fx-background-color: #F8FAFC;
-    -fx-padding: 24;
+    -fx-padding: 32;
+    -fx-background-color: transparent;
 }

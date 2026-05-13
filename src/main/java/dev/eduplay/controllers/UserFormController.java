@@ -6,6 +6,7 @@ import dev.eduplay.services.UserService;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import org.mindrot.jbcrypt.BCrypt;
 
 public class UserFormController {
@@ -24,9 +25,9 @@ public class UserFormController {
     @FXML private CheckBox activeCheck;
 
     // Champs conditionnels
-    @FXML private HBox specialiteBox;
+    @FXML private VBox specialiteBox;
     @FXML private TextField specialiteField;
-    @FXML private HBox niveauBox;
+    @FXML private VBox niveauBox;
     @FXML private ComboBox<String> niveauCombo;
     @FXML private TextField usernameField;
 
@@ -209,7 +210,7 @@ public class UserFormController {
         if (editingUser == null) {
             // Création : obligatoire
             if (pw == null || pw.isBlank() || pw.length() < 6) {
-                passwordError.setText("Minimum 6 caractères requis.");
+                passwordError.setText("Minimum 8 caractères requis.");
                 valid = false;
             }
             if (pw != null && !pw.equals(confirmPw)) {
@@ -219,7 +220,7 @@ public class UserFormController {
         } else if (pw != null && !pw.isBlank()) {
             // Édition : valider seulement si rempli
             if (pw.length() < 6) {
-                passwordError.setText("Minimum 6 caractères requis.");
+                passwordError.setText("Minimum 8 caractères requis.");
                 valid = false;
             }
             if (!pw.equals(confirmPw)) {

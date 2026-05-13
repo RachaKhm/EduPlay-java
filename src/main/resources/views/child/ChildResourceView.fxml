@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.effect.GaussianBlur?>
+<?import javafx.scene.effect.DropShadow?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.paint.Color?>
+
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.eduplay.controllers.ChildResourceController" style="-fx-background-color: #F8FAFC;">
+    
+    <!-- Organic Background Shapes -->
+    <Pane style="-fx-background-color: transparent;" StackPane.alignment="CENTER">
+        <Circle radius="150" fill="#93c5fd" opacity="0.3" centerX="150" centerY="150">
+            <effect><GaussianBlur radius="80"/></effect>
+        </Circle>
+        <Circle radius="200" fill="#c4b5fd" opacity="0.3" centerX="800" centerY="500">
+            <effect><GaussianBlur radius="80"/></effect>
+        </Circle>
+    </Pane>
+
+    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+        <VBox alignment="TOP_CENTER" spacing="0">
+            
+            <VBox alignment="TOP_CENTER" spacing="32" maxWidth="1200" style="-fx-padding: 30 30 60 30;">
+                
+                <!-- Navbar / Header -->
+                <HBox alignment="CENTER_LEFT" maxWidth="1200" style="-fx-padding: 0 0 10 0;">
+                    <VBox spacing="4">
+                        <Label text="Bibliothèque" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #22223A;"/>
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Label text="Mes bibliothèques" style="-fx-text-fill: #64748B; -fx-font-weight: bold; -fx-cursor: hand; -fx-font-size: 13px;" onMouseClicked="#goBackToLibraries"/>
+                            <Label text="&gt;" style="-fx-text-fill: #9CA3AF; -fx-font-size: 13px;"/>
+                            <Label fx:id="lblLibraryNameNav" text="..." style="-fx-text-fill: #2563EB; -fx-font-weight: bold; -fx-font-size: 13px;"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+
+                <!-- Voice Search Section -->
+                <VBox spacing="16" maxWidth="1200" style="-fx-background-color: #EEF2FF; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 24; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4);">
+                    <HBox spacing="16" alignment="CENTER_LEFT">
+                        <StackPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-min-width: 48; -fx-min-height: 48;">
+                            <Label text="🎤" style="-fx-font-size: 20px; -fx-text-fill: #8B5CF6;"/>
+                        </StackPane>
+                        <VBox spacing="2">
+                            <Label text="🎤 Recherche Vocale" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #4C1D95;"/>
+                            <Label fx:id="lblVoiceStatus" text="Dis le nom d'un livre pour le trouver !" style="-fx-text-fill: #8B5CF6; -fx-font-size: 12px;"/>
+                        </VBox>
+                    </HBox>
+                    
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Button fx:id="btnVoiceSearch" text="🎙 Parler" onAction="#handleVoiceSearch"
+                                style="-fx-background-color: #8B5CF6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10 24; -fx-cursor: hand;">
+                            <effect><DropShadow color="#8B5CF644" radius="10" offsetY="4"/></effect>
+                        </Button>
+                        
+                        <Button fx:id="btnStopVoice" text="⏹ Fin de vocal" onAction="#handleStopVoiceSearch" visible="false" managed="false"
+                                style="-fx-background-color: #EF4444; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 10; -fx-padding: 10 24; -fx-cursor: hand;">
+                            <effect><DropShadow color="#EF444444" radius="10" offsetY="4"/></effect>
+                        </Button>
+
+                        <Button text="📄 Afficher tout" onAction="#handleShowAll"
+                                style="-fx-background-color: white; -fx-text-fill: #475569; -fx-font-weight: bold; -fx-border-color: #E2E8F0; -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 24; -fx-cursor: hand;">
+                            <effect><DropShadow color="#00000011" radius="5" offsetY="2"/></effect>
+                        </Button>
+                    </HBox>
+                </VBox>
+
+                <!-- NOTIFICATIONS & REQUEST SECTION -->
+                <HBox spacing="24" maxWidth="1200">
+                    <!-- Column Left: Request Book -->
+                    <VBox HBox.hgrow="ALWAYS" spacing="20" style="-fx-background-color: #FFFBEB; -fx-border-color: #FEF3C7; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 24; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4);">
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <StackPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-min-width: 40; -fx-min-height: 40; -fx-border-color: #F59E0B; -fx-border-radius: 12; -fx-border-width: 1;">
+                                <Label text="📖" style="-fx-font-size: 20px;"/>
+                            </StackPane>
+                            <VBox>
+                                <Label text="📖 Livre introuvable ?" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #92400E;"/>
+                                <Label fx:id="lblWelcomeRequest" text="Bonjour ! Demande ton livre ici 👇" style="-fx-text-fill: #D97706; -fx-font-size: 12px;"/>
+                            </VBox>
+                        </HBox>
+                        
+                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-background-color: #FFEDD5; -fx-padding: 10 16; -fx-background-radius: 12;">
+                            <Label text="👤" style="-fx-font-size: 14px;"/>
+                            <Label fx:id="lblChildName" text="Nom de l'enfant" style="-fx-font-weight: bold; -fx-text-fill: #9A3412;"/>
+                        </HBox>
+
+                        <TextField fx:id="txtRequestTitle" promptText="Titre du livre recherché..." style="-fx-padding: 12; -fx-background-radius: 12; -fx-border-color: #FED7AA; -fx-border-radius: 12; -fx-background-color: white;"/>
+                        
+                        <Button text="🔔 Me notifier quand disponible" onAction="#handleQuickRequest" maxWidth="2000"
+                                style="-fx-background-color: #F97316; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 12; -fx-background-radius: 12; -fx-cursor: hand;">
+                            <effect><DropShadow color="#F9731644" radius="10" offsetY="4"/></effect>
+                        </Button>
+                    </VBox>
+
+                    <!-- Column Right: Notifications -->
+                    <VBox HBox.hgrow="ALWAYS" spacing="16" style="-fx-background-color: #F0FDF4; -fx-border-color: #DCFCE7; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 24; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 4);">
+                        <HBox spacing="12" alignment="CENTER_LEFT">
+                            <StackPane style="-fx-background-color: white; -fx-background-radius: 12; -fx-min-width: 40; -fx-min-height: 40; -fx-border-color: #22C55E; -fx-border-radius: 12; -fx-border-width: 1;">
+                                <Label text="🔔" style="-fx-font-size: 20px;"/>
+                            </StackPane>
+                            <VBox>
+                                <Label text="🔔 Mes notifications" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #166534;"/>
+                                <Label text="Tes livres demandés disponibles !" style="-fx-text-fill: #15803D; -fx-font-size: 12px;"/>
+                            </VBox>
+                        </HBox>
+                        
+                        <VBox fx:id="notificationContainer" spacing="10" VBox.vgrow="ALWAYS" />
+                    </VBox>
+                </HBox>
+
+                <!-- Resources Title -->
+                <HBox alignment="CENTER_LEFT" spacing="16" maxWidth="1200" style="-fx-padding: 10 0 0 0;">
+                    <Label text="Livres disponibles" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="lblResourceCountAlt" text="0 livres" style="-fx-font-weight: bold; -fx-text-fill: #6B7280; -fx-font-size: 15px;"/>
+                </HBox>
+
+                <FlowPane fx:id="resourceContainer" hgap="32" vgap="32" alignment="TOP_LEFT" maxWidth="1200" />
+            </VBox>
+        </VBox>
+    </ScrollPane>
+
+    <!-- Floating Chat Button -->
+    <VBox fx:id="chatWindow" visible="false" managed="false" StackPane.alignment="BOTTOM_RIGHT" maxWidth="350" maxHeight="500" style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 20, 0, 0, 5); -fx-border-color: #E2E8F0; -fx-border-width: 1; -fx-border-radius: 16;" translateX="-30" translateY="-100">
+        <HBox alignment="CENTER_LEFT" style="-fx-background-color: linear-gradient(to right, #8B5CF6, #6D28D9); -fx-padding: 15; -fx-background-radius: 16 16 0 0;">
+            <Label text="🤖 Bibliothécaire IA" style="-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="✕" onAction="#toggleChat" style="-fx-background-color: transparent; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px; -fx-cursor: hand;"/>
+        </HBox>
+        <ScrollPane fx:id="chatScrollPane" fitToWidth="true" VBox.vgrow="ALWAYS" style="-fx-background-color: transparent; -fx-background: transparent; -fx-padding: 10;">
+            <VBox fx:id="chatMessagesContainer" spacing="10" style="-fx-background-color: white;"/>
+        </ScrollPane>
+        <HBox spacing="10" style="-fx-padding: 15; -fx-background-color: #F8FAFC; -fx-background-radius: 0 0 16 16; -fx-border-color: #E2E8F0; -fx-border-width: 1 0 0 0;">
+            <TextField fx:id="txtChatMessage" promptText="Pose ta question..." HBox.hgrow="ALWAYS" style="-fx-padding: 10; -fx-background-radius: 20; -fx-border-color: #CBD5E1; -fx-border-radius: 20;" onAction="#sendChatMessage"/>
+            <Button text="Envoyer" onAction="#sendChatMessage" style="-fx-background-color: #8B5CF6; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 10 15; -fx-cursor: hand;"/>
+        </HBox>
+    </VBox>
+    <Button fx:id="btnToggleChat" text="💬 Aide IA" onAction="#toggleChat" StackPane.alignment="BOTTOM_RIGHT" style="-fx-background-color: #8B5CF6; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16px; -fx-background-radius: 30; -fx-padding: 15 25; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 10, 0, 0, 4);" translateX="-30" translateY="-30"/>
+</StackPane>

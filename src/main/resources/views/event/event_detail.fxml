@@ -1,102 +1,131 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.shape.Rectangle?>
 
 <ScrollPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="dev.eduplay.controllers.event.EventDetailController"
-            style="-fx-background-color: #f3f4f6; -fx-background: #f3f4f6;"
-            fitToWidth="true" fitToHeight="false">
+            style="-fx-background-color: #f1f5f9; -fx-background: #f1f5f9;"
+            fitToWidth="true" fitToHeight="false" hbarPolicy="NEVER">
 
     <content>
-        <VBox spacing="20" style="-fx-background-color: #f3f4f6;" alignment="TOP_CENTER">
-
-            <padding>
-                <Insets top="25" right="35" bottom="25" left="35"/>
-            </padding>
-
+        <VBox alignment="TOP_CENTER" spacing="0" style="-fx-background-color: #f1f5f9;">
             <children>
-                <!-- En-tête avec bouton retour -->
-                <HBox alignment="CENTER_LEFT" spacing="15">
-                    <Button fx:id="backBtn" text="← Retour à la liste" style="-fx-background-color: #e2e8f0; -fx-text-fill: #1e293b; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;"/>
-                    <Label fx:id="eventTitleLabel" text="Détails de l'événement" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1e293b;" HBox.hgrow="ALWAYS"/>
+
+                <!-- HEADER NAVIGATION -->
+                <HBox alignment="CENTER_LEFT" style="-fx-padding: 20 40 10 40;">
+                    <Button fx:id="backBtn" text="← Retour à la liste"
+                            style="-fx-background-color: transparent; -fx-text-fill: #475569; -fx-font-size: 14px; -fx-font-weight: bold; -fx-cursor: hand; -fx-padding: 8 0;"/>
                 </HBox>
 
-                <!-- Carte principale -->
-                <VBox spacing="20" style="-fx-background-color: white; -fx-background-radius: 16; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);">
-                    <padding>
-                        <Insets top="25" right="25" bottom="25" left="25"/>
-                    </padding>
+                <!-- MAIN CARD CONTAINER -->
+                <StackPane maxWidth="1000" alignment="TOP_CENTER" style="-fx-padding: 0 40 40 40;">
+                    <VBox spacing="0" style="-fx-background-color: white; -fx-background-radius: 20;
+                           -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 5);">
 
-                    <children>
-                        <!-- Image de l'événement -->
-                        <VBox spacing="5" VBox.vgrow="NEVER">
-                            <Label text="📸 Image de l'événement" style="-fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-size: 14px;"/>
-                            <StackPane fx:id="imageContainer" prefHeight="250" style="-fx-background-color: #f8fafc; -fx-background-radius: 12; -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-border-width: 1;">
-                                <ImageView fx:id="eventImageView" fitHeight="250" fitWidth="600" preserveRatio="true" style="-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0, 0, 2);"/>
-                                <Label fx:id="noImageLabel" text="🖼️ Aucune image disponible" style="-fx-text-fill: #94a3b8; -fx-font-size: 14px;" visible="false"/>
-                            </StackPane>
-                        </VBox>
+                        <!-- HERO SECTION (IMAGE) -->
+                        <StackPane prefHeight="320">
+                            <ImageView fx:id="eventImageView" fitHeight="320" fitWidth="1000"
+                                       preserveRatio="false" style="-fx-background-color: #e2e8f0;"/>
 
-                        <!-- Séparateur -->
-                        <Separator/>
+                            <!-- Overlay semi-transparent pour que le texte soit lisible -->
+                            <Rectangle width="1000" height="320"
+                                       style="-fx-fill: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(0,0,0,0.6));"/>
 
-                        <!-- Informations principales -->
-                        <GridPane hgap="20" vgap="15">
-                            <columnConstraints>
-                                <ColumnConstraints minWidth="120" prefWidth="120"/>
-                                <ColumnConstraints minWidth="300" prefWidth="400"/>
-                            </columnConstraints>
+                            <!-- Titre et lieu superposés -->
+                            <VBox alignment="BOTTOM_LEFT" spacing="8" style="-fx-padding: 0 30 30 30;">
+                                <Label fx:id="titleValue" text="Chargement..." wrapText="true"
+                                       style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                                <Label fx:id="locationValue" text=""
+                                       style="-fx-font-size: 16px; -fx-text-fill: #e2e8f0; -fx-font-weight: 500;"/>
+                            </VBox>
+                        </StackPane>
 
-                            <children>
-                                <Label text="📌 Titre" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
-                                <Label fx:id="titleValue" text="-" style="-fx-text-fill: #1e293b; -fx-font-size: 14px; -fx-wrap-text: true;" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                        <!-- CONTENT AREA -->
+                        <VBox spacing="25" style="-fx-padding: 35;">
 
-                                <Label text="📍 Lieu" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
-                                <Label fx:id="locationValue" text="-" style="-fx-text-fill: #1e293b; -fx-font-size: 14px;" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                            <!-- INFO GRID -->
+                            <GridPane hgap="40" vgap="25">
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="50"/>
+                                    <ColumnConstraints percentWidth="50"/>
+                                </columnConstraints>
 
-                                <Label text="📅 Date de début" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
-                                <Label fx:id="startDateValue" text="-" style="-fx-text-fill: #1e293b; -fx-font-size: 14px;" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                                <children>
+                                    <!-- Date & Time -->
+                                    <VBox spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                        <Label text="📅 DATE ET HEURE"
+                                               style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #64748b; -fx-letter-spacing: 1px;"/>
+                                        <HBox spacing="20" alignment="CENTER_LEFT">
+                                            <VBox>
+                                                <Label text="Début" style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                                                <Label fx:id="startDateValue" text="--/--/---- --:--"
+                                                       style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                                            </VBox>
+                                            <VBox>
+                                                <Label text="Fin" style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                                                <Label fx:id="endDateValue" text="--/--/---- --:--"
+                                                       style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                                            </VBox>
+                                        </HBox>
+                                    </VBox>
 
-                                <Label text="📅 Date de fin" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
-                                <Label fx:id="endDateValue" text="-" style="-fx-text-fill: #1e293b; -fx-font-size: 14px;" GridPane.rowIndex="3" GridPane.columnIndex="1"/>
+                                    <!-- Participation -->
+                                    <VBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                        <Label text="🎟️ PARTICIPATION"
+                                               style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #64748b; -fx-letter-spacing: 1px;"/>
+                                        <VBox>
+                                            <Label fx:id="registrationsCountValue" text="0 / 0 inscrits"
+                                                   style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #3b82f6;"/>
+                                            <Label fx:id="capacityValue" text="Capacité: 0 places"
+                                                   style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
+                                        </VBox>
+                                    </VBox>
+                                </children>
+                            </GridPane>
 
-                                <Label text="🕒 Créé le" style="-fx-font-weight: bold; -fx-text-fill: #475569; -fx-font-size: 14px;" GridPane.rowIndex="4" GridPane.columnIndex="0"/>
-                                <Label fx:id="createdAtValue" text="-" style="-fx-text-fill: #1e293b; -fx-font-size: 14px;" GridPane.rowIndex="4" GridPane.columnIndex="1"/>
-                            </children>
-                        </GridPane>
+                            <Separator/>
 
-                        <!-- Séparateur -->
-                        <Separator/>
+                            <!-- DESCRIPTION -->
+                            <VBox spacing="12">
+                                <Label text="📝 À PROPOS DE CET ÉVÉNEMENT"
+                                       style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #64748b; -fx-letter-spacing: 1px;"/>
+                                <Label fx:id="descriptionValue" text="Aucune description disponible."
+                                       wrapText="true" style="-fx-font-size: 14px; -fx-text-fill: #475569;"/>
+                            </VBox>
 
-                        <!-- Description -->
-                        <VBox spacing="5">
-                            <Label text="📝 Description" style="-fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-size: 14px;"/>
-                            <TextArea fx:id="descriptionValue" editable="false" wrapText="true" prefHeight="150" style="-fx-background-color: #f8fafc; -fx-border-color: #e2e8f0; -fx-border-radius: 8; -fx-padding: 12; -fx-font-size: 14px;"/>
-                        </VBox>
-
-                        <!-- Localisation (si latitude/longitude existent) -->
-                        <VBox fx:id="locationBox" spacing="5" visible="false" managed="false">
-                            <Label text="🗺️ Localisation" style="-fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-font-size: 14px;"/>
-                            <HBox spacing="10">
-                                <Label text="Latitude:" style="-fx-text-fill: #64748b;"/>
-                                <Label fx:id="latitudeValue" text="-" style="-fx-text-fill: #1e293b;"/>
-                                <Label text="Longitude:" style="-fx-text-fill: #64748b;"/>
-                                <Label fx:id="longitudeValue" text="-" style="-fx-text-fill: #1e293b;"/>
+                            <!-- Création -->
+                            <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 5 0 0 0;">
+                                <Label text="🕒 Créé le:" style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                                <Label fx:id="createdAtValue" text="--/--/----"
+                                       style="-fx-font-size: 12px; -fx-text-fill: #64748b;"/>
                             </HBox>
-                        </VBox>
 
-                        <!-- Boutons d'action -->
-                        <HBox spacing="15" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
-                            <Button fx:id="editBtn" text="✏️ Modifier" style="-fx-background-color: #3b82f6; -fx-text-fill: white; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;"/>
-                            <Button fx:id="deleteBtn" text="🗑️ Supprimer" style="-fx-background-color: #ef4444; -fx-text-fill: white; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;"/>
-                            <Button fx:id="resourcesBtn" text="📚 Voir les ressources" style="-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-padding: 10 25; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;"/>
-                        </HBox>
-                    </children>
-                </VBox>
+                            <!-- ACTION BUTTONS -->
+                            <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+                                <Button fx:id="editBtn" text="✏️ Modifier"
+                                        style="-fx-background-color: #eff6ff; -fx-text-fill: #3b82f6; -fx-padding: 12 30;
+                                               -fx-background-radius: 12; -fx-cursor: hand; -fx-font-weight: bold;
+                                               -fx-border-color: #3b82f6; -fx-border-radius: 12; -fx-border-width: 1;"/>
+
+                                <Button fx:id="deleteBtn" text="🗑️ Supprimer"
+                                        style="-fx-background-color: #fef2f2; -fx-text-fill: #ef4444; -fx-padding: 12 30;
+                                               -fx-background-radius: 12; -fx-cursor: hand; -fx-font-weight: bold;
+                                               -fx-border-color: #ef4444; -fx-border-radius: 12; -fx-border-width: 1;"/>
+
+                                <Region HBox.hgrow="ALWAYS"/>
+
+                                <Button fx:id="resourcesBtn" text="📚 Voir les ressources"
+                                        style="-fx-background-color: #8b5cf6; -fx-text-fill: white; -fx-padding: 12 30;
+                                               -fx-background-radius: 12; -fx-cursor: hand; -fx-font-weight: bold;
+                                               -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.3), 10, 0, 0, 4);"/>
+                            </HBox>
+
+                        </VBox>
+                    </VBox>
+                </StackPane>
             </children>
         </VBox>
     </content>

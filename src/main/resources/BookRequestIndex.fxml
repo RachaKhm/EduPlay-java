@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
+
+<ScrollPane fitToWidth="true" style="-fx-background-color: transparent;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.eduplay.controllers.BookRequestIndexController">
+    <VBox spacing="24" style="-fx-padding: 30; -fx-background-color: #F8FAFC;">
+        
+        <!-- HEADER AVEC BACKGROUND GRADIENT -->
+        <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color: linear-gradient(to right, #F97316, #EAB308); -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 30; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 4);">
+            <VBox HBox.hgrow="ALWAYS" spacing="8">
+                <Label text="🔔 Demandes de Livres" style="-fx-text-fill: white; -fx-font-size: 32px; -fx-font-weight: bold;"/>
+                <Label text="Livres demandés par les enfants non encore disponibles" style="-fx-text-fill: #FFEDD5; -fx-font-size: 16px;"/>
+            </VBox>
+            <Button text="Retour aux ressources ➔" onAction="#goBackToResources" 
+                    style="-fx-background-color: white; -fx-text-fill: #EA580C; -fx-font-weight: bold; -fx-font-size: 14px; -fx-padding: 12 24; -fx-background-radius: 12; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 0, 0, 2);"/>
+        </HBox>
+
+        <!-- EN ATTENTE -->
+        <VBox spacing="16" style="-fx-background-color: white; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 24; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4); border-color: #FFEDD5; -fx-border-width: 1;">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <StackPane style="-fx-background-color: #F97316; -fx-background-radius: 16; -fx-min-width: 32; -fx-min-height: 32;">
+                    <Label fx:id="lblPendingCount" text="0" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                </StackPane>
+                <Label text="⏳ En attente" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1F2937;"/>
+                <Label text="— Cliquez sur Ajouter pour créer le livre directement" style="-fx-text-fill: #9CA3AF; -fx-font-size: 14px;"/>
+            </HBox>
+
+            <TableView fx:id="tablePending" VBox.vgrow="ALWAYS" prefHeight="250" style="-fx-background-color: white; -fx-border-color: #FFEDD5; -fx-border-radius: 8;">
+                <columns>
+                    <TableColumn fx:id="colBookTitle" text="Titre demandé" prefWidth="200" />
+                    <TableColumn fx:id="colEnfant" text="Enfant" prefWidth="180" />
+                    <TableColumn fx:id="colRole" text="Rôle" prefWidth="100" />
+                    <TableColumn fx:id="colDate" text="Date demande" prefWidth="150" />
+                    <TableColumn fx:id="colAction" text="Action" prefWidth="180"/>
+                </columns>
+            </TableView>
+        </VBox>
+
+        <!-- HISTORIQUE COMPLET -->
+        <VBox spacing="16" style="-fx-background-color: white; -fx-border-radius: 16; -fx-background-radius: 16; -fx-padding: 24; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4); border-color: #F3F4F6; -fx-border-width: 1;">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <StackPane style="-fx-background-color: #4B5563; -fx-background-radius: 16; -fx-min-width: 32; -fx-min-height: 32;">
+                    <Label fx:id="lblAllCount" text="0" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                </StackPane>
+                <Label text="📋 Historique complet" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1F2937;"/>
+            </HBox>
+
+            <TableView fx:id="tableAll" VBox.vgrow="ALWAYS" prefHeight="300" style="-fx-background-color: white; -fx-border-color: #F3F4F6; -fx-border-radius: 8;">
+                <columns>
+                    <TableColumn fx:id="colAllBookTitle" text="Titre" prefWidth="200" />
+                    <TableColumn fx:id="colAllEnfant" text="Enfant" prefWidth="180" />
+                    <TableColumn fx:id="colAllDate" text="Date demande" prefWidth="150" />
+                    <TableColumn fx:id="colAllStatus" text="Statut" prefWidth="150" />
+                </columns>
+            </TableView>
+        </VBox>
+
+    </VBox>
+</ScrollPane>

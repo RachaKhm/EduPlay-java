@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.UserFormController"
+            prefWidth="600"
+            stylesheets="@../../styles/user_form.css"
+            styleClass="form-root">
+
+    <!-- ===== HEADER ===== -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="12"
+              styleClass="form-header">
+            <Label fx:id="formTitle"
+                   text="Nouvel utilisateur"
+                   styleClass="form-header-title"/>
+            <HBox HBox.hgrow="ALWAYS"/>
+            <Button text="✕"
+                    onAction="#closeForm"
+                    styleClass="form-close-btn"/>
+        </HBox>
+    </top>
+
+    <!-- ===== FORMULAIRE ===== -->
+    <center>
+        <ScrollPane fitToWidth="true"
+                    styleClass="form-scroll-pane">
+            <VBox spacing="0"
+                  styleClass="form-content">
+
+                <!-- Section : Informations générales -->
+                <Label text="Informations personnelles"
+                       styleClass="form-section-label"/>
+
+                <HBox spacing="20">
+                    <!-- Prénom -->
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="field-container">
+                        <Label text="Prénom *"
+                               styleClass="form-label"/>
+                        <TextField fx:id="firstNameField"
+                                   promptText="ex: Mohamed"
+                                   styleClass="form-input"/>
+                        <Label fx:id="firstNameError" text="" styleClass="form-error-label" wrapText="true"/>
+                    </VBox>
+                    <!-- Nom -->
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="field-container">
+                        <Label text="Nom *"
+                               styleClass="form-label"/>
+                        <TextField fx:id="lastNameField"
+                                   promptText="ex: Ben Ali"
+                                   styleClass="form-input"/>
+                        <Label fx:id="lastNameError" text="" styleClass="form-error-label" wrapText="true"/>
+                    </VBox>
+                </HBox>
+
+                <VBox spacing="4" styleClass="field-container">
+                    <Label text="Adresse Email"
+                           styleClass="form-label"/>
+                    <TextField fx:id="emailField"
+                               promptText="ex: user@eduplay.com"
+                               styleClass="form-input"/>
+                    <Label fx:id="emailError" text="" styleClass="form-error-label" wrapText="true"/>
+                </VBox>
+
+                <HBox spacing="20">
+                    <!-- Téléphone -->
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="field-container">
+                        <Label text="Téléphone"
+                               styleClass="form-label"/>
+                        <TextField fx:id="telephoneField"
+                                   promptText="ex: +216 XX XXX XXX"
+                                   styleClass="form-input"/>
+                        <Label fx:id="telephoneError" text="" styleClass="form-error-label" wrapText="true"/>
+                    </VBox>
+                    <!-- Type -->
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="field-container">
+                        <Label text="Type d'utilisateur *"
+                               styleClass="form-label"/>
+                        <ComboBox fx:id="typeCombo"
+                                  maxWidth="Infinity"
+                                  styleClass="form-input"/>
+                        <Label fx:id="typeError" text="" styleClass="form-error-label" wrapText="true"/>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="20">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="field-container">
+                        <Label text="Adresse"
+                               styleClass="form-label"/>
+                        <TextField fx:id="adresseField"
+                                   promptText="ex: 12 rue de la République, Tunis"
+                                   styleClass="form-input"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="field-container">
+                        <Label text="Date de naissance"
+                               styleClass="form-label"/>
+                        <DatePicker fx:id="birthDateField"
+                                   promptText="JJ/MM/AAAA"
+                                   styleClass="form-input"
+                                   maxWidth="Infinity"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Séparateur -->
+                <Separator style="-fx-padding: 20 0;"/>
+
+                <!-- Section : Sécurité -->
+                <Label text="Sécurité du compte"
+                       styleClass="form-section-label"/>
+
+                <HBox spacing="20">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="field-container">
+                        <Label text="Mot de passe *"
+                               styleClass="form-label"/>
+                        <PasswordField fx:id="passwordField"
+                                       promptText="Minimum 6 caractères"
+                                       styleClass="form-input"/>
+                        <Label fx:id="passwordError" text="" styleClass="form-error-label" wrapText="true"/>
+                    </VBox>
+                    <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="field-container">
+                        <Label text="Confirmation *"
+                               styleClass="form-label"/>
+                        <PasswordField fx:id="confirmPasswordField"
+                                       promptText="Confirmer le mot de passe"
+                                       styleClass="form-input"/>
+                        <Label fx:id="confirmPasswordError" text="" styleClass="form-error-label" wrapText="true"/>
+                    </VBox>
+                </HBox>
+
+                <CheckBox fx:id="activeCheck"
+                          text="Activer le compte immédiatement"
+                          selected="true"
+                          styleClass="form-label"
+                          style="-fx-padding: 10 0 0 0;"/>
+
+                <!-- Séparateur -->
+                <Separator style="-fx-padding: 20 0;"/>
+
+                <!-- ===== CHAMPS CONDITIONNELS ===== -->
+
+                <!-- Spécialité (enseignant uniquement) -->
+                <VBox fx:id="specialiteBox" spacing="4" managed="false" visible="false"
+                      styleClass="field-container">
+                    <Label text="Spécialité Enseignant *"
+                           styleClass="form-section-label" style="-fx-text-fill: #8B5CF6;"/>
+                    <TextField fx:id="specialiteField"
+                               promptText="ex: Mathématiques, Informatique..."
+                               styleClass="form-input, form-input-special"/>
+                    <Label fx:id="specialiteError" text="" styleClass="form-error-label" wrapText="true"/>
+                </VBox>
+
+                <!-- Niveau + Username (enfant uniquement) -->
+                <VBox fx:id="niveauBox" spacing="20" managed="false" visible="false">
+                    <Label text="Détails Éducation Enfant"
+                           styleClass="form-section-label" style="-fx-text-fill: #10B981;"/>
+                    
+                    <HBox spacing="20">
+                        <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="field-container">
+                            <Label text="Niveau Scolaire *"
+                                   styleClass="form-label"/>
+                            <ComboBox fx:id="niveauCombo" maxWidth="Infinity"
+                                      styleClass="form-input"/>
+                            <Label fx:id="niveauError" text="" styleClass="form-error-label" wrapText="true"/>
+                        </VBox>
+                        <VBox spacing="4" HBox.hgrow="ALWAYS" styleClass="field-container">
+                            <Label text="Identifiant (Username) *"
+                                   styleClass="form-label"/>
+                            <TextField fx:id="usernameField"
+                                       promptText="ex: zied123"
+                                       styleClass="form-input"/>
+                            <Label fx:id="usernameError" text="" styleClass="form-error-label" wrapText="true"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Message succès -->
+                <Label fx:id="successLabel" text="" wrapText="true"
+                       styleClass="form-success-label"/>
+
+                <!-- Boutons -->
+                <HBox spacing="16" alignment="CENTER_RIGHT"
+                      styleClass="form-button-container">
+                    <Button text="Annuler"
+                            onAction="#closeForm"
+                            styleClass="btn-cancel"/>
+                    <Button text="Enregistrer l'utilisateur"
+                            onAction="#saveUser"
+                            styleClass="btn-save"/>
+                </HBox>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

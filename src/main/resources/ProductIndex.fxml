@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.eduplay.controllers.ProductIndexController"
+      spacing="24"
+      stylesheets="@/styles/admin.css"
+      style="-fx-background-color: transparent;">
+
+    <padding>
+        <Insets top="32" right="32" bottom="32" left="32"/>
+    </padding>
+
+    <!-- HEADER -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <VBox spacing="4">
+            <Label text="Gestion des Produits" styleClass="page-title"/>
+            <Label text="Gérez votre catalogue de produits et équipements" styleClass="page-subtitle"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="➕ Ajouter un produit"
+                onAction="#addProduct"
+                styleClass="admin-btn-primary-small"/>
+    </HBox>
+
+    <!-- SEARCH & FILTERS -->
+    <HBox alignment="CENTER_LEFT" spacing="16" styleClass="card" style="-fx-padding: 16;">
+        <TextField fx:id="txtSearchName"
+                   promptText="Rechercher un produit..."
+                   styleClass="search-field"
+                   prefWidth="350"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="lblProductCount"
+               text="0 résultats"
+               styleClass="stat-sublabel"
+               style="-fx-font-weight: bold;"/>
+    </HBox>
+
+    <!-- PRODUCT GRID -->
+    <ScrollPane fitToWidth="true"
+                VBox.vgrow="ALWAYS"
+                styleClass="form-scroll-pane"
+                style="-fx-background-color: transparent;">
+        <FlowPane fx:id="gridProducts"
+                  hgap="20"
+                  vgap="20"
+                  prefWrapLength="1000"
+                  style="-fx-padding: 10 0 0 0;"/>
+    </ScrollPane>
+
+</VBox>

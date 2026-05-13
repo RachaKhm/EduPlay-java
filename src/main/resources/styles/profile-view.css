@@ -1,0 +1,169 @@
+/* ══════════════════════════════════════════════════════
+   profile-view.css  —  Styles de views/shared/ProfileView.fxml
+   ══════════════════════════════════════════════════════ */
+
+/* ── Scroll racine ─────────────────────────────────── */
+.profile-scroll {
+    -fx-background-color: #F8F9FA;
+    -fx-background: #F8F9FA;
+}
+
+.profile-scroll-content {
+    -fx-padding: 40 0;
+}
+
+/* ── Card principale ───────────────────────────────── */
+.profile-card {
+    -fx-background-color: white;
+    -fx-padding: 30 40;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 15, 0, 0, 5);
+}
+
+/* ── En-tête avatar ────────────────────────────────── */
+.profile-header {
+    -fx-padding: 0 0 20 0;
+}
+
+.profile-avatar-circle {
+    -fx-min-width: 80;
+    -fx-min-height: 80;
+    -fx-max-width: 80;
+    -fx-max-height: 80;
+    -fx-background-color: #1A1A2E;
+    -fx-background-radius: 40;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);
+}
+
+.profile-initials-label {
+    -fx-text-fill: white;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+/* ── Bouton changer photo ──────────────────────────── */
+.profile-photo-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: #DDDDE8;
+    -fx-border-width: 1;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-font-size: 12px;
+    -fx-cursor: hand;
+    -fx-padding: 6 14;
+    -fx-text-fill: #555577;
+}
+
+/* ── Status upload ─────────────────────────────────── */
+.upload-status {
+    -fx-font-size: 11px;
+}
+
+/* ── Nom complet ───────────────────────────────────── */
+.profile-fullname {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1A1A2E;
+    -fx-padding: 6 0 0 0;
+}
+
+/* ── Titre de section ──────────────────────────────── */
+.section-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1A1A2E;
+    -fx-padding: 0 0 16 0;
+}
+
+/* ── Labels de champ ───────────────────────────────── */
+.field-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #555577;
+    -fx-font-weight: bold;
+}
+
+/* ── Champs texte (TextField / PasswordField) ──────── */
+.form-field {
+    -fx-background-color: #F8F9FA;
+    -fx-border-color: #DDDDE8;
+    -fx-border-width: 1;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-padding: 9 12;
+    -fx-font-size: 13px;
+}
+
+/* ── PasswordField dans section sécurité ───────────── */
+.security-field {
+    -fx-background-color: white;
+    -fx-border-color: #DDDDE8;
+    -fx-border-width: 1;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-padding: 9 12;
+    -fx-font-size: 13px;
+}
+
+/* ── DatePicker ────────────────────────────────────── */
+.date-picker-field {
+    -fx-background-color: #F8F9FA;
+    -fx-border-color: #DDDDE8;
+    -fx-border-width: 1;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-padding: 4 6;
+    -fx-font-size: 13px;
+}
+
+/* ── Labels d'erreur ───────────────────────────────── */
+.error-label {
+    -fx-text-fill: #E94560;
+    -fx-font-size: 11px;
+}
+
+/* ── Bloc Sécurité ─────────────────────────────────── */
+.security-box {
+    -fx-background-color: #FFF5F5;
+    -fx-padding: 20;
+    -fx-background-radius: 8;
+    -fx-border-color: #FFE5E5;
+    -fx-border-radius: 8;
+}
+
+.security-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #E94560;
+    -fx-padding: 0 0 16 0;
+}
+
+.security-hint {
+    -fx-font-size: 12px;
+    -fx-text-fill: #777799;
+    -fx-padding: 0 0 16 0;
+}
+
+/* ── Label succès ──────────────────────────────────── */
+.success-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #2E9E6E;
+    -fx-padding: 20 0 0 0;
+    -fx-alignment: center;
+}
+
+/* ── Bouton Enregistrer ────────────────────────────── */
+.save-btn {
+    -fx-background-color: #4A90E2;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-border-width: 0;
+}
+
+/* ── Row spacing ───────────────────────────────────── */
+.row-top {
+    -fx-padding: 10 0 0 0;
+}

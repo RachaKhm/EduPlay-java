@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/20.0.2"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="dev.eduplay.controllers.ScannerController"
+      spacing="20"
+      alignment="TOP_CENTER"
+      style="-fx-background-color: linear-gradient(to bottom, #0f172a, #1e293b);">
+
+    <padding>
+        <Insets top="25" right="35" bottom="25" left="35"/>
+    </padding>
+
+    <children>
+        <!-- Titre -->
+        <Label text="🎫 Scanner de tickets"
+               style="-fx-font-size: 34px; -fx-font-weight: bold; -fx-text-fill: white;">
+            <font>
+                <Font name="System Bold" size="34"/>
+            </font>
+        </Label>
+
+        <Label text="Placez le QR code devant la caméra dans le cadre vert"
+               style="-fx-text-fill: #94a3b8; -fx-font-size: 14px;"/>
+
+        <!-- Zone vidéo -->
+        <StackPane fx:id="videoContainer"
+                   prefWidth="720"
+                   prefHeight="540"
+                   style="-fx-background-color: #000000;
+                          -fx-background-radius: 16;
+                          -fx-border-color: #334155;
+                          -fx-border-radius: 16;
+                          -fx-border-width: 3;"/>
+
+        <!-- Informations du scan -->
+        <VBox fx:id="resultBox"
+              spacing="12"
+              visible="false"
+              managed="false"
+              style="-fx-background-color: white;
+                     -fx-background-radius: 16;
+                     -fx-padding: 20;
+                     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 5);">
+            <Label fx:id="resultTitle"
+                   text=""
+                   style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+            <Separator/>
+            <Label fx:id="resultMessage"
+                   text=""
+                   style="-fx-font-size: 14px;"
+                   wrapText="true"/>
+            <Label fx:id="childNameResult"
+                   text=""
+                   style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+            <Label fx:id="eventNameResult"
+                   text=""
+                   style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button fx:id="closeResultBtn"
+                        text="✓ OK"
+                        style="-fx-background-color: #3b82f6;
+                               -fx-text-fill: white;
+                               -fx-font-weight: bold;
+                               -fx-padding: 10 24;
+                               -fx-background-radius: 8;
+                               -fx-cursor: hand;"/>
+            </HBox>
+        </VBox>
+
+        <!-- Boutons de contrôle -->
+        <HBox spacing="15" alignment="CENTER">
+            <Button fx:id="startBtn"
+                    text="▶ Démarrer le scan"
+                    style="-fx-background-color: #10b981;
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;
+                           -fx-padding: 12 28;
+                           -fx-background-radius: 40;
+                           -fx-cursor: hand;"/>
+            <Button fx:id="stopBtn"
+                    text="⏹ Arrêter le scan"
+                    style="-fx-background-color: #ef4444;
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;
+                           -fx-padding: 12 28;
+                           -fx-background-radius: 40;
+                           -fx-cursor: hand;"
+                    disable="true"/>
+            <Button fx:id="backBtn"
+                    text="← Retour"
+                    style="-fx-background-color: #64748b;
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;
+                           -fx-padding: 12 28;
+                           -fx-background-radius: 40;
+                           -fx-cursor: hand;"/>
+        </HBox>
+
+        <!-- Statut -->
+        <Label fx:id="statusLabel"
+               text="✅ Prêt - Appuyez sur Démarrer"
+               style="-fx-text-fill: #cbd5e1; -fx-font-size: 13px;"/>
+
+        <!-- Footer -->
+        <VBox alignment="CENTER" spacing="5">
+            <Separator style="-fx-background-color: #334155;"/>
+            <Label text="EduPlay - Système de validation d'entrées"
+                   style="-fx-text-fill: #475569; -fx-font-size: 11px;"/>
+        </VBox>
+    </children>
+</VBox>

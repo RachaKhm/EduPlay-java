@@ -7,7 +7,7 @@
 <?import javafx.collections.FXCollections?>
 
 <?import java.lang.String?>
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="dev.eduplay.controllers.event.RegistrationListController"
       spacing="20" alignment="TOP_CENTER"
       style="-fx-background-color: #f3f4f6;">
@@ -26,7 +26,9 @@
                     </Label>
                     <Label text="Gérer les inscriptions aux événements" style="-fx-text-fill: #a7f3d0; -fx-font-size: 13px; -fx-padding: 5 0 0 0;"/>
                 </VBox>
-                <Button fx:id="refreshBtn" text="🔄 Rafraîchir" style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 12; -fx-cursor: hand; -fx-border-color: rgba(255,255,255,0.3); -fx-border-radius: 12;"/>
+                <HBox spacing="10">
+                    <Button fx:id="refreshBtn" text="🔄 Rafraîchir" style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 20; -fx-background-radius: 12; -fx-cursor: hand; -fx-border-color: rgba(255,255,255,0.3); -fx-border-radius: 12;"/>
+                </HBox>
             </HBox>
 
             <!-- Barre d'outils -->
@@ -36,16 +38,7 @@
                     <Label fx:id="countLabel" text="0 inscription(s)" style="-fx-text-fill: #6b7280; -fx-font-size: 12px;"/>
                 </VBox>
                 <ComboBox fx:id="eventFilterCombo" prefWidth="200" promptText="Filtrer par événement" style="-fx-padding: 8; -fx-background-radius: 12; -fx-border-color: #e5e7eb; -fx-border-radius: 12;"/>
-                <ComboBox fx:id="statusFilterCombo" prefWidth="130" promptText="Statut" style="-fx-padding: 8; -fx-background-radius: 12; -fx-border-color: #e5e7eb; -fx-border-radius: 12;">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="Tous"/>
-                            <String fx:value="PENDING"/>
-                            <String fx:value="APPROVED"/>
-                            <String fx:value="REJECTED"/>
-                        </FXCollections>
-                    </items>
-                </ComboBox>
+                <!-- ❌ statusFilterCombo SUPPRIMÉ -->
                 <TextField fx:id="searchField" promptText="🔍 Rechercher par nom ou téléphone..." prefWidth="220" style="-fx-padding: 8 12; -fx-background-radius: 12; -fx-border-color: #e5e7eb; -fx-border-radius: 12;"/>
             </HBox>
         </VBox>
@@ -62,9 +55,9 @@
                         <TableColumn fx:id="colEventTitle" text="Événement" prefWidth="200"/>
                         <TableColumn fx:id="colChildName" text="Nom enfant" prefWidth="180"/>
                         <TableColumn fx:id="colParentPhone" text="Téléphone" prefWidth="130"/>
-                        <TableColumn fx:id="colStatus" text="Statut" prefWidth="120"/>
-                        <TableColumn fx:id="colRegisteredAt" text="Date inscription" prefWidth="150"/>
-                        <TableColumn fx:id="colActions" text="Actions" prefWidth="150"/>
+                        <!-- ❌ colStatus SUPPRIMÉ -->
+                        <TableColumn fx:id="colRegisteredAt" text="Date inscription" prefWidth="180"/>
+                        <TableColumn fx:id="colActions" text="Actions" prefWidth="180"/>
                     </columns>
                 </TableView>
 

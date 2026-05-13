@@ -33,16 +33,20 @@
                         </HBox>
                     </HBox>
 
-                    <!-- Bouton Enrollment Facial -->
-                    <StackPane fx:id="faceEnrollBtn"
-                               onMouseClicked="#handleFaceEnroll"
-                               styleClass="icon-btn">
-                        <Label text="🪪" styleClass="icon-label">
-                            <tooltip>
-                                <Tooltip text="Enregistrer / Modifier mon visage"/>
-                            </tooltip>
-                        </Label>
-                    </StackPane>
+                    <!-- Bouton Enrollment Facial (Button pour support Tooltip) -->
+                    <Button fx:id="faceEnrollBtn"
+                            onAction="#handleFaceEnroll"
+                            styleClass="face-id-capsule">
+                        <graphic>
+                            <HBox alignment="CENTER" spacing="8">
+                                <Label text="📷" styleClass="face-id-icon"/>
+                                <Label text="Face ID" styleClass="face-id-text"/>
+                            </HBox>
+                        </graphic>
+                        <tooltip>
+                            <Tooltip text="Gérer mon empreinte faciale"/>
+                        </tooltip>
+                    </Button>
 
                     <!-- Notification Bell -->
                     <StackPane styleClass="icon-btn">

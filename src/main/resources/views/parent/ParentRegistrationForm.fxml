@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.parent.ParentRegistrationController"
+            style="-fx-background-color: #f8f9fa;"
+            stylesheets="@/styles/parent_registration.css"
+            fitToWidth="true" fitToHeight="false">
+
+    <content>
+        <VBox spacing="20" styleClass="registration-container" alignment="TOP_CENTER">
+
+            <padding>
+                <Insets top="25" right="35" bottom="25" left="35"/>
+            </padding>
+
+            <children>
+
+                <Button fx:id="backBtn" text="← Retour à l'événement" styleClass="back-btn"/>
+
+                <VBox spacing="16" styleClass="form-card">
+
+                    <Label text="📝 Inscription" styleClass="form-title"/>
+                    <Label fx:id="eventTitleLabel" styleClass="form-subtitle"/>
+
+                    <Separator/>
+
+                    <Label text="👶 Sélection des enfants *" styleClass="field-label"/>
+
+                    <HBox spacing="10">
+                        <VBox spacing="5" HBox.hgrow="ALWAYS">
+                            <Label text="📋 Mes enfants" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
+                            <ComboBox fx:id="childCombo" promptText="Sélectionnez un enfant" styleClass="combo-box" HBox.hgrow="ALWAYS"/>
+                            <Button fx:id="addChildBtn" text="+ Ajouter un enfant" maxWidth="Infinity" styleClass="add-btn"/>
+                        </VBox>
+
+                        <Button text="→ Ajouter →" onAction="#addChildToSelection" styleClass="add-btn"/>
+
+                        <VBox spacing="5" HBox.hgrow="ALWAYS">
+                            <Label fx:id="selectedChildrenLabel" text="0 enfant(s) sélectionné(s)" style="-fx-text-fill: #64748b; -fx-font-size: 12px;"/>
+                            <ListView fx:id="selectedChildrenList" prefHeight="100" styleClass="list-view"/>
+                            <Button text="← Retirer" onAction="#removeChildFromSelection" maxWidth="Infinity" styleClass="remove-btn"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Formulaire d'ajout d'enfant -->
+                    <VBox fx:id="newChildForm" spacing="10" visible="false" managed="false"
+                          style="-fx-background-color: #f8fafc; -fx-padding: 15; -fx-background-radius: 12; -fx-border-color: #e2e8f0; -fx-border-radius: 12;">
+
+                        <Label text="➕ Nouvel enfant" style="-fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                        <TextField fx:id="newChildFirstName" promptText="Prénom *" styleClass="input-field"/>
+                        <TextField fx:id="newChildLastName" promptText="Nom *" styleClass="input-field"/>
+                        <DatePicker fx:id="newChildBirthDate" promptText="Date de naissance (optionnel)" styleClass="input-field"/>
+
+                        <HBox spacing="10">
+                            <Button fx:id="saveNewChildBtn" text="✅ Ajouter" styleClass="add-btn"/>
+                            <Button fx:id="cancelNewChildBtn" text="❌ Annuler" styleClass="remove-btn"/>
+                        </HBox>
+                    </VBox>
+
+                    <Separator/>
+
+                    <Label text="📞 Téléphone parent *" styleClass="field-label"/>
+                    <TextField fx:id="parentPhoneField" promptText="Ex: 55123456" styleClass="input-field"/>
+
+                    <Label text="🎓 Niveau / Classe" styleClass="field-label"/>
+                    <TextField fx:id="classLevelField" promptText="Ex: CE2" styleClass="input-field"/>
+
+                    <Label text="🩺 Notes médicales" styleClass="field-label"/>
+                    <TextArea fx:id="medicalNotesArea" promptText="Allergies, traitements, etc..." prefHeight="60" wrapText="true" styleClass="text-area"/>
+
+                    <Label text="🚨 Contact d'urgence - Nom" styleClass="field-label"/>
+                    <TextField fx:id="emergencyNameField" promptText="Ex: Ahmed Ben Ali" styleClass="input-field"/>
+
+                    <Label text="📞 Contact d'urgence - Téléphone" styleClass="field-label"/>
+                    <TextField fx:id="emergencyPhoneField" promptText="Ex: 98765432" styleClass="input-field"/>
+
+                    <Label text="📝 Notes supplémentaires" styleClass="field-label"/>
+                    <TextArea fx:id="notesArea" prefHeight="60" wrapText="true" styleClass="text-area"/>
+
+                    <Label fx:id="messageLabel" wrapText="true" styleClass="error-message"/>
+
+                    <Button fx:id="submitBtn" text="Confirmer l'inscription" maxWidth="Infinity" styleClass="submit-btn"/>
+
+                </VBox>
+            </children>
+        </VBox>
+    </content>
+</ScrollPane>

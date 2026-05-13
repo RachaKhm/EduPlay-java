@@ -1,144 +1,144 @@
-/* ==================== SIDEBAR STYLESHEET ==================== */
+/* ══════════════════════════════════════════════════════
+   sidebar.css  —  Styles modern, pro & kid-friendly
+   ══════════════════════════════════════════════════════ */
 
+/* ── Racine Sidebar ────────────────────────────────── */
 .sidebar-root {
     -fx-background-color: #FFFFFF;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 2, 0);
-    -fx-pref-width: 260px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 0 2 0 0;
+    /* Soft shadow on the right side */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 15, 0, 4, 0);
 }
 
-/* ── Header ──────────────────────────────── */
+/* ── Header ────────────────────────────────────────── */
 .sidebar-header {
-    -fx-background-color: linear-gradient(to bottom right, #1E293B, #334155);
-    -fx-padding: 20 16;
-    -fx-min-height: 72px;
+    -fx-padding: 30 24 24 24;
+    -fx-border-color: #F1F5F9;
+    -fx-border-width: 0 0 2 0;
 }
 
 .sidebar-logo-icon {
-    -fx-font-size: 20px;
     -fx-text-fill: white;
+    -fx-font-size: 26px;
 }
 
 .sidebar-brand-edu {
-    -fx-font-family: "Segoe UI", "Inter", sans-serif;
-    -fx-font-size: 20px;
     -fx-font-weight: 900;
-    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 26px;
+    -fx-text-fill: #1E293B;
+    -fx-letter-spacing: -1px;
 }
 
 .sidebar-brand-play {
-    -fx-font-family: "Segoe UI", "Inter", sans-serif;
-    -fx-font-size: 20px;
     -fx-font-weight: 900;
-    -fx-text-fill: #60A5FA;
+    -fx-font-size: 26px;
+    -fx-text-fill: #3B82F6; /* Modern Blue */
+    -fx-letter-spacing: -1px;
 }
 
 .sidebar-role-label {
-    -fx-font-family: "Segoe UI", "Inter", sans-serif;
-    -fx-font-size: 11px;
-    -fx-text-fill: #94A3B8;
-    -fx-font-weight: 600;
+    -fx-text-fill: #64748B;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 2 0 0 0;
 }
 
-/* ── Nav scroll area ─────────────────────── */
+/* ── Zone de navigation (ScrollPane) ───────────────── */
 .sidebar-scroll {
     -fx-background-color: transparent;
     -fx-background: transparent;
-    -fx-padding: 0;
     -fx-border-color: transparent;
-    -fx-vbar-policy: never;
-}
-
-.sidebar-scroll .viewport {
-    -fx-background-color: transparent;
 }
 
 .sidebar-nav {
-    -fx-padding: 12 10;
-    -fx-background-color: transparent;
+    -fx-padding: 20 16;
 }
 
-/* ── Section headers ─────────────────────── */
-.section-header-box {
-    -fx-padding: 12 8 4 8;
-}
-
-.section-label {
-    -fx-font-family: "Segoe UI", "Inter", sans-serif;
-    -fx-font-size: 10px;
-    -fx-font-weight: 900;
-    -fx-text-fill: #94A3B8;
-    -fx-letter-spacing: 1;
-}
-
-/* ── Nav buttons ─────────────────────────── */
+/* ── Bouton de navigation ──────────────────────────── */
 .modern-nav-btn {
     -fx-background-color: transparent;
-    -fx-padding: 10 12;
-    -fx-background-radius: 10;
+    -fx-padding: 12 16;
+    -fx-background-radius: 16;
     -fx-cursor: hand;
-    -fx-border-color: transparent;
-    -fx-pref-width: Infinity;
+    -fx-transition-duration: 200ms;
 }
 
 .modern-nav-btn:hover {
-    -fx-background-color: #F1F5F9;
-}
-
-.modern-nav-btn-active {
-    -fx-background-color: #3B82F6;
-    -fx-padding: 10 12;
-    -fx-background-radius: 10;
-    -fx-cursor: hand;
-    -fx-border-color: transparent;
-    -fx-effect: dropshadow(gaussian, rgba(59,130,246,0.25), 8, 0, 0, 3);
+    -fx-background-color: #F8FAFC;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
 }
 
 .nav-btn-label {
-    -fx-font-family: "Segoe UI", "Inter", sans-serif;
-    -fx-font-size: 13px;
-    -fx-font-weight: 600;
     -fx-text-fill: #475569;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+/* ── Bouton Actif (Dynamique via Controller idéalement, mais style ici) */
+.modern-nav-btn:selected, .modern-nav-btn:focused, .modern-nav-btn:pressed, .modern-nav-btn-active {
+    -fx-background-color: linear-gradient(to right bottom, #3B82F6, #8B5CF6); /* Blue to Purple */
+    -fx-effect: dropshadow(three-pass-box, rgba(59,130,246,0.3), 10, 0, 0, 4);
 }
 
 .modern-nav-btn-active .nav-btn-label {
     -fx-text-fill: white;
 }
 
-/* ── Footer ──────────────────────────────── */
+/* ── Titres de section ─────────────────────────────── */
+.section-header-box {
+    -fx-padding: 24 0 8 10;
+}
+
+.section-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: #94A3B8;
+    -fx-font-weight: 900;
+    -fx-letter-spacing: 1.5px;
+    -fx-text-transform: uppercase;
+}
+
+/* ──-- Footer / Déconnexion ──────────────────────────── */
 .sidebar-footer {
-    -fx-padding: 12 10 16 10;
+    -fx-padding: 24 16;
+    -fx-background-color: #FFFFFF;
     -fx-border-color: #F1F5F9;
     -fx-border-width: 1 0 0 0;
 }
 
-.modern-logout-btn {
-    -fx-background-color: #FEF2F2;
-    -fx-background-radius: 12;
+.modern-logout-hbox {
+    -fx-background-color: #FFF1F2; /* Very light red */
+    -fx-background-radius: 16;
+    -fx-padding: 12 16;
     -fx-cursor: hand;
-    -fx-border-color: transparent;
-    -fx-pref-width: Infinity;
-    -fx-padding: 10 12;
+    -fx-border-color: #FFE4E6;
+    -fx-border-width: 1;
+    -fx-border-radius: 16;
 }
 
-.modern-logout-btn:hover {
-    -fx-background-color: #FEE2E2;
-}
-
-.logout-icon {
-    -fx-font-size: 14px;
-    -fx-text-fill: white;
-    -fx-rotate: 180;
+.modern-logout-hbox:hover {
+    -fx-background-color: #FFE4E6;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+    -fx-effect: dropshadow(three-pass-box, rgba(239, 68, 68, 0.1), 10, 0, 0, 4);
 }
 
 .logout-label {
-    -fx-font-family: "Segoe UI", "Inter", sans-serif;
-    -fx-font-size: 13px;
-    -fx-font-weight: 700;
-    -fx-text-fill: #EF4444;
+    -fx-text-fill: #E11D48;
+    -fx-font-weight: 800;
+    -fx-font-size: 14px;
 }
 
 .logout-user-label {
-    -fx-font-family: "Segoe UI", "Inter", sans-serif;
-    -fx-font-size: 11px;
     -fx-text-fill: #94A3B8;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
 }
+
+.logout-icon {
+    -fx-text-fill: white;
+    -fx-font-weight: 900;
+    -fx-font-size: 14px;
+}
+

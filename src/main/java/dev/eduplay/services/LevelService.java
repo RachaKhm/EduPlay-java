@@ -1,12 +1,12 @@
 package dev.eduplay.services;
 
-import dev.eduplay.entities.Level;
 import dev.eduplay.tools.MyDataBase;
+import dev.eduplay.entities.Level;
+
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
 public class LevelService {
 
     private Connection cnx;

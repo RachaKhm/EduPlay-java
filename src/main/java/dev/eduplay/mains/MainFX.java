@@ -1,6 +1,7 @@
 package dev.eduplay.mains;
 
 import dev.eduplay.core.ResetTokenServer;
+import dev.eduplay.services.EmailSchedulerService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,6 +13,8 @@ import java.io.IOException;
 import java.util.Objects;
 
 public class MainFX extends Application {
+
+    private EmailSchedulerService emailScheduler;
 
     @Override
     public void start(Stage primaryStage) throws IOException {
@@ -51,6 +54,17 @@ public class MainFX extends Application {
 
         // Arrêter le serveur proprement à la fermeture
         primaryStage.setOnCloseRequest(e -> ResetTokenServer.stop());
+
+        // ========== DÉMARRER LE SCHEDULER D'EMAILS ==========
+        emailScheduler = new EmailSchedulerService();
+        emailScheduler.startReminderScheduler();
+
+        // Arrêter le scheduler à la fermeture
+        primaryStage.setOnCloseRequest(e -> {
+            if (emailScheduler != null) {
+                emailScheduler.stopReminderScheduler();
+            }
+        });
 
         primaryStage.show();
     }

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane fitToWidth="true"
+            styleClass="parent-scroll-pane"
+            stylesheets="@../../styles/parent.css"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="dev.eduplay.controllers.AddChildController">
+
+    <VBox alignment="CENTER" styleClass="parent-container">
+
+        <VBox maxWidth="500" spacing="0"
+              styleClass="parent-card">
+
+            <!-- Titre -->
+            <Label fx:id="formTitleLabel" text="Ajouter un enfant"
+                   styleClass="parent-title"/>
+
+            <!-- Info box -->
+            <Label text="ℹ Créez un compte pour votre enfant. Il pourra se connecter avec l'identifiant et le mot de passe que vous allez définir."
+                   wrapText="true"
+                   styleClass="parent-info-box" style="-fx-margin: 12 0 0 0;"/>
+
+            <!-- Nom & Prénom -->
+            <HBox spacing="16" style="-fx-padding: 18 0 0 0;">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Nom *" styleClass="parent-label"/>
+                    <TextField fx:id="lastNameField" promptText="Ex: Trabelsi"
+                               styleClass="parent-input"/>
+                    <Label fx:id="lastNameError" text="" styleClass="parent-error-label" wrapText="true"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Prénom *" styleClass="parent-label"/>
+                    <TextField fx:id="firstNameField" promptText="Ex: Ahmed"
+                               styleClass="parent-input"/>
+                    <Label fx:id="firstNameError" text="" styleClass="parent-error-label" wrapText="true"/>
+                </VBox>
+            </HBox>
+
+            <!-- Identifiant -->
+            <VBox spacing="4" style="-fx-padding: 10 0 0 0;">
+                <Label text="Identifiant de connexion *" styleClass="parent-label"/>
+                <TextField fx:id="usernameField" promptText="Ex: ahmed2024 (lettres, chiffres, _)"
+                           styleClass="parent-input"/>
+                <Label fx:id="usernameError" text="" styleClass="parent-error-label" wrapText="true"/>
+            </VBox>
+
+            <!-- Date de naissance & Niveau -->
+            <HBox spacing="16" style="-fx-padding: 10 0 0 0;">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Date de naissance *" styleClass="parent-label"/>
+                    <DatePicker fx:id="birthDateField" maxWidth="Infinity"
+                                style="-fx-font-size: 13px;"/>
+                    <Label fx:id="birthDateError" text="" styleClass="parent-error-label" wrapText="true"/>
+                </VBox>
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Niveau scolaire *" styleClass="parent-label"/>
+                    <ComboBox fx:id="niveauCombo" maxWidth="Infinity"
+                              style="-fx-font-size: 13px;"/>
+                    <Label fx:id="niveauError" text="" styleClass="parent-error-label" wrapText="true"/>
+                </VBox>
+            </HBox>
+
+            <Separator style="-fx-padding: 14 0 0 0;"/>
+
+            <Label text="Définir le mot de passe de connexion"
+                   styleClass="parent-title" style="-fx-font-size: 15px; -fx-padding: 14 0 0 0;"/>
+
+            <!-- Mot de passe -->
+            <VBox spacing="4" style="-fx-padding: 10 0 0 0;">
+                <Label text="Mot de passe *" styleClass="parent-label"/>
+                <PasswordField fx:id="passwordField" promptText="Minimum 6 caractères"
+                               styleClass="parent-input"/>
+                <Label fx:id="passwordError" text="" styleClass="parent-error-label" wrapText="true"/>
+            </VBox>
+
+            <!-- Confirmer mot de passe -->
+            <VBox spacing="4" style="-fx-padding: 10 0 0 0;">
+                <Label text="Confirmer le mot de passe *" styleClass="parent-label"/>
+                <PasswordField fx:id="confirmPasswordField" promptText="Confirmer le mot de passe"
+                               styleClass="parent-input"/>
+                <Label fx:id="confirmPasswordError" text="" styleClass="parent-error-label" wrapText="true"/>
+            </VBox>
+
+            <!-- Succès -->
+            <Label fx:id="successLabel" text="" wrapText="true"
+                   styleClass="parent-success-label"/>
+
+            <!-- Boutons -->
+            <HBox spacing="12" style="-fx-padding: 20 0 0 0;">
+                <Button fx:id="submitButton" text="Créer le compte" onAction="#handleAddChild"
+                        HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                        styleClass="parent-btn-primary"/>
+                <Button text="Annuler" onAction="#handleCancel"
+                        HBox.hgrow="ALWAYS" maxWidth="Infinity"
+                        styleClass="parent-btn-secondary"/>
+            </HBox>
+
+        </VBox>
+    </VBox>
+</ScrollPane>
